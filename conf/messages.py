@@ -11,5 +11,7 @@ CONTACT_ALREADY_EXISTS = 'Contact already exists'
 CONTACT_NOT_FOUND = 'Contact not found'
 USER_NOT_FOUND = 'User not found'
 INVALID_SCOPE_TOKEN = 'Invalid scope token'
+DATABASE_IS_NOT_AVAILABLE = "Database is not available"
+DATABASE_IS_HEALTHY = "Database is healthy"
 
 # TODO REPLACE ALL ERROR MESSAGES IN PROJECT

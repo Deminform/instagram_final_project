@@ -2,7 +2,6 @@ from sqlalchemy import Integer, String, ForeignKey, DateTime, func, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from conf.config import Base
-from src.orders.models import Order
 from src.payments.models import Payment
 from src.users.models import User
 
@@ -17,7 +16,7 @@ class Invoice(Base):
     invoice_amount: Mapped[float] = mapped_column(Float, nullable=False)
     invoice_fee: Mapped[float] = mapped_column(Float, nullable=False)
     payment_id: Mapped[int] = mapped_column(Integer, ForeignKey('payments.id'), nullable=True, index=True)
-    payment: Mapped['Payment'] = relationship('Payment', backref='payment_invoices', lazy='joined', nullable=True)
+    payment: Mapped['Payment'] = relationship('Payment', backref='payment_invoices', lazy='joined')
     is_paid: Mapped[bool] = mapped_column(default=False)
     paid_at: Mapped[DateTime] = mapped_column('paid_at', DateTime, nullable=True)
     created_at: Mapped[DateTime] = mapped_column('created_at', DateTime, default=func.now())
