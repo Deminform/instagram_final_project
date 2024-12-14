@@ -19,14 +19,14 @@ class PostTag(Base):
 class Post(Base):
     __tablename__ = 'posts'
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
     description: Mapped[str] = mapped_column(String, nullable=False)
-    comments: Mapped[List['Comment'] ] = relationship('Comment', back_populates='post', lazy='joined')
-    score_results: Mapped[float] = mapped_column(Float, nullable=True)
+    score_result: Mapped[float] = mapped_column(Float, nullable=True)
     images: Mapped[List['Image']] = relationship('Image', back_populates='edited_post', lazy='joined')
+    comments: Mapped[List['Comment'] ] = relationship('Comment', back_populates='post', lazy='joined')
+    tags: Mapped[List["Tag"]] = relationship("Tag", secondary=PostTag.__table__, back_populates="posts")
     created_at: Mapped[DateTime] = mapped_column('created_at', DateTime, default=func.now())
     updated_at: Mapped[DateTime] = mapped_column('updated_at', DateTime, default=func.now(), onupdate=func.now())
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
-    tags: Mapped[List["Tag"]] = relationship("Tag", secondary=PostTag.__table__, back_populates="posts")
 
 
 class Tag(Base):
