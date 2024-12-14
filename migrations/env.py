@@ -9,15 +9,7 @@ from alembic import context
 
 from conf.config import app_config
 from conf.config import Base
-
-from src.files.models import File
-from src.invoices.models import Invoice
-from src.messages.models import ChatMessages
-from src.orders.models import Order
-from src.payments.models import Payment
-from src.plans.models import Plan
-from src.subscriptions.models import Subscription
-from src.users.models import User, UserSettings, CompanyInfo, ActionHistory, Role
+from src.users.models import User, Role
 
 
 # this is the Alembic Config object, which provides
