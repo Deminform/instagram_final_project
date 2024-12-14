@@ -10,19 +10,36 @@ class User(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     first_name: Mapped[str] = mapped_column(String(50))
     last_name: Mapped[str] = mapped_column(String(50))
-    middle_name: Mapped[str] = mapped_column(String(50))
     phone: Mapped[str] = mapped_column(String(15))
     email: Mapped[str] = mapped_column(String(70), unique=True, index=True)
     username: Mapped[str] = mapped_column(String(50), unique=True)
+    posts: Mapped['Post'] = relationship('Post', backref='users', lazy='joined')
     avatar_url: Mapped[str] = mapped_column(String(255), nullable=True)
     role_id: Mapped[int] = mapped_column(Integer, ForeignKey('roles.id'), nullable=False)
     password: Mapped[str] = mapped_column(String(255), nullable=False)
     refresh_token: Mapped[str] = mapped_column(String(255), nullable=True)
     created_at: Mapped[DateTime] = mapped_column('created_at', DateTime, default=func.now())
     updated_at: Mapped[DateTime] = mapped_column('updated_at', DateTime, default=func.now(), onupdate=func.now())
-    is_active: Mapped[bool] = mapped_column(default=False)
+    is_banned: Mapped[bool] = mapped_column(default=False)
     is_confirmed: Mapped[bool] = mapped_column(default=False)
 
+
+# # id: int
+# + first_name: str
+# + last_name: str
+# + phone: str
+# + email: str
+# + username: str
+# + avatar_url: str
+# + role_id: int
+# + password: str
+# + refresh_token: str
+# + created_at: DateTime
+# + updated_at: DateTime
+# + is_banned: bool
+# + is_confirmed: bool
+# + posts: list['Post'] Relationship
+#
 
     @hybrid_property
     def fullname(self):
