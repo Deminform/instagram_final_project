@@ -5,13 +5,6 @@ from sqlalchemy.orm import Mapped, mapped_column
 from conf.config import Base
 
 
-# + id: int
-# + post_id
-# + user_id
-# + comment: str
-# + created_at
-# + updated_at
-
 class Comment(Base):
     __tablename__ = "comments"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)

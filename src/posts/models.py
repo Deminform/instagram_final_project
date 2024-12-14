@@ -1,31 +1,37 @@
+from typing import List
+
 from sqlalchemy import Integer, String, DateTime, func, ForeignKey, Float
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from conf.config import Base
+from src.comments.models import Comment
+from src.images.models import Image
 
-# + id: int
-# + image_id: Mapped[int] = (Integer, Foreignkey)
-# + image: Image Relationship
-# + description: str
-# + comments: list['Comment'] Relationship
-# + score_result: float
-# + tags: list['Tag'] Relationship
-# + edited_images: list['Image'] Relationship
-# + created_at: DateTime
-# + updated_at: DateTime
-# + user_id: int
+
+
+class PostTag(Base):
+    __tablename__ = "post_tag"
+    post_id: Mapped[int] = mapped_column(Integer, ForeignKey("posts.id"), primary_key=True)
+    tag_id: Mapped[int] = mapped_column(Integer, ForeignKey("tags.id"), primary_key=True)
+
 
 class Post(Base):
     __tablename__ = 'posts'
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    image_id: Mapped[int] = mapped_column(Integer, ForeignKey('images.id'), nullable=False)
-    image: Mapped['Image'] = relationship('Image', back_populates='posts', lazy='joined')
     description: Mapped[str] = mapped_column(String, nullable=False)
-    comments: Mapped[list ['Comment'] ] = relationship('Comment', back_populates='post', lazy='joined')
+    comments: Mapped[List['Comment'] ] = relationship('Comment', back_populates='post', lazy='joined')
     score_results: Mapped[float] = mapped_column(Float, nullable=True)
-    edited_images: Mapped[list ['Image']] = relationship('Image', back_populates='edited_post', lazy='joined')
+    images: Mapped[List['Image']] = relationship('Image', back_populates='edited_post', lazy='joined')
     created_at: Mapped[DateTime] = mapped_column('created_at', DateTime, default=func.now())
     updated_at: Mapped[DateTime] = mapped_column('updated_at', DateTime, default=func.now(), onupdate=func.now())
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
-    tags: Mapped[list["Tag"]] = relationship("PostTag", secondary=post_tag, back_populates="posts")
+    tags: Mapped[List["Tag"]] = relationship("Tag", secondary=PostTag.__table__, back_populates="posts")
+
+
+class Tag(Base):
+    __tablename__ = "tags"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(String(50), nullable=False)
+    posts: Mapped[List["Post"]] = relationship("Post", secondary=PostTag.__table__, back_populates="tags")
+

@@ -1,8 +1,9 @@
 from sqlalchemy import Integer, String, DateTime, func, ForeignKey, Float
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from conf.config import Base
+from src.posts.models import Post
 
 
 class User(Base):
@@ -23,31 +24,6 @@ class User(Base):
     is_banned: Mapped[bool] = mapped_column(default=False)
     is_confirmed: Mapped[bool] = mapped_column(default=False)
 
-
-# # id: int
-# + first_name: str
-# + last_name: str
-# + phone: str
-# + email: str
-# + username: str
-# + avatar_url: str
-# + role_id: int
-# + password: str
-# + refresh_token: str
-# + created_at: DateTime
-# + updated_at: DateTime
-# + is_banned: bool
-# + is_confirmed: bool
-# + posts: list['Post'] Relationship
-#
-
-    @hybrid_property
-    def fullname(self):
-        return f'{self.first_name} {self.middle_name} {self.last_name}'
-
-    @fullname.expression
-    def fullname(cls) -> str:
-        return func.concat(cls.first_name, ' ', cls.middle_name, ' ', cls.last_name)
 
 
 class Role(Base):

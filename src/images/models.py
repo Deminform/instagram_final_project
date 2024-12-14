@@ -5,16 +5,6 @@ from sqlalchemy.orm import Mapped, mapped_column
 from conf.config import Base
 
 
-
-
-# + id: int
-# + url: str
-# + post_id: int
-# + name: str
-# + type: str
-# + size: int
-# + description: str
-
 class Image(Base):
     __tablename__ = 'images'
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
