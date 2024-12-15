@@ -1,8 +1,8 @@
 """Init
 
-Revision ID: a76f74b9b6f9
+Revision ID: 2b3b02582ecf
 Revises: 
-Create Date: 2024-12-15 15:21:18.626238
+Create Date: 2024-12-16 00:12:30.878799
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'a76f74b9b6f9'
+revision: str = '2b3b02582ecf'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -48,10 +48,11 @@ def upgrade() -> None:
     sa.Column('is_banned', sa.Boolean(), nullable=False),
     sa.Column('is_confirmed', sa.Boolean(), nullable=False),
     sa.ForeignKeyConstraint(['role_id'], ['roles.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('username')
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_users_email'), 'users', ['email'], unique=True)
+    op.create_index(op.f('ix_users_id'), 'users', ['id'], unique=False)
+    op.create_index(op.f('ix_users_username'), 'users', ['username'], unique=True)
     op.create_table('posts',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('user_id', sa.Integer(), nullable=False),
@@ -113,6 +114,8 @@ def downgrade() -> None:
     op.drop_table('images')
     op.drop_table('comments')
     op.drop_table('posts')
+    op.drop_index(op.f('ix_users_username'), table_name='users')
+    op.drop_index(op.f('ix_users_id'), table_name='users')
     op.drop_index(op.f('ix_users_email'), table_name='users')
     op.drop_table('users')
     op.drop_table('tags')
