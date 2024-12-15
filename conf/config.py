@@ -15,8 +15,7 @@ class Settings(BaseSettings):
     POSTGRES_DBNAME: str = 'database_name'
     POSTGRES_HOST: str = 'localhost'
     POSTGRES_PORT: str = '5432'
-
-    DB_URL: str = 'postgresql+asyncpg://postgres@localhost:5432/database_name'
+    DB_URL: str
 
     # Mail settings ----------------------------------------------------------------------------------
     MAIL_USERNAME: EmailStr = 'email@example.com'
