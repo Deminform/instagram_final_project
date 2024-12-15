@@ -47,7 +47,7 @@ class CustomKeyBuilder:
         cache_key = ":".join(key_parts)
         return cache_key
 
-async def clear_cache(user_id):
-    await FastAPICache.clear(namespace=f'get_my_contacts:user={user_id}')
+# async def clear_cache(user_id):
+#     await FastAPICache.clear(namespace=f'get_my_contacts:user={user_id}')
 
 custom_key_builder = CustomKeyBuilder()
