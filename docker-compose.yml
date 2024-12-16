@@ -18,7 +18,7 @@ services:
 #      build:
 #        context: .
 #        dockerfile: Dockerfile
-#      image: arpixe
+#      image: insta_final_project
 #      environment:
 #        DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DBNAME}
 #        REDIS_URL: redis://redis:6379

@@ -17,6 +17,7 @@ from fastapi.templating import Jinja2Templates
 from conf import messages
 from conf.config import app_config
 from src.services import healthchecker
+from src.posts.routes import router as posts_router
 
 
 @asynccontextmanager
@@ -42,3 +43,4 @@ app.add_middleware(
 
 
 app.include_router(healthchecker.router, prefix="/api")
+app.include_router(posts_router, prefix="/api")
