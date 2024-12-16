@@ -14,7 +14,7 @@ class User(Base):
     phone: Mapped[str] = mapped_column(String(15))
     email: Mapped[str] = mapped_column(String(70), unique=True, index=True)
     username: Mapped[str] = mapped_column(String(50), unique=True, index=True)
-    posts: Mapped['Post'] = relationship('Post', backref='users', lazy='joined')
+    posts: Mapped['Post'] = relationship('Post', backref='users', lazy='select')
     avatar_url: Mapped[str] = mapped_column(String(255), nullable=True)
     role_id: Mapped[int] = mapped_column(Integer, ForeignKey('roles.id'))
     role: Mapped[str] = relationship("Role", lazy="selectin")
