@@ -1,6 +1,5 @@
 ACCOUNT_EXIST = 'Account already exists'
-INCORRECT_EMAIL = 'Incorrect email'
-INCORRECT_PASSWORD = 'Incorrect password'
+INCORRECT_CREDENTIALS = 'Incorrect username or password'
 EMAIL_NOT_CONFIRMED = 'Email not confirmed'
 EMAIL_CONFIRMED = 'Email verified successfully'
 EMAIL_ALREADY_CONFIRMED = "Your email is already confirmed"
