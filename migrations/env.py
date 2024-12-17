@@ -9,12 +9,6 @@ from alembic import context
 
 from conf.config import app_config
 from conf.config import Base
-from src.users.models import User, Role
-from src.comments.models import Comment
-from src.images.models import Image
-from src.posts.models import PostTag, Post, Tag
-from src.scores.models import Score
-
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

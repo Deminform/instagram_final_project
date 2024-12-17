@@ -1,16 +1,15 @@
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks, Request
 from fastapi.security import OAuth2PasswordRequestForm
-from jinja2 import Environment, FileSystemLoader
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from conf.messages import (ACCOUNT_EXIST, EMAIL_ALREADY_CONFIRMED, EMAIL_CONFIRMED, EMAIL_NOT_CONFIRMED,
                            INCORRECT_CREDENTIALS, USER_NOT_FOUND)
 from database.db import get_db
-from src.users.mail_utils import send_verification_email
-from src.users.pass_utils import verify_password
-from src.users.repos import UserRepository
-from src.users.schema import UserResponse, UserCreate, Token
-from src.users.utils import decode_verification_token, create_access_token, create_refresh_token, decode_access_token
+from src.auth.mail_utils import send_verification_email
+from src.auth.pass_utils import verify_password
+from src.auth.repos import UserRepository
+from src.auth.schema import UserResponse, UserCreate, Token
+from src.auth.utils import decode_verification_token, create_access_token, create_refresh_token, decode_access_token
 
 router = APIRouter()
 

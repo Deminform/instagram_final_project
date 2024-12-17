@@ -8,9 +8,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from conf.config import app_config
 from database.db import get_db
-from src.users.models import User
-from src.users.repos import UserRepository
-from src.users.schema import TokenData
+from src.auth.models import User
+from src.auth.repos import UserRepository
+from src.auth.schema import TokenData
 
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30

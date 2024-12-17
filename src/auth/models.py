@@ -1,5 +1,4 @@
 from sqlalchemy import Integer, String, DateTime, func, ForeignKey, Boolean
-from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from conf.config import Base

@@ -1,10 +1,9 @@
 from sqlalchemy import select
 from libgravatar import Gravatar
-from starlette.datastructures import URL
 
-from src.users.models import User, Role
-from src.users.pass_utils import get_password_hash
-from src.users.schema import UserCreate, RoleEnum
+from src.auth.models import User, Role
+from src.auth.pass_utils import get_password_hash
+from src.auth.schema import UserCreate, RoleEnum
 
 
 class UserRepository:
