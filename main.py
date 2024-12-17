@@ -10,6 +10,7 @@ from fastapi_limiter import FastAPILimiter
 from conf.config import app_config
 from src.services import healthchecker
 from src.auth.routes import router as users_router
+from src.posts.routes import router as posts_router
 
 
 @asynccontextmanager
@@ -36,3 +37,4 @@ app.add_middleware(
 
 app.include_router(healthchecker.router, prefix="/api")
 app.include_router(users_router, prefix="/api/auth", tags=["auth"])
+app.include_router(posts_router, prefix="/api")
