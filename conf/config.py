@@ -22,8 +22,9 @@ class Settings(BaseSettings):
     MAIL_FROM: str = MAIL_USERNAME
     MAIL_PASSWORD: str = '9876543210'
     MAIL_SERVER: str = 'mail.example.com'
-    MAIL_SMTP_PORT: str = '993'
-    MAIL_IMAP_PORT: str = '465'
+    MAIL_PORT: int
+    # MAIL_SMTP_PORT: str = '993'
+    # MAIL_IMAP_PORT: str = '465'
     VERIFY_EMAIL_TOKEN_LIFETIME: int = 1  # Days
 
     # JWT Key --------------------------------------------------------------------------------------
