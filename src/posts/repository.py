@@ -54,8 +54,12 @@ async def get_tags_by_names(db: AsyncSession, tags_list: set[str]) -> set[Tag]:
     return result
 
 
-async def delete_post(db: AsyncSession, post_id: int):
-    stmt = select(Post).where(Post.id == post_id)
+async def delete_post(db: AsyncSession, user: User, post_id: int):
+    stmt = (
+        select(Post)
+        .where(Post.id == post_id, Post.user_id == user.id)
+        .with_for_update(nowait=True)
+    )
     result = await db.execute(stmt)
     post = result.scalar_one_or_none()
     if post:

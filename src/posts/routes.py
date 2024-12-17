@@ -31,6 +31,8 @@ from src.posts import repository as posts_repository
 from src.users.models import User
 from src.services.auth import auth_service
 from src.images import repository as images_repository
+from src.comments import repository as comment_repository
+from src.scores import repository as score_repository
 
 router = APIRouter(prefix="/posts", tags=["posts"])
 
@@ -77,8 +79,14 @@ async def create_post(
 async def delete_post(
         post_id: int,
         db: AsyncSession = Depends(get_db),
-        # user: User = Depends(auth_service.get_current_user),
+        user: User = Depends(auth_service.get_current_user),
 ):
+    post = await posts_repository.delete_post(db, user, post_id)
+    if post is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=messages.POST_NOT_FOUND
+        )
+    return post
 
 
 
@@ -86,10 +94,20 @@ async def delete_post(
 async def edit_post(
         post_id: int,
         body: PostUpdateSchema,
+        image: UploadFile = File(...),
         db: AsyncSession = Depends(get_db),
-        # user: User = Depends(auth_service.get_current_user),
+        user: User = Depends(auth_service.get_current_user),
 ):
-    ...
+    post = await posts_repository.get_post_by_id(db, post_id)
+    if post is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=messages.POST_NOT_FOUND
+        )
+
+    comment = comment_repository.create_comment(db, post.id, user, body.comment)
+    score = score_repository.get_average_score(db, post.id, user, body.score)
+    image = images_repository.create_image(db, post.id, user, image)
+    post = await posts_repository.update_post(db, post_id, body)
 
 
 
