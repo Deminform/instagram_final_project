@@ -6,16 +6,12 @@ from conf.config import Base
 
 
 class Image(Base):
-    __tablename__ = 'images'
+    __tablename__ = "images"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     url: Mapped[str] = mapped_column(String, nullable=False, unique=True)
-    post_id: Mapped[int] = mapped_column(Integer, ForeignKey('posts.id'), nullable=False)
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), nullable=False)
+    post_id: Mapped[int] = mapped_column(Integer, ForeignKey("posts.id"), nullable=False)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
     name: Mapped[str] = mapped_column(String, nullable=True)
     type: Mapped[str] = mapped_column(String, nullable=True)
     size: Mapped[int] = mapped_column(Integer, nullable=True)
     description: Mapped[str] = mapped_column(String, nullable=True)
-
-
-
-

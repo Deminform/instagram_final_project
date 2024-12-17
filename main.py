@@ -18,12 +18,13 @@ from conf import messages
 from conf.config import app_config
 from src.services import healthchecker
 from src.posts.routes import router as posts_router
+from src.comments.router import router as comment_router
 
 
 @asynccontextmanager
 async def lifespan(fastapi_app: FastAPI):
-    redis = aioredis.from_url(app_config.REDIS_URL, encoding='utf8')
-    FastAPICache.init(RedisBackend(redis), prefix='fastapi-cache')
+    redis = aioredis.from_url(app_config.REDIS_URL, encoding="utf8")
+    FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
     await FastAPILimiter.init(redis)
 
     yield
@@ -44,3 +45,9 @@ app.add_middleware(
 
 app.include_router(healthchecker.router, prefix="/api")
 app.include_router(posts_router, prefix="/api")
+app.include_router(comment_router, prefix="/api")
+
+
+@app.get("/")
+def root():
+    return {"message": "REST APP v1.0"}
