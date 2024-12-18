@@ -98,7 +98,7 @@ async def edit_post(
         db: AsyncSession = Depends(get_db),
         user: User = Depends(auth_service.get_current_user),
 ):
-    post = await posts_repository.get_post_by_id(db, post_id)
+    post = await posts_repository.get_post_by_id(db, user, post_id)
     if post is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=messages.POST_NOT_FOUND

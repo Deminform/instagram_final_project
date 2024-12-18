@@ -18,7 +18,7 @@ async def get_post_by_filter(db: AsyncSession, user_id: int = None, limit: int =
     return result
 
 
-async def get_post_by_id(db: AsyncSession, post_id: int = None):
+async def get_post_by_id(db: AsyncSession, user: User, post_id: int = None):
     stmt = select(Post).where(Post.id == post_id)
     post = await db.execute(stmt)
     result = post.scalar_one_or_none()

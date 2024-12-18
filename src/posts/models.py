@@ -1,6 +1,6 @@
 from typing import List, Set
 
-from sqlalchemy import Integer, String, DateTime, func, ForeignKey, Float
+from sqlalchemy import Integer, String, DateTime, func, ForeignKey, Float, Boolean
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -25,6 +25,7 @@ class Post(Base):
     images: Mapped[Set["Image"]] = relationship("Image", lazy="joined")
     comments: Mapped[Set["Comment"] ] = relationship("Comment", lazy="joined")
     tags: Mapped[Set["Tag"]] = relationship("Tag", secondary=PostTag.__table__)
+    is_published: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[DateTime] = mapped_column("created_at", DateTime, default=func.now())
     updated_at: Mapped[DateTime] = mapped_column("updated_at", DateTime, default=func.now(), onupdate=func.now())
 
