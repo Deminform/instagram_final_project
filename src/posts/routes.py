@@ -52,9 +52,9 @@ async def get_post_by_filter(
 async def get_post_by_id(
         post_id: int,
         db: AsyncSession = Depends(get_db),
-        # user: User = Depends(auth_service.get_current_user)
+        user: User = Depends(auth_service.get_current_user)
 ):
-    post = await posts_repository.get_post_by_id(db, post_id)
+    post = await posts_repository.get_post_by_id(db, user, post_id)
     if post is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=messages.POST_NOT_FOUND
@@ -106,7 +106,7 @@ async def edit_post(
 
     comment = comment_repository.create_comment(db, post.id, user, body.comment)
     score = score_repository.get_average_score(db, post.id, user, body.score)
-    image = images_repository.create_image(db, post.id, user, image)
+    # image = images_repository.create_image(db, post.id, user, image)
     post = await posts_repository.update_post(db, post_id, body)
 
 
