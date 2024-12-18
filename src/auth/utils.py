@@ -12,24 +12,20 @@ from src.auth.models import User
 from src.auth.repos import UserRepository
 from src.auth.schema import TokenData
 
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-REFRESH_TOKEN_EXPIRE_DAYS = 7
-VERIFICATION_TOKEN_EXPIRE_HOURS = 24
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 
 def create_verification_token(email: EmailStr) -> str:
-    expire = datetime.now(timezone.utc) + timedelta(hours=VERIFICATION_TOKEN_EXPIRE_HOURS)
+    expire = datetime.now(timezone.utc) + timedelta(hours=app_config.VERIFY_EMAIL_TOKEN_LIFETIME)
     to_encode = {"exp": expire, "sub": email}
-    encoded_jwt = jwt.encode(to_encode, app_config.JWT_SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, app_config.JWT_SECRET_KEY, algorithm=app_config.ALGORITHM)
     return encoded_jwt
 
 
 def decode_verification_token(token: str) -> str | None:
     try:
-        payload = jwt.decode(token, app_config.JWT_SECRET_KEY, algorithms=ALGORITHM)
+        payload = jwt.decode(token, app_config.JWT_SECRET_KEY, algorithms=app_config.ALGORITHM)
         email: str = payload.get("sub")
         if email is None:
             return None
@@ -41,23 +37,23 @@ def decode_verification_token(token: str) -> str | None:
 
 def create_access_token(data: dict) -> str:
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    expire = datetime.now(timezone.utc) + timedelta(minutes=app_config.TOKEN_LIFETIME)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, app_config.JWT_SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, app_config.JWT_SECRET_KEY, algorithm=app_config.ALGORITHM)
     return encoded_jwt
 
 
 def create_refresh_token(data: dict):
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)
+    expire = datetime.now(timezone.utc) + timedelta(days=app_config.REFRESH_TOKEN_LIFETIME)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, app_config.JWT_SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, app_config.JWT_SECRET_KEY, algorithm=app_config.ALGORITHM)
     return encoded_jwt
 
 
 def decode_access_token(token: str) -> TokenData | None:
     try:
-        payload = jwt.decode(token, app_config.JWT_SECRET_KEY, algorithms=ALGORITHM)
+        payload = jwt.decode(token, app_config.JWT_SECRET_KEY, algorithms=app_config.ALGORITHM)
         username: str = payload.get("sub")
         if username is None:
             return None
