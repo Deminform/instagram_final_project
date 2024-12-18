@@ -68,9 +68,9 @@ async def delete_post(db: AsyncSession, user: User, post_id: int):
     return post
 
 
-async def update_post(db: AsyncSession, post_id: int, body: PostUpdateSchema, comment: Comment = None,
+async def update_post(db: AsyncSession, user: User, post_id: int, body: PostUpdateSchema, comment: Comment = None,
                       average_score: float = None, image: Image = None):
-    post = await get_post_by_id(db, post_id)
+    post = await get_post_by_id(db, user, post_id)
     if post:
         if body.description:
             post.description = body.description
