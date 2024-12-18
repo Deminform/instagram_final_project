@@ -7,11 +7,11 @@ from pydantic import EmailStr
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from conf.config import app_config
+from conf.messages import FORBIDDEN, INCORRECT_CREDENTIALS
 from database.db import get_db
 from src.auth.models import User
 from src.auth.repos import UserRepository
-from src.auth.schema import TokenData
-
+from src.auth.schema import TokenData, RoleEnum
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
@@ -67,7 +67,7 @@ async def get_current_user(
 ) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Invalid credentials",
+        detail=INCORRECT_CREDENTIALS,
         headers={"WWW-Authenticate": "Bearer"},
     )
     token_data = decode_access_token(token)
@@ -78,4 +78,20 @@ async def get_current_user(
     if user is None:
         raise credentials_exception
     return user
+
+class RoleChecker:
+    def __init__(self, allowed_roles: list[RoleEnum]):
+        self.allowed_roles = allowed_roles
+
+    async def __call__(
+        self, token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)
+    ) -> User:
+        user = await get_current_user(token, db)
+
+        if user.role.name not in [role.value for role in self.allowed_roles]:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail=FORBIDDEN,
+            )
+        return user
 

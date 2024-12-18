@@ -5,6 +5,7 @@ EMAIL_CONFIRMED = 'Email verified successfully'
 EMAIL_ALREADY_CONFIRMED = "Your email is already confirmed"
 INCORRECT_REFRESH_TOKEN = 'Could not validate credentials'
 VERIFICATION_FAILED = 'Verification failed'
+FORBIDDEN = "You do not have permission to perform this action"
 INTERNAL_SERVER_ERROR = 'Internal Server Error'
 BANNED = 'You are banned'
 CONTACT_ALREADY_EXISTS = 'Contact already exists'

@@ -50,6 +50,11 @@ class UserRepository:
         await self.session.commit()
         await self.session.refresh(user)
 
+    async def get_user(self, id) -> User | None:
+        query = select(User).where(User.id == id)
+        result = await self.session.execute(query)
+        return result.scalar_one_or_none()
+
 
 class RoleRepository:
 
