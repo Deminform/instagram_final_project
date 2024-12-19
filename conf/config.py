@@ -15,17 +15,17 @@ class Settings(BaseSettings):
     POSTGRES_DBNAME: str = 'database_name'
     POSTGRES_HOST: str = 'localhost'
     POSTGRES_PORT: str = '5432'
-
-    DB_URL: str = 'postgresql+asyncpg://postgres@localhost:5432/database_name'
+    DB_URL: str
 
     # Mail settings ----------------------------------------------------------------------------------
     MAIL_USERNAME: EmailStr = 'email@example.com'
     MAIL_FROM: str = MAIL_USERNAME
     MAIL_PASSWORD: str = '9876543210'
     MAIL_SERVER: str = 'mail.example.com'
-    MAIL_SMTP_PORT: str = '993'
-    MAIL_IMAP_PORT: str = '465'
-    VERIFY_EMAIL_TOKEN_LIFETIME: int = 1  # Days
+    MAIL_PORT: int
+    # MAIL_SMTP_PORT: str = '993'
+    # MAIL_IMAP_PORT: str = '465'
+    VERIFY_EMAIL_TOKEN_LIFETIME: int = 24  # Hours
 
     # JWT Key --------------------------------------------------------------------------------------
     JWT_SECRET_KEY: str = '0123a654b987c'

@@ -1,22 +1,16 @@
-import re
 from contextlib import asynccontextmanager
-from typing import Callable, Dict
-
-from pathlib import Path
 
 from redis import asyncio as aioredis
-from fastapi import FastAPI, status, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
 from fastapi_limiter import FastAPILimiter
-from fastapi.responses import JSONResponse, HTMLResponse, FileResponse
-from fastapi.templating import Jinja2Templates
 
-from conf import messages
 from conf.config import app_config
 from src.services import healthchecker
+from src.services.auth.routes import router as auth_router
+from src.users.routes import router as users_router
 from src.posts.routes import router as posts_router
 
 
@@ -43,4 +37,6 @@ app.add_middleware(
 
 
 app.include_router(healthchecker.router, prefix="/api")
+app.include_router(auth_router, prefix="/api")
 app.include_router(posts_router, prefix="/api")
+app.include_router(users_router, prefix="/api")

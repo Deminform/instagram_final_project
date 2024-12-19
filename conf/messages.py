@@ -1,10 +1,11 @@
 ACCOUNT_EXIST = 'Account already exists'
-INCORRECT_EMAIL = 'Incorrect email'
-INCORRECT_PASSWORD = 'Incorrect password'
+INCORRECT_CREDENTIALS = 'Incorrect username or password'
 EMAIL_NOT_CONFIRMED = 'Email not confirmed'
-EMAIL_CONFIRMED = 'Email confirmed'
+EMAIL_CONFIRMED = 'Email verified successfully'
+EMAIL_ALREADY_CONFIRMED = "Your email is already confirmed"
 INCORRECT_REFRESH_TOKEN = 'Could not validate credentials'
 VERIFICATION_FAILED = 'Verification failed'
+FORBIDDEN = "You do not have permission to perform this action"
 INTERNAL_SERVER_ERROR = 'Internal Server Error'
 BANNED = 'You are banned'
 POST_ALREADY_EXISTS = 'Contact already exists'
