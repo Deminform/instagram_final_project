@@ -29,32 +29,32 @@ from database.db import get_db
 from src.posts.schemas import PostResponseSchema, PostSchema, PostUpdateSchema
 from src.posts import repository as posts_repository
 from src.users.models import User
-from src.services.auth import auth_service
-from src.images import repository as images_repository
-from src.comments import repository as comment_repository
-from src.scores import repository as score_repository
+from src.services.auth.utils import get_current_user
+from src.posts.post_service import PostService
 
 router = APIRouter(prefix="/posts", tags=["posts"])
 
 
+
 @router.get("/", response_model=list[PostResponseSchema])
-async def get_post_by_filter(
+async def get_posts(
         limit: int = Query(10, ge=10, le=100),
         offset: int = Query(0, ge=0),
-        user_id: int | None = Query(None, description="Get posts by user id"),
-        db: AsyncSession = Depends(get_db)
-        # user: User = Depends(auth_service.get_current_user),
+        db: AsyncSession = Depends(get_db),
+        user: User = Depends(get_current_user),
 ):
-    posts = await posts_repository.get_post_by_filter(db, user_id, limit, offset)
-    return posts
+    post_service = PostService(db)
+    return await post_service.get_posts(limit, offset)
+
 
 @router.get("/{post_id}", response_model=PostResponseSchema)
 async def get_post_by_id(
         post_id: int,
         db: AsyncSession = Depends(get_db),
-        user: User = Depends(auth_service.get_current_user)
+        user: User = Depends(get_current_user)
 ):
-    post = await posts_repository.get_post_by_id(db, user, post_id)
+    post_service = PostService(db)
+    post = await post_service.get_post_by_id(post_id)
     if post is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=messages.POST_NOT_FOUND
@@ -67,10 +67,10 @@ async def create_post(
         body: PostSchema,
         image: UploadFile = File(...),
         db: AsyncSession = Depends(get_db),
-        user: User = Depends(auth_service.get_current_user),
+        user: User = Depends(get_current_user),
 ):
-    image = await images_repository.create_image(db, image)
-    post = await posts_repository.create_post(db, user, body, image)
+    post_service = PostService(db)
+    post = await post_service.create_post(body, image)
     return post
 
 
@@ -78,9 +78,10 @@ async def create_post(
 async def delete_post(
         post_id: int,
         db: AsyncSession = Depends(get_db),
-        user: User = Depends(auth_service.get_current_user),
+        user: User = Depends(get_current_user),
 ):
-    post = await posts_repository.delete_post(db, user, post_id)
+    post_service = PostService(db)
+    post = await post_service.delete_post(user, post_id)
     if post is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=messages.POST_NOT_FOUND
@@ -88,15 +89,12 @@ async def delete_post(
     return post
 
 
-@router.put("/{post_id}/tags", response_model=PostResponseSchema)
-@router.put("/{post_id}/images", response_model=PostResponseSchema)
-@router.put("/{post_id}/comments", response_model=PostResponseSchema)
+@router.put("/{post_id}", response_model=PostResponseSchema)
 async def edit_post(
         post_id: int,
         body: PostUpdateSchema,
-        image: UploadFile = File(...),
         db: AsyncSession = Depends(get_db),
-        user: User = Depends(auth_service.get_current_user),
+        user: User = Depends(get_current_user),
 ):
     post = await posts_repository.get_post_by_id(db, user, post_id)
     if post is None:
@@ -104,9 +102,6 @@ async def edit_post(
             status_code=status.HTTP_404_NOT_FOUND, detail=messages.POST_NOT_FOUND
         )
 
-    comment = comment_repository.create_comment(db, post.id, user, body.comment)
-    score = score_repository.get_average_score(db, post.id, user, body.score)
-    # image = images_repository.create_image(db, post.id, user, image)
     post = await posts_repository.update_post(db, user, post_id, body)
 
 

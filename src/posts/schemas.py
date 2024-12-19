@@ -4,7 +4,6 @@ from conf import const
 
 
 class PostSchema(BaseModel):
-    user_id: int = Field(...)
     description: str = Field(min_length=5, max_length=500)
     effect: str | None
     tags: set[str] = Field(description="5 tags max")
