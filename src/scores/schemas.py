@@ -19,8 +19,8 @@ class ScoreUpdate(BaseModel):
 
 
 class Score(ScoreBase):
-    id: int = Field(..., description="Unique identifier.")
-    
+    id: int = Field(..., description="Unique identifier for the score.")
+
     class Config:
         orm_model = True
 
