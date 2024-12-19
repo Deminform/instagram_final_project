@@ -5,7 +5,7 @@ from jinja2 import Environment, FileSystemLoader
 from starlette.datastructures import URL
 
 from conf.config import app_config
-from src.auth.utils import create_verification_token
+from src.services.auth.utils import create_verification_token
 
 env = Environment(loader=FileSystemLoader("src/templates"))
 

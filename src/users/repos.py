@@ -1,9 +1,9 @@
 from sqlalchemy import select
 from libgravatar import Gravatar
 
-from src.auth.models import User, Role
-from src.auth.pass_utils import get_password_hash
-from src.auth.schema import UserCreate, RoleEnum
+from src.users.models import User, Role
+from src.services.auth.pass_utils import get_password_hash
+from src.users.schema import UserCreate, RoleEnum
 
 
 class UserRepository:
@@ -54,6 +54,15 @@ class UserRepository:
         query = select(User).where(User.id == id)
         result = await self.session.execute(query)
         return result.scalar_one_or_none()
+
+    async def update_user(self, id):
+        pass
+
+    async def ban_user(self, id):
+        pass
+
+    async def unban_user(self, id):
+        pass
 
 
 class RoleRepository:

@@ -9,9 +9,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from conf.config import app_config
 from conf.messages import FORBIDDEN, INCORRECT_CREDENTIALS
 from database.db import get_db
-from src.auth.models import User
-from src.auth.repos import UserRepository
-from src.auth.schema import TokenData, RoleEnum
+from src.users.models import User
+from src.users.repos import UserRepository
+from src.users.schema import TokenData, RoleEnum
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 

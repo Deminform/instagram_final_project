@@ -5,13 +5,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from conf.messages import (ACCOUNT_EXIST, EMAIL_ALREADY_CONFIRMED, EMAIL_CONFIRMED, EMAIL_NOT_CONFIRMED,
                            INCORRECT_CREDENTIALS, USER_NOT_FOUND)
 from database.db import get_db
-from src.auth.mail_utils import send_verification_email
-from src.auth.pass_utils import verify_password
-from src.auth.repos import UserRepository
-from src.auth.schema import UserResponse, UserCreate, Token
-from src.auth.utils import decode_verification_token, create_access_token, create_refresh_token, decode_access_token
+from src.services.auth.mail_utils import send_verification_email
+from src.services.auth.pass_utils import verify_password
+from src.users.repos import UserRepository
+from src.users.schema import UserResponse, UserCreate, Token
+from src.services.auth.utils import decode_verification_token, create_access_token, create_refresh_token, decode_access_token
 
-router = APIRouter()
+router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post(
@@ -98,3 +98,31 @@ async def refresh_tokens(
     return Token(
         access_token=access_token, refresh_token=refresh_token, token_type="bearer"
     )
+
+
+@router.get("/logout")
+async def logout(token: str, db: AsyncSession = Depends(get_db)):
+
+    user_repo = UserRepository(db)
+    user = await user_repo.get_user_by_email()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=USER_NOT_FOUND,
+        )
+
+
+@router.get("/password-reset")
+async def reset_password(token: str, db: AsyncSession = Depends(get_db)):
+    email: str = decode_verification_token(token)
+    user_repo = UserRepository(db)
+    user = await user_repo.get_user_by_email(email)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=USER_NOT_FOUND,
+        )
+    if user.is_confirmed:
+        return {"message": EMAIL_ALREADY_CONFIRMED}
+    await user_repo.activate_user(user)
+    return {"msg": EMAIL_CONFIRMED}
