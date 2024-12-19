@@ -27,7 +27,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from conf import messages
 from database.db import get_db
 from src.posts.schemas import PostResponseSchema, PostSchema, PostUpdateSchema
-from src.posts import repository as posts_repository
 from src.users.models import User
 from src.services.auth.utils import get_current_user
 from src.posts.post_service import PostService
@@ -40,6 +39,7 @@ router = APIRouter(prefix="/posts", tags=["posts"])
 async def get_posts(
         limit: int = Query(10, ge=10, le=100),
         offset: int = Query(0, ge=0),
+        query: int = Query(0, ge=0),
         db: AsyncSession = Depends(get_db),
         user: User = Depends(get_current_user),
 ):
