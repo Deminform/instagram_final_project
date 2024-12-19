@@ -62,7 +62,6 @@ async def get_post_by_id(
     return post
 
 
-
 @router.post("/", response_model=PostResponseSchema)
 async def create_post(
         body: PostSchema,
@@ -89,8 +88,9 @@ async def delete_post(
     return post
 
 
-
-@router.put("/{post_id}", response_model=PostResponseSchema)
+@router.put("/{post_id}/tags", response_model=PostResponseSchema)
+@router.put("/{post_id}/images", response_model=PostResponseSchema)
+@router.put("/{post_id}/comments", response_model=PostResponseSchema)
 async def edit_post(
         post_id: int,
         body: PostUpdateSchema,
@@ -107,7 +107,7 @@ async def edit_post(
     comment = comment_repository.create_comment(db, post.id, user, body.comment)
     score = score_repository.get_average_score(db, post.id, user, body.score)
     # image = images_repository.create_image(db, post.id, user, image)
-    post = await posts_repository.update_post(db, post_id, body)
+    post = await posts_repository.update_post(db, user, post_id, body)
 
 
 
