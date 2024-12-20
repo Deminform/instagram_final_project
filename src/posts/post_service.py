@@ -17,8 +17,8 @@ class PostService:
         self.post_repository = PostRepository(db)
 
 
-    async def get_posts(self, limit, offset):
-        return await self.post_repository.get_posts(limit, offset)
+    async def get_posts(self, limit, offset, keyword, tag):
+        return await self.post_repository.get_posts(limit, offset, keyword.strip(), tag.strip())
 
 
     async def get_post_by_id(self, post_id):

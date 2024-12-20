@@ -19,11 +19,13 @@ router = APIRouter(prefix="/posts", tags=["posts"])
 async def get_posts(
         limit: int = Query(10, ge=10, le=100),
         offset: int = Query(0, ge=0),
+        tag: str = Query(None, description="Search by description or by tags"),
+        keyword: str = Query(None, description="Search by description or by tags"),
         db: AsyncSession = Depends(get_db),
         user: User = Depends(get_current_user),
 ):
     post_service = PostService(db)
-    return await post_service.get_posts(limit, offset)
+    return await post_service.get_posts(limit, offset, keyword, tag)
 
 
 @router.get("/{post_id}", response_model=PostResponseSchema)

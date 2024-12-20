@@ -1,5 +1,6 @@
-from sqlalchemy import select
+from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from src.posts.models import Post
 from src.tags.models import Tag
@@ -10,8 +11,24 @@ class PostRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def get_posts(self, limit: int, offset: int):
-        stmt = select(Post).offset(offset).limit(limit)
+
+    async def get_posts(self, limit: int, offset: int, keyword: str, tag: str):
+        stmt = select(Post)
+        conditions = []
+
+        if tag:
+            conditions.append(Post.tags.any(Tag.name == tag))
+        if keyword:
+            conditions.append(Post.description.ilike(f"%{keyword}%"))
+        if conditions:
+            stmt = stmt.where(and_(*conditions))
+
+        stmt = (
+            stmt
+            .options(selectinload(Post.tags))
+            .offset(offset)
+            .limit(limit))
+
         posts = await self.db.execute(stmt)
         return posts.scalars().all()
 
