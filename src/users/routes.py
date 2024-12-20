@@ -9,7 +9,7 @@ from conf.messages import USER_NOT_FOUND
 from database.db import get_db
 from src.services.auth.auth_service import get_current_user, RoleChecker
 from src.users.models import User
-from src.users.schema import UserResponse, RoleEnum
+from src.users.schema import UserResponse, RoleEnum, UserUpdate
 from src.users.users_service import UserService
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -32,14 +32,19 @@ async def get_user_info_by_username(
 
 
 
-# @router.patch("/{user_id}", response_model=UserResponse)
-# async def update_user(
-#     user_id: int,
-#     current_user: User = Depends(get_current_user),
-#     # user: User = Depends(RoleChecker([RoleEnum.MODER, RoleEnum.USER])),
-#     db: AsyncSession = Depends(get_db),
-# ):
-#     pass
+@router.patch("/", response_model=UserResponse)
+async def update_user_info(
+    body: UserUpdate,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> User:
+    user_service = UserService(db)
+    user = await user_service.update_user(current_user.id, body)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=USER_NOT_FOUND
+        )
+    return user
 
 
 # @router.post("/{user_id}", response_model=UserResponse)

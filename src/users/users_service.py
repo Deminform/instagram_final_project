@@ -1,11 +1,24 @@
 from libgravatar import Gravatar
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import IntegrityError
+from fastapi import HTTPException, status
 
 from src.services.auth.auth_service import Hash
 from src.users.models import User
 from src.users.repos import UserRepository, RoleRepository
-from src.users.schema import UserCreate, RoleEnum
+from src.users.schema import UserCreate, RoleEnum, UserUpdate
 
+def _handle_integrity_error(e: IntegrityError):
+    if "unique" in str(e.orig):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Data already exist.",
+        )
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Data integrity error.",
+        )
 
 class UserService:
     def __init__(self, db: AsyncSession):
@@ -33,14 +46,14 @@ class UserService:
     async def activate_user(self, user):
         return await self.user_repository.activate_user(user)
 
+    async def update_user(self, user_id, body: UserUpdate) -> User | None:
+        user = await self.user_repository.get_user_by_id(user_id)
+        try:
+            if user:
+                return await self.user_repository.update_user(user, body)
+        except IntegrityError as e:
+            _handle_integrity_error(e)
 
-
-def get_current_user_info():
-    pass
-
-
-def update_user():
-    pass
 
 
 def ban_user():
