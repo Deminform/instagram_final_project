@@ -28,8 +28,8 @@ from conf import messages
 from database.db import get_db
 from src.posts.schemas import PostResponseSchema, PostSchema, PostUpdateSchema
 from src.posts import repository as posts_repository
+from src.services.auth.auth_service import get_current_user
 from src.users.models import User
-from src.services.auth.utils import get_current_user
 from src.posts.post_service import PostService
 
 router = APIRouter(prefix="/posts", tags=["posts"])

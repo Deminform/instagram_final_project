@@ -7,10 +7,10 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from conf.messages import USER_NOT_FOUND
 from database.db import get_db
+from src.services.auth.auth_service import get_current_user, RoleChecker
 from src.users.models import User
 from src.users.repos import UserRepository
 from src.users.schema import UserResponse, RoleEnum
-from src.services.auth.utils import get_current_user, RoleChecker
 
 router = APIRouter(prefix="/users", tags=["users"])
 
