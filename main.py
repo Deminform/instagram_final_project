@@ -37,6 +37,6 @@ app.add_middleware(
 
 
 app.include_router(healthchecker.router, prefix="/api")
-app.include_router(auth_router, prefix="/api")
+app.include_router(auth_router, prefix="")
 app.include_router(posts_router, prefix="/api")
 app.include_router(users_router, prefix="/api")

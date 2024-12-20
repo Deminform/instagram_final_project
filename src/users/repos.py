@@ -1,5 +1,6 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
 from src.users.models import User, Role
 from src.users.schema import UserCreate, RoleEnum
@@ -10,12 +11,12 @@ class UserRepository:
         self.session = session
 
     async def get_user_by_email(self, email: str) -> User | None:
-        query = select(User).where(User.email == email)
+        query = select(User).options(selectinload(User.role)).where(User.email == email)
         result = await self.session.execute(query)
         return result.scalar_one_or_none()
 
     async def get_user_by_username(self, username: str) -> User | None:
-        query = select(User).where(User.username == username)
+        query = select(User).options(selectinload(User.role)).where(User.username == username)
         result = await self.session.execute(query)
         return result.scalar_one_or_none()
 
@@ -37,7 +38,7 @@ class UserRepository:
         await self.session.refresh(user)
 
     async def get_user(self, id) -> User | None:
-        query = select(User).where(User.id == id)
+        query = select(User).options(selectinload(User.role)).where(User.id == id)
         result = await self.session.execute(query)
         return result.scalar_one_or_none()
 

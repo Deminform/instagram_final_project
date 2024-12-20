@@ -1,3 +1,6 @@
+from typing import Optional
+from datetime import datetime
+
 from pydantic import BaseModel, EmailStr
 from enum import Enum
 
@@ -23,9 +26,10 @@ class UserCreate(UserBase):
 class UserResponse(UserBase):
     avatar_url: str
     id: int
-    role_id: int
+    role_name: Optional[str] = None
     is_confirmed: bool
     is_banned: bool
+    created_at: datetime
 
     class Config:
         from_attributes = True
