@@ -2,8 +2,11 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
+
 from src.users.models import User, Role
-from src.users.schema import UserCreate, RoleEnum
+from src.users.schema import UserCreate, RoleEnum, UserUpdate
+
+
 
 
 class UserRepository:
@@ -37,13 +40,20 @@ class UserRepository:
         await self.session.commit()
         await self.session.refresh(user)
 
-    async def get_user(self, id) -> User | None:
-        query = select(User).options(selectinload(User.role)).where(User.id == id)
+    async def get_user_by_id(self, user_id) -> User | None:
+        query = select(User).options(selectinload(User.role)).where(User.id == user_id)
         result = await self.session.execute(query)
         return result.scalar_one_or_none()
 
-    async def update_user(self, id):
-        pass
+    async def update_user(self, user, body: UserUpdate) -> User:
+        updated_data = body.model_dump(exclude_unset=True)
+        for key, value in updated_data.items():
+            setattr(user, key, value)
+
+        await self.session.commit()
+        await self.session.refresh(user)
+        return user
+
 
     async def ban_user(self, id):
         pass
