@@ -20,7 +20,6 @@ class Post(Base):
     __tablename__ = "posts"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     image_url: Mapped[str] = mapped_column(String(500), nullable=False)
-    edited_image_url: Mapped[str] = mapped_column(String(500), nullable=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
     description: Mapped[str] = mapped_column(String(500), nullable=False)
     created_at: Mapped[DateTime] = mapped_column("created_at", DateTime, default=func.now())

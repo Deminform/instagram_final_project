@@ -5,27 +5,19 @@ from pathlib import Path
 
 import cloudinary
 import cloudinary.uploader
-from fastapi import (
-    HTTPException,
-    Depends,
-    status,
-    APIRouter,
-    Security,
-    BackgroundTasks,
-    Request,
-    Form,
-    Query,
-)
+
 
 from conf.config import app_config
+from src.posts.repository import PostRepository
 
 
 class PostService:
     def __init__(self, db: AsyncSession):
         self.post_repository = PostRepository(db)
-        self.score_repository = ScoreRepository(db)
-        self.comment_repository = CommentRepository(db)
-        self.tag_repository = TagRepository(db)
+        # self.score_repository = ScoreRepository(db)
+        # self.comment_repository = CommentRepository(db)
+        # self.tag_repository = TagRepository(db)
+
 
     async def get_posts(self, limit, offset):
         return await self.post_repository.get_posts(limit, offset)
@@ -69,6 +61,6 @@ class PostService:
     #     return None
 
 
-    async def delete_post(sefl, user, post_id):
+    async def delete_post(self, user, post_id):
         ...
 

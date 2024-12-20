@@ -1,39 +1,18 @@
-from pathlib import Path
-
 from fastapi import (
-    HTTPException,
-    Depends,
-    status,
-    APIRouter,
-    Security,
-    BackgroundTasks,
-    Request,
-    Form,
-    Query,
+    Query, HTTPException, status, UploadFile, File,
 )
 
-import cloudinary
-import cloudinary.uploader
-from fastapi import Depends, APIRouter, UploadFile, File, status
-from fastapi_limiter.depends import RateLimiter
-from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
-from fastapi_limiter.depends import RateLimiter
-from jose import JWTError
+from fastapi import Depends, APIRouter
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from conf import messages
 from database.db import get_db
-from src.posts.schemas import PostResponseSchema, PostSchema, PostUpdateSchema
-from src.posts import repository as posts_repository
+from src.posts.schemas import PostResponseSchema, PostSchema
 from src.users.models import User
 from src.services.auth.utils import get_current_user
 from src.posts.post_service import PostService
 
 router = APIRouter(prefix="/posts", tags=["posts"])
-
 
 
 @router.get("/", response_model=list[PostResponseSchema])
@@ -103,7 +82,7 @@ async def edit_post(
         )
 
     post = await posts_repository.update_post(db, user, post_id, body)
-
+#
 
 
         # - get_post_by_filter()
