@@ -2,7 +2,6 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.posts.models import Post
-from src.posts.schemas import PostSchema
 from src.users.models import User
 
 

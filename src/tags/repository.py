@@ -8,7 +8,7 @@ from src.users.models import User
 
 
 
-class PostRepository:
+class TagRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
@@ -27,11 +27,3 @@ class PostRepository:
         return result
 
 
-    async def get_or_create_tags(self, db: AsyncSession, tags: set[str]):
-        tags_list = await get_tags_by_names(db, tags)
-        existing_tag_names = {tag.name for tag in tags_list}
-        not_existing_tag_names = [tag for tag in tags if tag not in existing_tag_names]
-        for tag in not_existing_tag_names:
-            tag_obj = await create_tag(db, tag)
-            tags_list.add(tag_obj)
-        return tags_list
