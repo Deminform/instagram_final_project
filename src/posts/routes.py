@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from conf import messages
 from database.db import get_db
-from src.posts.schemas import PostResponseSchema, PostSchema
+from src.posts.schemas import PostResponseSchema, PostSchema, PostUpdateSchema
 from src.users.models import User
 from src.services.auth.utils import get_current_user
 from src.posts.post_service import PostService
@@ -49,7 +49,7 @@ async def create_post(
         user: User = Depends(get_current_user),
 ):
     post_service = PostService(db)
-    post = await post_service.create_post(body, image)
+    post = await post_service.create_post(user, body, image)
     return post
 
 
@@ -71,18 +71,18 @@ async def delete_post(
 @router.put("/{post_id}", response_model=PostResponseSchema)
 async def edit_post(
         post_id: int,
-        body: PostUpdateSchema,
+        description: str,
         db: AsyncSession = Depends(get_db),
         user: User = Depends(get_current_user),
 ):
-    post = await posts_repository.get_post_by_id(db, user, post_id)
+    post_service = PostService(db)
+    post = await post_service.update_post_description(user, post_id, description)
     if post is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=messages.POST_NOT_FOUND
         )
+    return post
 
-    post = await posts_repository.update_post(db, user, post_id, body)
-#
 
 
         # - get_post_by_filter()

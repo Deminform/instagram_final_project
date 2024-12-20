@@ -1,10 +1,8 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.comments.models import Comment
-from src.images.models import Image
-from src.posts.models import Post, Tag
-from src.posts.schemas import PostSchema, PostUpdateSchema
+from src.posts.models import Post
+from src.posts.schemas import PostSchema
 from src.users.models import User
 
 
@@ -38,18 +36,32 @@ class PostRepository:
         return post
 
 
-    # async def create_post(self, db: AsyncSession, user: User, body: PostSchema, image: Image):
-    #     post = Post(user_id=user.id, description=body.description)
-    #     db.add(post)
-    #
-    #     tags = await get_or_create_tags(db, body.tags)
-    #
-    #     post.tags.update(tags)
-    #     post.images.add(image)
-    #
-    #     await db.commit()
-    #     await db.refresh(post)
-    #     return post
+    async def update_post_description(self, user: User, post_id: int, description: str):
+        stmt = (
+            select(Post)
+            .where(Post.id == post_id, Post.user_id == user.id)
+            .with_for_update(nowait=True)
+        )
+        result = await self.db.execute(stmt)
+        post = result.scalar_one_or_none()
+        if post:
+            post.description = description
+            await self.db.commit()
+            await self.db.refresh(post)
+        return post
+
+
+    async def create_post(self, user: User, description: str, images: dict):
+        post = Post(
+            description=description,
+            user_id=user.id,
+            original_image_url=images['original'],
+            image_url=images['edited'],
+        )
+        self.db.add(post)
+        await self.db.commit()
+        await self.db.refresh(post)
+        return post
 
 
     # async def create_tag(self, db: AsyncSession, tag_name: str):
