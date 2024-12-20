@@ -15,9 +15,6 @@ class PostService:
         self.image_service = ImageService(db)
         self.tag_service = TagService(db)
         self.post_repository = PostRepository(db)
-        # self.tag_repository = TagRepository(db)
-
-
 
 
     async def get_posts(self, limit, offset):
@@ -36,17 +33,16 @@ class PostService:
         image_urls = await self.image_service.get_image_urls(image, filter)
 
         try:
-            post = await self.post_repository.create_post(user, body.description, image_urls)
+            tags = await self.tag_service.get_or_create_tags(body.tags)
+            post = await self.post_repository.create_post(user, body.description, tags, image_urls)
             await self.image_service.create_image(post.id, post.image_url)
-            await self.tag_service.create_tags(post.id, body.tags)
         except IntegrityError as e:
             await self.post_repository.db.rollback()
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Data integrity error.",
+                detail=f"Data integrity error. -//- {e}",
             )
         return post
 
     async def delete_post(self, user, post_id):
         return await self.post_repository.delete_post(user, post_id)
-

@@ -11,7 +11,6 @@ from src.posts.schemas import PostResponseSchema, PostSchema
 from src.users.models import User
 from src.services.auth.utils import get_current_user
 from src.posts.post_service import PostService
-from src.tags.tag_service import TagService
 
 router = APIRouter(prefix="/posts", tags=["posts"])
 
@@ -83,12 +82,3 @@ async def edit_post(
             status_code=status.HTTP_404_NOT_FOUND, detail=messages.POST_NOT_FOUND
         )
     return post
-
-
-
-        # - get_post_by_filter()
-        # - get_post_by_id()
-        # - get_post_by_user_id() - ADMIN + MODER
-        # - create_post()
-        # - delete_post()
-        # - edit_post()

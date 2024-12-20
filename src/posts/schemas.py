@@ -18,17 +18,6 @@ class PostSchema(BaseModel):
         return tags
 
 
-# class PostUpdateSchema(BaseModel):
-#     description: str | None = Field(min_length=const.COMMENT_MIN_LENGTH, max_length=const.POST_DESCRIPTION_MAX_LENGTH)
-#     comment: str | None = Field(min_length=const.COMMENT_MIN_LENGTH, max_length=const.COMMENT_MAX_LENGTH)
-#     score: int | None = Field(ge=const.SCORE_MIN_VALUE, le=const.SCORE_MAX_VALUE)
-#     tags: set[str] | None = Field(description="5 tags max")
-#     @field_validator("tags")
-#     def validate_tags(cls, tags):
-#         if len(tags) > 5:
-#             raise ValueError("The maximum number of tags (5) ")
-
-
 class PostResponseSchema(BaseModel):
     id: int
     images: list[str]

@@ -2,6 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.posts.models import Post
+from src.tags.models import Tag
 from src.users.models import User
 
 
@@ -50,61 +51,15 @@ class PostRepository:
         return post
 
 
-    async def create_post(self, user: User, description: str, images: dict):
+    async def create_post(self, user: User, description: str, tags: set[Tag], images: dict):
         post = Post(
             description=description,
             user_id=user.id,
             original_image_url=images['original'],
             image_url=images['edited'],
         )
+        post.tags = tags
         self.db.add(post)
         await self.db.commit()
         await self.db.refresh(post)
         return post
-
-
-    # async def create_tag(self, db: AsyncSession, tag_name: str):
-    #     tag = Tag(name=tag_name)
-    #     db.add(tag)
-    #     await db.commit()
-    #     await db.refresh(tag)
-    #     return tag
-    #
-    #
-    # async def get_tags_by_names(self, db: AsyncSession, tags_list: set[str]) -> set[Tag]:
-    #     stmt = select(Tag).where(Tag.name.in_(tags_list))
-    #     tag = await db.execute(stmt)
-    #     result = set(tag.scalars().all())
-    #     return result
-
-
-    # async def update_post(self, db: AsyncSession, user: User, post_id: int, body: PostUpdateSchema, comment: Comment = None,
-    #                       average_score: float = None, image: Image = None):
-    #     post = await get_post_by_id(db, user, post_id)
-    #     if post:
-    #         if body.description:
-    #             post.description = body.description
-    #         if comment:
-    #             post.comments.add(comment)
-    #         if body.tags:
-    #             tags = await get_or_create_tags(db, body.tags)
-    #             post.tags.update(tags)
-    #         if average_score:
-    #             post.score_result = average_score
-    #         if image:
-    #             post.images.add(image)
-    #
-    #     await db.commit()
-    #     await db.refresh(post)
-    #     return post
-    #
-    #
-    # async def get_or_create_tags(self, db: AsyncSession, tags: set[str]):
-    #     tags_list = await get_tags_by_names(db, tags)
-    #     existing_tag_names = {tag.name for tag in tags_list}
-    #     not_existing_tag_names = [tag for tag in tags if tag not in existing_tag_names]
-    #     for tag in not_existing_tag_names:
-    #         tag_obj = await create_tag(db, tag)
-    #         tags_list.add(tag_obj)
-    #     return tags_list
-
