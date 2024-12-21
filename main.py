@@ -12,6 +12,7 @@ from src.services import healthchecker
 from src.services.auth.routes import router as auth_router
 from src.users.routes import router as users_router
 from src.posts.routes import router as posts_router
+from src.scores.routes import router as scores_router
 
 
 @asynccontextmanager
@@ -37,6 +38,7 @@ app.add_middleware(
 
 
 app.include_router(healthchecker.router, prefix="/api")
-app.include_router(auth_router, prefix="")
+app.include_router(auth_router, prefix="/api")
 app.include_router(posts_router, prefix="/api")
 app.include_router(users_router, prefix="/api")
+app.include_router(scores_router, prefix="/api")
