@@ -18,6 +18,7 @@ from conf import messages
 from conf.config import app_config
 from src.services import healthchecker
 from src.posts.routes import router as posts_router
+from src.scores.routes import router as scores_router
 
 
 @asynccontextmanager
@@ -44,3 +45,4 @@ app.add_middleware(
 
 app.include_router(healthchecker.router, prefix="/api")
 app.include_router(posts_router, prefix="/api")
+app.include_router(scores_router, prefix="/api")
