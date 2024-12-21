@@ -19,9 +19,9 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.get("/{user_id}", response_model=UserResponse)
-async def get_user_info_by_username(
+async def get_user_info_by_id(
     user_id: int,
-    # current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     # user: User = Depends(RoleChecker([RoleEnum.MODER, RoleEnum.USER])),
     db: AsyncSession = Depends(get_db),
 ):
@@ -38,7 +38,7 @@ async def get_user_info_by_username(
 async def get_user_info_by_username(
     username: str,
     current_user: User = Depends(get_current_user),
-    user: User = Depends(RoleChecker([RoleEnum.MODER, RoleEnum.USER])),
+    # user: User = Depends(RoleChecker([RoleEnum.MODER, RoleEnum.USER])),
     db: AsyncSession = Depends(get_db),
 ):
     user_service = UserService(db)
@@ -124,8 +124,8 @@ async def ban_user(
 async def change_user_role(
     user_id: int,
     role: str,
-    # current_user: User = Depends(get_current_user),
-    # user: User = Depends(RoleChecker([RoleEnum.ADMIN])),   # TODO Check admin permission
+    current_user: User = Depends(get_current_user),
+    user: User = Depends(RoleChecker([RoleEnum.ADMIN])),   # TODO Check admin permission
     db: AsyncSession = Depends(get_db),
 ):
     user_service = UserService(db)
