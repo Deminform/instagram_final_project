@@ -87,13 +87,14 @@ class UserService:
                 detail="User is already not banned")
         return await self.user_repository.unban_user(user)
 
-    async def change_role(self, user_id):
+    async def change_role(self, user_id: int, role: str):
         user = await self.user_repository.get_user_by_id(user_id)
+        user_role = await self.role_repository.get_role_by_name(RoleEnum(role))
         if not user:
             raise HTTPException(
                     status_code=status.HTTP_404_NOT_FOUND,
                     detail=USER_NOT_FOUND)
-        return await self.user_repository.change_role(user)
+        return await self.user_repository.change_role(user, user_role)
 
 
 
