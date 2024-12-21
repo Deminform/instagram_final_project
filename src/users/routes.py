@@ -123,13 +123,13 @@ async def ban_user(
 @router.patch("/role/{user_id}", status_code=status.HTTP_200_OK)
 async def change_user_role(
     user_id: int,
-    role
+    role: str,
     # current_user: User = Depends(get_current_user),
     # user: User = Depends(RoleChecker([RoleEnum.ADMIN])),   # TODO Check admin permission
     db: AsyncSession = Depends(get_db),
 ):
     user_service = UserService(db)
-    await user_service.change_role(user_id)
+    await user_service.change_role(user_id, role)
     return {"message": "Success"}
 
 
