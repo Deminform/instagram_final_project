@@ -1,6 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
+from starlette.datastructures import URL
 
 
 from src.users.models import User, Role
@@ -54,12 +55,19 @@ class UserRepository:
         await self.session.refresh(user)
         return user
 
+    async def update_avatar_url(self, username: str, url: URL):
+        user = await self.get_user_by_username(username)
+        user.avatar_url = url
+        await self.session.commit()
+        await self.session.refresh(user)
+        return user
 
     async def ban_user(self, id):
         pass
 
     async def unban_user(self, id):
         pass
+
 
 
 class RoleRepository:

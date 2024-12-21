@@ -2,6 +2,7 @@ from libgravatar import Gravatar
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException, status
+from starlette.datastructures import URL
 
 from src.services.auth.auth_service import Hash
 from src.users.models import User
@@ -53,6 +54,9 @@ class UserService:
                 return await self.user_repository.update_user(user, body)
         except IntegrityError as e:
             _handle_integrity_error(e)
+
+    async def update_avatar(self, username: str, url: URL):
+        return await self.user_repository.update_avatar_url(username, url)
 
 
 
