@@ -39,10 +39,13 @@ class UserService:
 
         return await self.user_repository.create_user(user_create, user_role, avatar, password_hashed)
 
-    async def get_user_by_email(self, email):
+    async def get_user_by_id(self, user_id: int) -> User | None:
+        return await self.user_repository.get_user_by_id(user_id)
+
+    async def get_user_by_email(self, email: str) -> User | None:
         return await self.user_repository.get_user_by_email(email)
 
-    async def get_user_by_username(self, username):
+    async def get_user_by_username(self, username) -> User | None:
         return await self.user_repository.get_user_by_username(username)
 
     async def activate_user(self, user):
@@ -83,6 +86,16 @@ class UserService:
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="User is already not banned")
         return await self.user_repository.unban_user(user)
+
+    async def change_role(self, user_id):
+        user = await self.user_repository.get_user_by_id(user_id)
+        if not user:
+            raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=USER_NOT_FOUND)
+        return await self.user_repository.change_role(user)
+
+
 
 
 

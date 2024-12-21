@@ -72,6 +72,8 @@ class UserRepository:
         await self.session.commit()
         await self.session.refresh(user)
 
+    async def change_role(self, user):
+        pass
 
 
 class RoleRepository:
