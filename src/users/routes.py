@@ -79,21 +79,31 @@ async def update_user_info(
     return user
 
 
-# @router.post("/{user_id}", response_model=UserResponse)
-# async def ban_user(
-#     user_id: int,
-#     current_user: User = Depends(get_current_user),
-#     user: User = Depends(RoleChecker([RoleEnum.MODER, RoleEnum.USER])),
-#     db: AsyncSession = Depends(get_db),
-# ):
-#     pass
+
+@router.post("/ban/{user_id}", status_code=status.HTTP_200_OK)
+async def ban_user(
+    user_id: int,
+    current_user: User = Depends(get_current_user),
+    user: User = Depends(RoleChecker([RoleEnum.ADMIN])),   # TODO Check admin permission
+    db: AsyncSession = Depends(get_db),
+):
+    user_service = UserService(db)
+    await user_service.ban_user(user_id)
+    return {"message": "Success"}
 
 
-# @router.post("/{user_id}", response_model=UserResponse)
-# async def unban_user(
-#     user_id: int,
-#     current_user: User = Depends(get_current_user),
-#     user: User = Depends(RoleChecker([RoleEnum.MODER, RoleEnum.ADMIN])),
-#     db: AsyncSession = Depends(get_db),
-# ):
-#     pass
+@router.post("/unban/{user_id}", status_code=status.HTTP_200_OK)
+async def ban_user(
+    user_id: int,
+    current_user: User = Depends(get_current_user),
+    user: User = Depends(RoleChecker([RoleEnum.ADMIN])),   # TODO Check admin permission
+    db: AsyncSession = Depends(get_db),
+):
+    user_service = UserService(db)
+    await user_service.unban_user(user_id)
+    return {"message": "Success"}
+
+
+
+
+
