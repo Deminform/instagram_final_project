@@ -35,6 +35,14 @@ class UserResponse(UserBase):
         from_attributes = True
 
 
+class UserUpdate(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    phone: Optional[str] = None
+    username: Optional[str] = None
+    email: Optional[EmailStr] = None
+
+
 class TokenData(BaseModel):
     username: str | None = None
 

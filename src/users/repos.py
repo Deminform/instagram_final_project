@@ -1,9 +1,13 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
+from starlette.datastructures import URL
+
 
 from src.users.models import User, Role
-from src.users.schema import UserCreate, RoleEnum
+from src.users.schema import UserCreate, RoleEnum, UserUpdate
+
+
 
 
 class UserRepository:
@@ -37,19 +41,42 @@ class UserRepository:
         await self.session.commit()
         await self.session.refresh(user)
 
-    async def get_user(self, id) -> User | None:
-        query = select(User).options(selectinload(User.role)).where(User.id == id)
+    async def get_user_by_id(self, user_id) -> User | None:
+        query = select(User).options(selectinload(User.role)).where(User.id == user_id)
         result = await self.session.execute(query)
         return result.scalar_one_or_none()
 
-    async def update_user(self, id):
-        pass
+    async def update_user(self, user, body: UserUpdate) -> User:
+        updated_data = body.model_dump(exclude_unset=True)
+        for key, value in updated_data.items():
+            setattr(user, key, value)
 
-    async def ban_user(self, id):
-        pass
+        await self.session.commit()
+        await self.session.refresh(user)
+        return user
 
-    async def unban_user(self, id):
-        pass
+    async def update_avatar_url(self, username: str, url: URL):
+        user = await self.get_user_by_username(username)
+        user.avatar_url = url
+        await self.session.commit()
+        await self.session.refresh(user)
+        return user
+
+    async def ban_user(self, user: User):
+        user.is_banned = True
+        await self.session.commit()
+        await self.session.refresh(user)
+
+    async def unban_user(self, user: User):
+        user.is_banned = False
+        await self.session.commit()
+        await self.session.refresh(user)
+
+    async def change_role(self, user: User, user_role: Role):
+        # role_id = user_role.id
+        user.role_id = user_role.id
+        await self.session.commit()
+        await self.session.refresh(user)
 
 
 class RoleRepository:
