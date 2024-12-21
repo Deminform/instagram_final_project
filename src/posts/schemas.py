@@ -5,7 +5,7 @@ from conf import const
 
 class PostSchema(BaseModel):
     description: str = Field(min_length=5, max_length=500)
-    effect: str | None
+    image_filter: str | None
     tags: set[str] = Field(description="5 tags max")
     @field_validator("tags")
     def validate_tags(cls, tags):

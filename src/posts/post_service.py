@@ -30,12 +30,13 @@ class PostService:
 
 
     async def create_post(self, user: User, body: PostSchema, image: File):
-        image_urls = await self.image_service.get_image_urls(image, filter)
+        image_urls = await self.image_service.get_image_urls(image, body.image_filter)
 
         try:
             tags = await self.tag_service.get_or_create_tags(body.tags)
             post = await self.post_repository.create_post(user, body.description, tags, image_urls)
-            await self.image_service.create_image(post.id, post.image_url)
+            if image_urls["edited_image_url"] != image_urls["original_image_url"]:
+                await self.image_service.create_image(post.id, post.image_url, body.image_filter)
         except IntegrityError as e:
             await self.post_repository.db.rollback()
             raise HTTPException(
@@ -46,3 +47,8 @@ class PostService:
 
     async def delete_post(self, user, post_id):
         return await self.post_repository.delete_post(user, post_id)
+
+
+    async def create_qr(self, post_id, image_filter):
+        post = await self.post_repository.get_post_by_id(post_id)
+        return await self.image_service.create_qr(post.id, post.original_image_url, image_filter)
