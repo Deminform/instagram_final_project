@@ -22,7 +22,6 @@ class User(Base):
     role_id: Mapped[int] = mapped_column(Integer, ForeignKey('roles.id'))
     role: Mapped["Role"] = relationship("Role", lazy="selectin")
     password: Mapped[str] = mapped_column(String(255))
-    refresh_token: Mapped[str] = mapped_column(String(255), nullable=True)
     created_at: Mapped[DateTime] = mapped_column('created_at', DateTime, default=func.now())
     updated_at: Mapped[DateTime] = mapped_column('updated_at', DateTime, default=func.now(), onupdate=func.now())
     is_banned: Mapped[bool] = mapped_column(Boolean, default=False)
@@ -37,3 +36,12 @@ class Role(Base):
     __tablename__ = 'roles'
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     name: Mapped[str] = mapped_column(String(20), unique=True)
+
+
+class Token(Base):
+    __tablename__ = "tokens"
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=True)
+    access_token: Mapped[str] = mapped_column(String(450), primary_key=True)
+    refresh_token: Mapped[str] = mapped_column(String(450), nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean)
+    created_at: Mapped[DateTime] = mapped_column('created_at', DateTime, default=func.now())

@@ -7,7 +7,7 @@ from starlette.datastructures import URL
 from conf.messages import USER_NOT_FOUND
 from src.services.auth.auth_service import Hash
 from src.users.models import User
-from src.users.repos import UserRepository, RoleRepository
+from src.users.repos import UserRepository, RoleRepository, TokenRepository
 from src.users.schema import UserCreate, RoleEnum, UserUpdate
 
 def _handle_integrity_error(e: IntegrityError):
@@ -26,6 +26,7 @@ class UserService:
     def __init__(self, db: AsyncSession):
         self.user_repository = UserRepository(db)
         self.role_repository = RoleRepository(db)
+        self.token_repository = TokenRepository(db)
 
     async def create_user(self, user_create: UserCreate) -> User:
         avatar = None
@@ -95,6 +96,9 @@ class UserService:
                     status_code=status.HTTP_404_NOT_FOUND,
                     detail=USER_NOT_FOUND)
         return await self.user_repository.change_role(user, user_role)
+
+    async def add_tokens_db(self, user_id: int, access_token: str, refresh_token: str, status: bool):
+        return await self.token_repository.add_tokens(user_id, access_token, refresh_token, status)
 
 
 

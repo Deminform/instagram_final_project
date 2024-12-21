@@ -4,7 +4,7 @@ from sqlalchemy.orm import selectinload
 from starlette.datastructures import URL
 
 
-from src.users.models import User, Role
+from src.users.models import User, Role, Token
 from src.users.schema import UserCreate, RoleEnum, UserUpdate
 
 
@@ -88,3 +88,23 @@ class RoleRepository:
         query = select(Role).where(Role.name == name.value)
         result = await self.session.execute(query)
         return result.scalar_one_or_none()
+
+
+class TokenRepository:
+
+    def __init__(self, session):
+        self.session = session
+
+    async def add_tokens(self, user_id: int, access_token: str, refresh_token: str, status: bool):
+        new_tokens = Token(
+            user_id=user_id,
+            access_token=access_token,
+            refresh_token=refresh_token,
+            is_active=status,
+        )
+        self.session.add(new_tokens)
+        await self.session.commit()
+        await self.session.refresh(new_tokens)
+
+
+

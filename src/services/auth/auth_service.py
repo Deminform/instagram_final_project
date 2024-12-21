@@ -1,3 +1,5 @@
+from functools import wraps
+
 from passlib.context import CryptContext
 from datetime import datetime, timedelta, timezone
 
@@ -10,8 +12,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from conf.config import app_config
 from conf.messages import FORBIDDEN, INCORRECT_CREDENTIALS
 from database.db import get_db
+from src.users import models
 from src.users.models import User
-from src.users.repos import UserRepository
+from src.users.repos import UserRepository, TokenRepository
 from src.users.schema import TokenData, RoleEnum
 
 
@@ -77,6 +80,27 @@ def decode_access_token(token: str) -> TokenData | None:
         return None
 
 
+def token_required(func):
+    @wraps(func)
+    async def wrapper(*args, token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db), **kwargs):
+        try:
+
+            payload = jwt.decode(token, app_config.JWT_SECRET_KEY, app_config.ALGORITHM)
+            user_id = payload.get("sub")
+            if not user_id:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Invalid token",
+                    headers={"WWW-Authenticate": "Bearer"},
+                )
+            # Перевірка статусу токена в базі
+            token_repo = TokenRepository(db)
+            token = await token_repo.get_token(user_id, token)
+
+
+
+
+
 async def get_current_user(
     token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)
 ) -> User:
@@ -95,6 +119,10 @@ async def get_current_user(
     if user.is_banned:
         raise credentials_exception
     return user
+
+
+
+
 
 
 class RoleChecker:
@@ -118,26 +146,3 @@ class RoleChecker:
 
 
 
-
-
-
-
-
-def create_user():
-    pass
-
-
-def login():
-    pass
-
-def refresh_tokens():
-    pass
-
-def logout():
-    pass
-
-def verify_email():
-    pass
-
-def reset_password():
-    pass

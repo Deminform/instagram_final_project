@@ -51,3 +51,12 @@ class Token(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str
+
+
+class TokenCreate(BaseModel):
+    user_id: str
+    access_token: str
+    refresh_token: str
+    status: bool
+    created_date: datetime
+

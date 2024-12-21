@@ -79,6 +79,9 @@ async def login_for_access_token(
         )
     access_token = create_access_token(data={"sub": user.email})
     refresh_token = create_refresh_token(data={"sub": user.email})
+
+    token_db = await user_service.add_tokens_db(user.id, access_token, refresh_token, status=True)
+
     return Token(
         access_token=access_token, refresh_token=refresh_token, token_type="bearer"
     )

@@ -10,7 +10,7 @@ import cloudinary.uploader
 from conf.config import app_config
 from conf.messages import USER_NOT_FOUND
 from database.db import get_db
-from src.services.auth.auth_service import get_current_user, RoleChecker
+from src.services.auth.auth_service import get_current_user, RoleChecker, token_required
 from src.users.models import User
 from src.users.schema import UserResponse, RoleEnum, UserUpdate
 from src.users.users_service import UserService
@@ -19,9 +19,10 @@ router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.get("/{user_id}", response_model=UserResponse)
-async def get_user_info_by_username(
+# @token_required
+async def get_user_info_by_id(
     user_id: int,
-    # current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
     # user: User = Depends(RoleChecker([RoleEnum.MODER, RoleEnum.USER])),
     db: AsyncSession = Depends(get_db),
 ):
