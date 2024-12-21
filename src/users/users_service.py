@@ -4,6 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException, status
 from starlette.datastructures import URL
 
+from conf.messages import USER_NOT_FOUND
 from src.services.auth.auth_service import Hash
 from src.users.models import User
 from src.users.repos import UserRepository, RoleRepository
@@ -47,7 +48,7 @@ class UserService:
     async def activate_user(self, user):
         return await self.user_repository.activate_user(user)
 
-    async def update_user(self, user_id, body: UserUpdate) -> User | None:
+    async def update_user(self, user_id: int, body: UserUpdate) -> User | None:
         user = await self.user_repository.get_user_by_id(user_id)
         try:
             if user:
@@ -58,10 +59,34 @@ class UserService:
     async def update_avatar(self, username: str, url: URL):
         return await self.user_repository.update_avatar_url(username, url)
 
+    async def ban_user(self, user_id: int):
+        user = await self.user_repository.get_user_by_id(user_id)
+        if not user:
+            raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=USER_NOT_FOUND)
+        if user.is_banned:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="User is already banned")
+        return await self.user_repository.ban_user(user)
 
 
-def ban_user():
-    pass
+    async def unban_user(self, user_id: int):
+        user = await self.user_repository.get_user_by_id(user_id)
+        if not user:
+            raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail=USER_NOT_FOUND)
+        if not user.is_banned:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="User is already not banned")
+        return await self.user_repository.unban_user(user)
 
-def unban_user():
-    pass
+
+
+
+
+
+

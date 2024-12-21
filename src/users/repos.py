@@ -62,11 +62,15 @@ class UserRepository:
         await self.session.refresh(user)
         return user
 
-    async def ban_user(self, id):
-        pass
+    async def ban_user(self, user: User):
+        user.is_banned = True
+        await self.session.commit()
+        await self.session.refresh(user)
 
-    async def unban_user(self, id):
-        pass
+    async def unban_user(self, user: User):
+        user.is_banned = False
+        await self.session.commit()
+        await self.session.refresh(user)
 
 
 

@@ -54,7 +54,7 @@ async def verify_email(token: str, db: AsyncSession = Depends(get_db)):
     if user.is_confirmed:
         return {"message": EMAIL_ALREADY_CONFIRMED}
     await user_service.activate_user(user)
-    return {"msg": EMAIL_CONFIRMED}
+    return {"message": EMAIL_CONFIRMED}
 
 
 @router.post("/login", response_model=Token)
