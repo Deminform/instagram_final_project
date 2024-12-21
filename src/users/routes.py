@@ -18,6 +18,22 @@ from src.users.users_service import UserService
 router = APIRouter(prefix="/users", tags=["users"])
 
 
+@router.get("/{user_id}", response_model=UserResponse)
+async def get_user_info_by_username(
+    user_id: int,
+    # current_user: User = Depends(get_current_user),
+    # user: User = Depends(RoleChecker([RoleEnum.MODER, RoleEnum.USER])),
+    db: AsyncSession = Depends(get_db),
+):
+    user_service = UserService(db)
+    user = await user_service.get_user_by_id(user_id)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=USER_NOT_FOUND
+        )
+    return user
+
+
 @router.get("/{username}", response_model=UserResponse)
 async def get_user_info_by_username(
     username: str,
@@ -104,6 +120,16 @@ async def ban_user(
     return {"message": "Success"}
 
 
-
+@router.patch("/role/{user_id}", status_code=status.HTTP_200_OK)
+async def change_user_role(
+    user_id: int,
+    role
+    # current_user: User = Depends(get_current_user),
+    # user: User = Depends(RoleChecker([RoleEnum.ADMIN])),   # TODO Check admin permission
+    db: AsyncSession = Depends(get_db),
+):
+    user_service = UserService(db)
+    await user_service.change_role(user_id)
+    return {"message": "Success"}
 
 
