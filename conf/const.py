@@ -10,3 +10,6 @@ TAG_MIN_LENGTH = 2
 
 SCORE_MAX_VALUE = 5
 SCORE_MIN_VALUE = 1
+
+EDITED_IMAGE_URL = 'edited_image_url'
+ORIGINAL_IMAGE_URL = 'original_image_url'
