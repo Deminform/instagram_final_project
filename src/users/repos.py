@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from starlette.datastructures import URL
@@ -105,6 +105,12 @@ class TokenRepository:
         self.session.add(new_tokens)
         await self.session.commit()
         await self.session.refresh(new_tokens)
+
+    async def get_token(self, user_id, token):
+        query = select(Token).where(and_(Token.user_id == user_id),
+                                    (Token.access_token == token), (Token.is_active.is_(True)))
+        result = await self.session.execute(query)
+        return result.scalar_one_or_none()
 
 
 

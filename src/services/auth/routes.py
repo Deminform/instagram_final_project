@@ -5,6 +5,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from conf.messages import (ACCOUNT_EXIST, EMAIL_ALREADY_CONFIRMED, EMAIL_CONFIRMED, EMAIL_NOT_CONFIRMED,
                            INCORRECT_CREDENTIALS, USER_NOT_FOUND, BANNED)
 from database.db import get_db
+from src.services.auth.auth_service import get_current_user
+from src.users.models import User
 from src.services.auth.auth_service import decode_verification_token, Hash, create_access_token, create_refresh_token, \
     decode_access_token
 from src.services.auth.mail_utils import send_verification_email
@@ -80,7 +82,7 @@ async def login_for_access_token(
     access_token = create_access_token(data={"sub": user.email})
     refresh_token = create_refresh_token(data={"sub": user.email})
 
-    token_db = await user_service.add_tokens_db(user.id, access_token, refresh_token, status=True)
+    await user_service.add_tokens_db(user.id, access_token, refresh_token, status=True)
 
     return Token(
         access_token=access_token, refresh_token=refresh_token, token_type="bearer"
@@ -107,16 +109,17 @@ async def refresh_tokens(
     )
 
 
-# @router.get("/logout")
-# async def logout(token: str, db: AsyncSession = Depends(get_db)):
-#
-#     user_repo = UserRepository(db)
-#     user = await user_repo.get_user_by_email()
-#     if not user:
-#         raise HTTPException(
-#             status_code=status.HTTP_404_NOT_FOUND,
-#             detail=USER_NOT_FOUND,
-#         )
+@router.get("/logout")
+async def logout(current_user: User = Depends(get_current_user),
+                 db: AsyncSession = Depends(get_db)):
+
+    user_repo = UserRepository(db)
+    user = await user_repo.get_user_by_email()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=USER_NOT_FOUND,
+        )
 
 
 # @router.get("/password-reset")

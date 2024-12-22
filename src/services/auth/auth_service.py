@@ -80,27 +80,6 @@ def decode_access_token(token: str) -> TokenData | None:
         return None
 
 
-def token_required(func):
-    @wraps(func)
-    async def wrapper(*args, token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db), **kwargs):
-        try:
-
-            payload = jwt.decode(token, app_config.JWT_SECRET_KEY, app_config.ALGORITHM)
-            user_id = payload.get("sub")
-            if not user_id:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Invalid token",
-                    headers={"WWW-Authenticate": "Bearer"},
-                )
-            # Перевірка статусу токена в базі
-            token_repo = TokenRepository(db)
-            token = await token_repo.get_token(user_id, token)
-
-
-
-
-
 async def get_current_user(
     token: str = Depends(oauth2_scheme), db: AsyncSession = Depends(get_db)
 ) -> User:
@@ -116,6 +95,14 @@ async def get_current_user(
     user = await user_repo.get_user_by_email(token_data.username)
     if user is None:
         raise credentials_exception
+    token_repo = TokenRepository(db)
+    token_entry = await token_repo.get_token(user.id, token)
+    if not token_entry:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Token not provided",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     if user.is_banned:
         raise credentials_exception
     return user
