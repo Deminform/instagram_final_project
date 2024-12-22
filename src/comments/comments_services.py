@@ -40,7 +40,7 @@ class CommentServices:
         return comment
 
     async def get_comment_by_post_author(
-        self, post_id: int, user_id: int, limit: int, offset: int, user: User
+        self, post_id: int, user_id: int, limit: int, offset: int
     ) -> list[Comment]:
         comment = await self.comment_repository.get_comment_by_post_author(
             post_id, user_id, limit, offset
