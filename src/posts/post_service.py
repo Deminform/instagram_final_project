@@ -16,18 +16,14 @@ class PostService:
         self.tag_service = TagService(db)
         self.post_repository = PostRepository(db)
 
-
     async def get_posts(self, limit, offset, keyword, tag):
         return await self.post_repository.get_posts(limit, offset, keyword.strip(), tag.strip())
-
 
     async def get_post_by_id(self, post_id):
         return await self.post_repository.get_post_by_id(post_id)
 
-
     async def update_post_description(self, user, post_id, description):
         return await self.post_repository.update_post_description(user, post_id, description)
-
 
     async def create_post(self, user: User, body: PostSchema, image: File):
         image_urls = await self.image_service.get_image_urls(image, body.image_filter)
@@ -47,7 +43,6 @@ class PostService:
 
     async def delete_post(self, user, post_id):
         return await self.post_repository.delete_post(user, post_id)
-
 
     async def create_qr(self, post_id, image_filter):
         post = await self.post_repository.get_post_by_id(post_id)

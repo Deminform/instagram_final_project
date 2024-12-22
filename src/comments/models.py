@@ -1,5 +1,4 @@
-from sqlalchemy import Boolean, Integer, String, DateTime, func, ForeignKey, Float
-from sqlalchemy.ext.hybrid import hybrid_property
+from sqlalchemy import Boolean, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 
 from conf.config import Base
@@ -11,6 +10,6 @@ class Comment(Base):
     post_id: Mapped[int] = mapped_column(Integer, ForeignKey("posts.id"), nullable=False)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
     comment: Mapped[str] = mapped_column(String(300), nullable=False)
-    is_update: Mapped[bool] = mapped_column(Boolean, default=False, nullable=True)  #!!! Add
+    is_update: Mapped[bool] = mapped_column(Boolean, default=False, nullable=True)
     created_at: Mapped[DateTime] = mapped_column(DateTime, nullable=False)
     updated_at: Mapped[DateTime] = mapped_column(DateTime, nullable=False)

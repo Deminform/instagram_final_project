@@ -21,18 +21,14 @@ class CommentServices:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.NOT_COMMENT)
         return comment
 
-    async def delete_comment(self, comment_id: int, user: User) -> Comment:
-        comment = await self.comment_repository.delete_comment(comment_id, user)
+    async def delete_comment(self, comment_id: int) -> Comment:
+        comment = await self.comment_repository.delete_comment(comment_id)
         if comment is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.NOT_COMMENT)
         return comment
 
-    async def get_comment_by_post_all(
-        self, post_id: int, limit: int, offset: int, user: User
-    ) -> list[Comment]:
-        comment = await self.comment_repository.get_comment_by_post_all(
-            post_id, limit, offset, user
-        )
+    async def get_comment_by_post_all(self, post_id: int, limit: int, offset: int) -> list[Comment]:
+        comment = await self.comment_repository.get_comment_by_post_all(post_id, limit, offset)
         return comment
 
     async def get_comment_by_post_user(
@@ -47,6 +43,6 @@ class CommentServices:
         self, post_id: int, user_id: int, limit: int, offset: int, user: User
     ) -> list[Comment]:
         comment = await self.comment_repository.get_comment_by_post_author(
-            post_id, user_id, limit, offset, user
+            post_id, user_id, limit, offset
         )
         return comment

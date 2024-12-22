@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
-from uuid import UUID
 
 
 class CommentBase(BaseModel):
@@ -12,7 +11,7 @@ class CommentBase(BaseModel):
 class CommentResponse(BaseModel):
     id: int
     post_id: int
-    user_id: UUID
+    user_id: int
     comment: str
     created_at: datetime
 

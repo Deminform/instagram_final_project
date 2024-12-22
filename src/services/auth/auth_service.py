@@ -25,7 +25,7 @@ class Hash:
         return self.pwd_context.hash(password)
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
 
 
 # Generate token for verification email
@@ -114,15 +114,6 @@ class RoleChecker:
         return user
 
 
-
-
-
-
-
-
-
-
-
 def create_user():
     pass
 
@@ -130,14 +121,18 @@ def create_user():
 def login():
     pass
 
+
 def refresh_tokens():
     pass
+
 
 def logout():
     pass
 
+
 def verify_email():
     pass
+
 
 def reset_password():
     pass
