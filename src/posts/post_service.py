@@ -31,7 +31,6 @@ class PostService:
             )
         return post
 
-
     async def create_post(self, user: User, body: PostSchema, image: File):
         image_urls = await self.image_service.get_image_urls(image, body.image_filter)
 

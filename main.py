@@ -13,12 +13,13 @@ from src.services.auth.routes import router as auth_router
 from src.users.routes import router as users_router
 from src.posts.routes import router as posts_router
 from src.scores.routes import router as scores_router
+from src.comments.router import router as comment_router
 
 
 @asynccontextmanager
 async def lifespan(fastapi_app: FastAPI):
-    redis = aioredis.from_url(app_config.REDIS_URL, encoding='utf8')
-    FastAPICache.init(RedisBackend(redis), prefix='fastapi-cache')
+    redis = aioredis.from_url(app_config.REDIS_URL, encoding="utf8")
+    FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
     await FastAPILimiter.init(redis)
 
     yield
@@ -26,7 +27,7 @@ async def lifespan(fastapi_app: FastAPI):
     await redis.close()
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(title="Contact Application", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -42,3 +43,9 @@ app.include_router(auth_router, prefix="/api")
 app.include_router(posts_router, prefix="/api")
 app.include_router(users_router, prefix="/api")
 app.include_router(scores_router, prefix="/api")
+app.include_router(comment_router, prefix="/api")
+
+
+@app.get("/")
+def root():
+    return {"message": "REST APP v1.0"}
