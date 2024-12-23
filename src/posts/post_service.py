@@ -3,6 +3,8 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from conf import messages, const
+from src.images.image_service import ImageService
+from src.images.qr_service import QRService
 from src.posts.repository import PostRepository
 from src.posts.schemas import PostSchema
 from src.tags.tag_service import TagService
@@ -12,6 +14,7 @@ from src.users.models import User
 class PostService:
     def __init__(self, db: AsyncSession):
         self.image_service = ImageService(db)
+        self.qr_service = QRService
         self.tag_service = TagService(db)
         self.post_repository = PostRepository(db)
 
@@ -69,4 +72,5 @@ class PostService:
 
     async def create_qr(self, post_id: int, image_filter: str):
         post = await self.post_repository.get_post_by_id(post_id)
-        return await self.image_service.create_qr(post.id, post.original_image_url, image_filter)
+        print('FUNCTION was called ------------------------------------------------------------ generate_qr')
+        # return await self.qr_service(post.id, post.original_image_url, image_filter)
