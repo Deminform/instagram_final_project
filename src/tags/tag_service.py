@@ -8,10 +8,8 @@ class TagService:
     def __init__(self, db: AsyncSession):
         self.tag_repository = TagRepository(db)
 
-
     async def delete_tag_by_name(self, tag):
         await self.tag_repository.delete_tag(tag)
-
 
     async def get_or_create_tags(self, tags: set[str]):
         if len(tags) > 5:

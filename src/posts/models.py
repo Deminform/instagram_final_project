@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, String, DateTime, func, ForeignKey
+from sqlalchemy import DateTime, ForeignKey, Integer, String, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from conf.config import Base
@@ -7,8 +7,12 @@ from src.tags.models import Tag
 
 class PostTag(Base):
     __tablename__ = "post_tag"
-    post_id: Mapped[int] = mapped_column(Integer, ForeignKey("posts.id"), primary_key=True)
-    tag_id: Mapped[int] = mapped_column(Integer, ForeignKey("tags.id"), primary_key=True)
+    post_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("posts.id"), primary_key=True
+    )
+    tag_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("tags.id"), primary_key=True
+    )
 
 
 class Post(Base):
