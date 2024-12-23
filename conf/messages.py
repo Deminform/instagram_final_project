@@ -16,5 +16,9 @@ DATABASE_IS_NOT_AVAILABLE = "Database is not available"
 DATABASE_IS_HEALTHY = "Database is healthy"
 DATA_INTEGRITY_ERROR = "Data integrity error"
 
+UPLOAD_IMAGE_ERROR = "Upload image failed"
+FILTER_IMAGE_ERROR = "Filter image failed"
+QR_NOT_FOUND = "QR code not found"
+
 NOT_COMMENT = "Comment not found or not available."
 # TODO REPLACE ALL ERROR MESSAGES IN PROJECT
