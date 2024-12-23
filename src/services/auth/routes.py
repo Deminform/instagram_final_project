@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks, Request
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.ext.asyncio import AsyncSession
+from datetime import datetime
 
+from conf.config import app_config
 from conf.messages import (ACCOUNT_EXIST, EMAIL_ALREADY_CONFIRMED, EMAIL_CONFIRMED, EMAIL_NOT_CONFIRMED,
                            INCORRECT_CREDENTIALS, USER_NOT_FOUND, BANNED)
 from database.db import get_db
@@ -113,13 +115,26 @@ async def refresh_tokens(
 async def logout(current_user: User = Depends(get_current_user),
                  db: AsyncSession = Depends(get_db)):
 
-    user_repo = UserRepository(db)
-    user = await user_repo.get_user_by_email()
+    user_service = UserService(db)
+    user = await user_service.get_user_by_email(current_user.email)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=USER_NOT_FOUND,
         )
+    token_records = await user_service.get_user_tokens(user.id)
+    expired_tokens = []
+    print("record", type(token_records))
+    print("record", token_records)
+    for record in token_records:
+        if (datetime.now() - record.created_at).days > app_config.REFRESH_TOKEN_LIFETIME:
+            expired_tokens.append(record.id)
+            print("record", record.id)
+    if expired_tokens:
+        await user_service.delete_tokens(expired_tokens)
+
+    await user_service.deactivate_user_tokens(user.id)
+    return {"message": "Logout Successfully"}
 
 
 # @router.get("/password-reset")

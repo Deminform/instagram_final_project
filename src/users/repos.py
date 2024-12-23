@@ -73,7 +73,6 @@ class UserRepository:
         await self.session.refresh(user)
 
     async def change_role(self, user: User, user_role: Role):
-        # role_id = user_role.id
         user.role_id = user_role.id
         await self.session.commit()
         await self.session.refresh(user)
@@ -106,11 +105,37 @@ class TokenRepository:
         await self.session.commit()
         await self.session.refresh(new_tokens)
 
-    async def get_token(self, user_id, token):
+    async def get_active_token(self, user_id, token):
         query = select(Token).where(and_(Token.user_id == user_id),
                                     (Token.access_token == token), (Token.is_active.is_(True)))
         result = await self.session.execute(query)
         return result.scalar_one_or_none()
+
+    async def get_user_tokens(self, user_id):
+        query = select(Token).where(Token.user_id == user_id)
+        result = await self.session.execute(query)
+        return result.scalars().all()
+
+    async def delete_tokens(self, expired_tokens):
+        query = select(Token).where(Token.id.in_(expired_tokens))
+        result = await self.session.execute(query)
+        result = result.scalars().all()
+        if result:
+            for record in result:
+                await self.session.delete(record)
+                await self.session.commit()
+
+    async def deactivate_user_tokens(self, user_id):
+        query = select(Token).where(Token.user_id == user_id)
+        result = await self.session.execute(query)
+        result = result.scalars().all()
+        if result:
+            for record in result:
+                record.is_active = False
+                await self.session.commit()
+                await self.session.refresh(record)
+
+
 
 
 

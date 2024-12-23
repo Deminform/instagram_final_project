@@ -9,7 +9,7 @@ from alembic import context
 
 from conf.config import app_config
 from conf.config import Base
-from src.users.models import User, Role, TokenTable
+from src.users.models import User, Role, Token
 from src.posts.models import Post, PostTag
 from src.tags.models import Tag
 from src.images.models import Image

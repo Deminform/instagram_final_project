@@ -96,7 +96,7 @@ async def get_current_user(
     if user is None:
         raise credentials_exception
     token_repo = TokenRepository(db)
-    token_entry = await token_repo.get_token(user.id, token)
+    token_entry = await token_repo.get_active_token(user.id, token)
     if not token_entry:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

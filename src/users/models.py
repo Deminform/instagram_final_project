@@ -40,8 +40,9 @@ class Role(Base):
 
 class Token(Base):
     __tablename__ = "tokens"
-    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=True)
-    access_token: Mapped[str] = mapped_column(String(450), primary_key=True)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=True, index=True)
+    access_token: Mapped[str] = mapped_column(String(450), nullable=False, index=True)
     refresh_token: Mapped[str] = mapped_column(String(450), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean)
     created_at: Mapped[DateTime] = mapped_column('created_at', DateTime, default=func.now())

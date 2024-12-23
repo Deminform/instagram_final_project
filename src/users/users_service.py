@@ -100,6 +100,16 @@ class UserService:
         return await self.token_repository.add_tokens(user_id, access_token, refresh_token, status)
 
 
+    async def get_user_tokens(self, user_id):
+        return await self.token_repository.get_user_tokens(user_id)
+
+    async def delete_tokens(self, expired_tokens):
+        return await self.token_repository.delete_tokens(expired_tokens)
+
+    async def deactivate_user_tokens(self, user_id):
+        return await self.token_repository.deactivate_user_tokens(user_id)
+
+
 
 
 
