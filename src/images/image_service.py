@@ -1,12 +1,9 @@
 import uuid
 import cloudinary
 import cloudinary.uploader
-
-from cloudinary.api import transformation
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import HTTPException, status
-from fastapi.responses import StreamingResponse
-from io import BytesIO
+
 from conf.config import app_config
 from conf.const import FILTER_DICT
 from conf import messages
@@ -18,26 +15,6 @@ cloudinary.config(
     api_secret=app_config.CLOUDINARY_API_SECRET,
     secure=True,
 )
-
-
-# async def generate_qr(image_url): #TODO MOVE TO QR SERVICE
-#     qr = qrcode.QRCode(
-#         version=1,
-#         error_correction=qrcode.constants.ERROR_CORRECT_L,
-#         box_size=10,
-#         border=4,
-#     )
-#
-#     qr.add_data(image_url)
-#     qr.make(fit=True)
-#
-#     img = qr.make_image(fill_color="black", back_color="white")
-#
-#     buffer = BytesIO()
-#     img.save(buffer, format="PNG")
-#     buffer.seek(0)
-#
-#     return StreamingResponse(buffer, media_type="image/png")
 
 class ImageService:
     def __init__(self, db: AsyncSession):
@@ -105,6 +82,13 @@ class ImageService:
             return None
         return await self.image_repository.add_image(post_id, image_url, image_filter)
 
+    async def check_get_edited_image(self, post_id, image_filter):
+        edited_image = await self.image_repository.get_image(post_id, image_filter)
+        if edited_image:
+            edited_image_url = edited_image.image_url
+            return edited_image_url
+        else:
+            return None
 
     # async def create_qr(self, post_id, original_image_url, image_filter):    #TODO MOVE CHECK TO POST REPO AND
                                                                                 #TODO LOGIC TO QR SERVIE
