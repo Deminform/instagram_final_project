@@ -2,6 +2,8 @@ import cloudinary
 import cloudinary.uploader
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
+import cloudinary
+import cloudinary.uploader
 
 from conf.config import app_config
 from conf.messages import USER_NOT_FOUND
@@ -34,7 +36,7 @@ async def get_user_info_by_id(
 async def get_user_info_by_username(
     username: str,
     current_user: User = Depends(get_current_user),
-    user: User = Depends(RoleChecker([RoleEnum.MODER, RoleEnum.USER])),
+    # user: User = Depends(RoleChecker([RoleEnum.MODER, RoleEnum.USER])),
     db: AsyncSession = Depends(get_db),
 ):
     user_service = UserService(db)
@@ -131,3 +133,4 @@ async def change_user_role(
     user_service = UserService(db)
     await user_service.change_role(user_id, role)
     return {"message": "Success"}
+

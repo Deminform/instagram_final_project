@@ -57,7 +57,6 @@ class UserRepository:
         updated_data = body.model_dump(exclude_unset=True)
         for key, value in updated_data.items():
             setattr(user, key, value)
-
         await self.session.commit()
         await self.session.refresh(user)
         return user

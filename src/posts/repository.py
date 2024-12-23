@@ -65,8 +65,8 @@ class PostRepository:
         post = Post(
             description=description,
             user_id=user.id,
-            original_image_url=images["original"],
-            image_url=images["edited"],
+            original_image_url=images["original_image_url"],
+            image_url=images["edited_image_url"],
         )
         post.tags = tags
         self.db.add(post)
