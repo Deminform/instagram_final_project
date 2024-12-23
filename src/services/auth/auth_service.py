@@ -11,7 +11,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from conf.config import app_config
 from conf.messages import FORBIDDEN, INCORRECT_CREDENTIALS, INVALID_TOKEN_DATA, USER_NOT_FOUND, BANNED
 from database.db import get_db
-from src.users import models
 from src.users.models import User
 from src.users.repos import TokenRepository, UserRepository
 from src.users.schema import RoleEnum, TokenData
@@ -37,20 +36,17 @@ class Hash:
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
-class AuthService:
-    def __init__(self, db: AsyncSession):
-        self.user_repository = UserRepository(db)
-        self.token_repository = TokenRepository(db)
+
 # Generate token for verification email
-    def create_verification_token(email: EmailStr) -> str:
-        expire = datetime.now(timezone.utc) + timedelta(
-            hours=app_config.VERIFY_EMAIL_TOKEN_LIFETIME
-        )
-        to_encode = {"exp": expire, "sub": email}
-        encoded_jwt = jwt.encode(
-            to_encode, app_config.JWT_SECRET_KEY, algorithm=app_config.ALGORITHM
-        )
-        return encoded_jwt
+def create_verification_token(email: EmailStr) -> str:
+    expire = datetime.now(timezone.utc) + timedelta(
+        hours=app_config.VERIFY_EMAIL_TOKEN_LIFETIME
+    )
+    to_encode = {"exp": expire, "sub": email}
+    encoded_jwt = jwt.encode(
+        to_encode, app_config.JWT_SECRET_KEY, algorithm=app_config.ALGORITHM
+    )
+    return encoded_jwt
 
 
 def decode_verification_token(token: str) -> str | None:

@@ -67,6 +67,25 @@ class UserService:
     async def update_avatar(self, username: str, url: URL):
         return await self.user_repository.update_avatar_url(username, url)
 
+    async def add_tokens_db(
+        self, user_id: int, access_token: str, refresh_token: str, status: bool):
+        return await self.token_repository.add_tokens(
+            user_id, access_token, refresh_token, status
+        )
+
+    async def get_user_tokens(self, user_id):
+        return await self.token_repository.get_user_tokens(user_id)
+
+    async def delete_tokens(self, expired_tokens):
+        return await self.token_repository.delete_tokens(expired_tokens)
+
+    async def deactivate_user_tokens(self, user_id):
+        return await self.token_repository.deactivate_user_tokens(user_id)
+
+
+
+    # -------ADMIN ENDPOINTS-------
+
     async def ban_user(self, user_id: int):
         user = await self.user_repository.get_user_by_id(user_id)
         if not user:
@@ -100,19 +119,3 @@ class UserService:
                 status_code=status.HTTP_404_NOT_FOUND, detail=USER_NOT_FOUND
             )
         return await self.user_repository.change_role(user, user_role)
-
-    async def add_tokens_db(
-        self, user_id: int, access_token: str, refresh_token: str, status: bool
-    ):
-        return await self.token_repository.add_tokens(
-            user_id, access_token, refresh_token, status
-        )
-
-    async def get_user_tokens(self, user_id):
-        return await self.token_repository.get_user_tokens(user_id)
-
-    async def delete_tokens(self, expired_tokens):
-        return await self.token_repository.delete_tokens(expired_tokens)
-
-    async def deactivate_user_tokens(self, user_id):
-        return await self.token_repository.deactivate_user_tokens(user_id)
