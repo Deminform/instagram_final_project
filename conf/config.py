@@ -17,15 +17,15 @@ class Settings(BaseSettings):
     POSTGRES_PORT: str = '5432'
     DB_URL: str = "postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DBNAME}"
 
-    # Mail settings ----------------------------------------------------------------------------------
-    MAIL_USERNAME: EmailStr = 'email@example.com'
-    MAIL_FROM: str = MAIL_USERNAME
-    MAIL_PASSWORD: str = '9876543210'
-    MAIL_SERVER: str = 'mail.example.com'
-    MAIL_PORT: int = 1025
-    # MAIL_SMTP_PORT: str = '993'
-    # MAIL_IMAP_PORT: str = '465'
-    VERIFY_EMAIL_TOKEN_LIFETIME: int = 24  # Hours
+    # # Mail settings ----------------------------------------------------------------------------------
+    # MAIL_USERNAME: EmailStr = 'email@example.com'
+    # MAIL_FROM: str = MAIL_USERNAME
+    # MAIL_PASSWORD: str = '9876543210'
+    # MAIL_SERVER: str = 'mail.example.com'
+    # MAIL_PORT: int = 1025
+    # # MAIL_SMTP_PORT: str = '993'
+    # # MAIL_IMAP_PORT: str = '465'
+    # VERIFY_EMAIL_TOKEN_LIFETIME: int = 24  # Hours
 
     # JWT Key --------------------------------------------------------------------------------------
     JWT_SECRET_KEY: str = '0123a654b987c'
@@ -40,10 +40,10 @@ class Settings(BaseSettings):
     REDIS_URL: str = 'redis://${REDIS_USER}:${REDIS_PASSWORD}@${REDIS_DOMAIN}:${REDIS_PORT}/${REDIS_DB}'
 
     # Cloudinary --------------------------------------------------------------------------------------
-    CLOUDINARY_FOLDER: str = 'first_app'
-    CLOUDINARY_NAME: str = 'cloud_name'
-    CLOUDINARY_API_KEY: int = 123465790
-    CLOUDINARY_API_SECRET: str = 'secret'
+    CLOUDINARY_FOLDER: str = 'insta_app'
+    CLOUDINARY_NAME: str = 'insta'
+    CLOUDINARY_API_KEY: int = 928621137276229
+    CLOUDINARY_API_SECRET: str = 'LWO671q6kz1jDx8mB0jHnW - LBak'
     CLOUDINARY_URL: str = f'cloudinary://{CLOUDINARY_API_KEY}:{CLOUDINARY_API_SECRET}@{CLOUDINARY_NAME}'
 
     # Temporary code --------------------------------------------------------------------------------------

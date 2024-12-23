@@ -1,67 +1,104 @@
-from sqlalchemy import select, and_
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 
-from conf import const
-from src.posts.models import Post
-from src.tags.models import Tag
+from src.comments.models import Comment
+from src.images.models import Image
+from src.posts.models import Post, Tag
+from src.posts.schemas import PostSchema, PostUpdateSchema
 from src.users.models import User
 
 
 class PostRepository:
     def __init__(self, db: AsyncSession):
-        self.session = db
+        self.db = db
 
-
-    async def get_posts(self, limit: int, offset: int, keyword: str, tag: str):
+    async def get_post_by_filter(self, db: AsyncSession, user_id: int = None, limit: int = 10, offset: int = 0):
         stmt = select(Post)
-        conditions = []
-
-        if tag:
-            conditions.append(Post.tags.any(Tag.name == tag))
-        if keyword:
-            conditions.append(Post.description.ilike(f"%{keyword}%"))
-        if conditions:
-            stmt = stmt.where(and_(*conditions))
-
-        stmt = (
-            stmt
-            .options(selectinload(Post.tags))
-            .offset(offset)
-            .limit(limit))
-
-        posts = await self.session.execute(stmt)
-        return posts.scalars().all()
+        if user_id:
+            stmt = select(Post).where(Post.user_id == user_id)
+        stmt = stmt.offset(offset).limit(limit)
+        posts = await db.execute(stmt)
+        result = posts.scalars().all()
+        return result
 
 
-    async def get_post_by_id(self, post_id: int):
+    async def get_post_by_id(self, db: AsyncSession, user: User, post_id: int = None):
         stmt = select(Post).where(Post.id == post_id)
-        post = await self.session.execute(stmt)
-        return post.scalar_one_or_none()
+        post = await db.execute(stmt)
+        result = post.scalar_one_or_none()
+        return result
 
 
-    async def delete_post(self, post: Post):
-        await self.session.delete(post)
-        await self.session.commit()
+    async def create_post(self, db: AsyncSession, user: User, body: PostSchema, image: Image):
+        post = Post(user_id=user.id, description=body.description)
+        db.add(post)
+
+        tags = await get_or_create_tags(db, body.tags)
+
+        post.tags.update(tags)
+        post.images.add(image)
+
+        await db.commit()
+        await db.refresh(post)
         return post
 
 
-    async def update_post_description(self, post: Post, description: str):
-        post.description = description
-        await self.session.commit()
-        await self.session.refresh(post)
-        return post
+    async def create_tag(self, db: AsyncSession, tag_name: str):
+        tag = Tag(name=tag_name)
+        db.add(tag)
+        await db.commit()
+        await db.refresh(tag)
+        return tag
 
 
-    async def create_post(self, user: User, description: str, tags: set[Tag], images: dict):
-        post = Post(
-            description=description,
-            user_id=user.id,
-            original_image_url=images[const.ORIGINAL_IMAGE_URL],
-            image_url=images[const.EDITED_IMAGE_URL],
+    async def get_tags_by_names(self, db: AsyncSession, tags_list: set[str]) -> set[Tag]:
+        stmt = select(Tag).where(Tag.name.in_(tags_list))
+        tag = await db.execute(stmt)
+        result = set(tag.scalars().all())
+        return result
+
+
+    async def delete_post(self, db: AsyncSession, user: User, post_id: int):
+        stmt = (
+            select(Post)
+            .where(Post.id == post_id, Post.user_id == user.id)
+            .with_for_update(nowait=True)
         )
-        post.tags = tags
-        self.session.add(post)
-        await self.session.commit()
-        await self.session.refresh(post)
+        result = await db.execute(stmt)
+        post = result.scalar_one_or_none()
+        if post:
+            await db.delete(post)
+            await db.commit()
         return post
+
+
+    async def update_post(self, db: AsyncSession, user: User, post_id: int, body: PostUpdateSchema, comment: Comment = None,
+                          average_score: float = None, image: Image = None):
+        post = await get_post_by_id(db, user, post_id)
+        if post:
+            if body.description:
+                post.description = body.description
+            if comment:
+                post.comments.add(comment)
+            if body.tags:
+                tags = await get_or_create_tags(db, body.tags)
+                post.tags.update(tags)
+            if average_score:
+                post.score_result = average_score
+            if image:
+                post.images.add(image)
+
+        await db.commit()
+        await db.refresh(post)
+        return post
+
+
+    async def get_or_create_tags(self, db: AsyncSession, tags: set[str]):
+        tags_list = await get_tags_by_names(db, tags)
+        existing_tag_names = {tag.name for tag in tags_list}
+        not_existing_tag_names = [tag for tag in tags if tag not in existing_tag_names]
+        for tag in not_existing_tag_names:
+            tag_obj = await create_tag(db, tag)
+            tags_list.add(tag_obj)
+        return tags_list
+

@@ -1,8 +1,13 @@
-from sqlalchemy import Integer, String, DateTime, func, ForeignKey
+from typing import List, Set
+
+from sqlalchemy import Integer, String, DateTime, func, ForeignKey, Float, Boolean
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from conf.config import Base
-from src.tags.models import Tag
+from src.comments.models import Comment
+from src.images.models import Image
+
 
 
 class PostTag(Base):
@@ -14,11 +19,15 @@ class PostTag(Base):
 class Post(Base):
     __tablename__ = "posts"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    original_image_url: Mapped[str] = mapped_column(String(500), nullable=False)
     image_url: Mapped[str] = mapped_column(String(500), nullable=False)
-    description: Mapped[str] = mapped_column(String(500), nullable=False)
-    tags: Mapped[set["Tag"]] = relationship("Tag", secondary="post_tag", backref="posts")
+    edited_image_url: Mapped[str] = mapped_column(String(500), nullable=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), nullable=False)
+    description: Mapped[str] = mapped_column(String(500), nullable=False)
     created_at: Mapped[DateTime] = mapped_column("created_at", DateTime, default=func.now())
     updated_at: Mapped[DateTime] = mapped_column("updated_at", DateTime, default=func.now(), onupdate=func.now())
 
+
+class Tag(Base):
+    __tablename__ = "tags"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(String(50), nullable=False)
