@@ -136,8 +136,6 @@ async def logout(
         )
     token_records = await user_service.get_user_tokens(user.id)
     expired_tokens = []
-    print("record", type(token_records))
-    print("record", token_records)
     for record in token_records:
         if (
             datetime.now() - record.created_at
@@ -151,17 +149,3 @@ async def logout(
     return {"message": "Logout Successfully"}
 
 
-# @router.get("/password-reset")
-# async def reset_password(token: str, db: AsyncSession = Depends(get_db)):
-#     email: str = decode_verification_token(token)
-#     user_repo = UserRepository(db)
-#     user = await user_repo.get_user_by_email(email)
-#     if not user:
-#         raise HTTPException(
-#             status_code=status.HTTP_404_NOT_FOUND,
-#             detail=USER_NOT_FOUND,
-#         )
-#     if user.is_confirmed:
-#         return {"message": EMAIL_ALREADY_CONFIRMED}
-#     await user_repo.activate_user(user)
-#     return {"msg": EMAIL_CONFIRMED}
