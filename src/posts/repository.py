@@ -1,4 +1,4 @@
-from sqlalchemy import select, and_
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
@@ -12,7 +12,6 @@ class PostRepository:
     def __init__(self, db: AsyncSession):
         self.session = db
 
-
     async def get_posts(self, limit: int, offset: int, keyword: str, tag: str):
         stmt = select(Post)
         conditions = []
@@ -24,15 +23,10 @@ class PostRepository:
         if conditions:
             stmt = stmt.where(and_(*conditions))
 
-        stmt = (
-            stmt
-            .options(selectinload(Post.tags))
-            .offset(offset)
-            .limit(limit))
+        stmt = stmt.options(selectinload(Post.tags)).offset(offset).limit(limit)
 
         posts = await self.session.execute(stmt)
         return posts.scalars().all()
-
 
     async def get_post_by_id(self, post_id: int):
         stmt = select(Post).where(Post.id == post_id)
@@ -52,8 +46,9 @@ class PostRepository:
         await self.session.refresh(post)
         return post
 
-
-    async def create_post(self, user: User, description: str, tags: set[Tag], images: dict):
+    async def create_post(
+        self, user: User, description: str, tags: set[Tag], images: dict
+    ):
         post = Post(
             description=description,
             user_id=user.id,

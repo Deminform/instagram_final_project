@@ -15,3 +15,4 @@ class Comment(Base):
     updated_at: Mapped[DateTime] = mapped_column(
         "updated_at", DateTime, default=func.now(), onupdate=func.now()
     )
+

@@ -1,10 +1,9 @@
-from fastapi import HTTPException, status, File
+from fastapi import File, HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from conf import messages, const
 from src.posts.repository import PostRepository
-
 from src.posts.schemas import PostSchema
 from src.tags.tag_service import TagService
 from src.users.models import User

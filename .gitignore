@@ -55,3 +55,6 @@ dmypy.json
 
 # Database Settings
 .env
+
+# Makefile
+*Makefile

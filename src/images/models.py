@@ -12,5 +12,3 @@ class EditedImage(Base):
     image_filter: Mapped[str] = mapped_column(String(100), nullable=False)
 
 
-
-
