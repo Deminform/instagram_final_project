@@ -13,6 +13,7 @@ from src.posts.models import Post, PostTag
 from src.tags.models import Tag
 from src.users.models import Role, Token, User
 
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config

@@ -31,9 +31,7 @@ from src.users.users_service import UserService
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-@router.post(
-    "/signup", response_model=UserResponse, status_code=status.HTTP_201_CREATED
-)
+@router.post("/signup", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 async def register(
     user_create: UserCreate,
     background_tasks: BackgroundTasks,
@@ -87,9 +85,7 @@ async def login_for_access_token(
             headers={"WWW-Authenticate": "Bearer"},
         )
     if not user.is_confirmed:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail=EMAIL_NOT_CONFIRMED
-        )
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=EMAIL_NOT_CONFIRMED)
     if user.is_banned:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=BANNED)
     access_token = create_access_token(data={"sub": user.email})
@@ -103,9 +99,7 @@ async def login_for_access_token(
 
 
 @router.post("/refresh", response_model=Token)
-async def refresh_tokens(
-    refresh_token: str, db: AsyncSession = Depends(get_db)
-) -> Token:
+async def refresh_tokens(refresh_token: str, db: AsyncSession = Depends(get_db)) -> Token:
     token_data = decode_access_token(refresh_token)
     user_service = UserService(db)
     user = await user_service.get_user_by_email(token_data.username)
@@ -117,9 +111,7 @@ async def refresh_tokens(
         )
     access_token = create_access_token(data={"sub": user.email})
     refresh_token = create_refresh_token(data={"sub": user.email})
-    return Token(
-        access_token=access_token, refresh_token=refresh_token, token_type="bearer"
-    )
+    return Token(access_token=access_token, refresh_token=refresh_token, token_type="bearer")
 
 
 @router.get("/logout")

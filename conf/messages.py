@@ -20,4 +20,10 @@ DATABASE_IS_HEALTHY = "Database is healthy"
 DATABASE_INTEGRITY_ERROR = "Data integrity error."
 DATA_NOT_UNIQUE = "Data already exist."
 
+UPLOAD_IMAGE_ERROR = "Upload image failed"
+FILTER_IMAGE_ERROR = "Filter image failed"
+QR_NOT_FOUND = "QR code not found"
+
+NOT_COMMENT = "Comment not found or not available."
+
 # TODO REPLACE ALL ERROR MESSAGES IN PROJECT

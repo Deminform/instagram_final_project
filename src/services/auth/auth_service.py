@@ -34,7 +34,7 @@ class Hash:
         return self.pwd_context.hash(password)
 
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
 
 
 # Generate token for verification email

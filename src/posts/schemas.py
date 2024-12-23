@@ -23,7 +23,7 @@ class PostSchema(BaseModel):
 
 class PostResponseSchema(BaseModel):
     id: int
-    images: list[str]
+    image_url: str
     tags: set[str]
     score_result: float
     description: str
