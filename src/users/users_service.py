@@ -4,7 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.datastructures import URL
 
-from conf.messages import USER_NOT_FOUND, DATABASE_INTEGRITY_ERROR, DATA_NOT_UNIQUE, ALREADY_BANNED, NOT_BANNED
+from conf.messages import USER_NOT_FOUND, DATA_INTEGRITY_ERROR, DATA_NOT_UNIQUE, ALREADY_BANNED, NOT_BANNED
 from src.services.auth.auth_service import Hash
 from src.users.models import User
 from src.users.repos import RoleRepository, TokenRepository, UserRepository
@@ -20,7 +20,7 @@ def _handle_integrity_error(e: IntegrityError):
     else:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=DATABASE_INTEGRITY_ERROR,
+            detail=DATA_INTEGRITY_ERROR,
         )
 
 
