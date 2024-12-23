@@ -19,8 +19,8 @@ router = APIRouter(prefix="/users", tags=["users"])
 @router.get("/{user_id}", response_model=UserResponse)
 async def get_user_info_by_id(
     user_id: int,
-    current_user: User = Depends(get_current_user),
-    # user: User = Depends(RoleChecker([RoleEnum.MODER, RoleEnum.USER])),
+    # current_user: User = Depends(get_current_user),
+    user: User = Depends(RoleChecker([RoleEnum.MODER, RoleEnum.USER])),
     db: AsyncSession = Depends(get_db),
 ):
     user_service = UserService(db)
@@ -32,11 +32,11 @@ async def get_user_info_by_id(
     return user
 
 
-@router.get("/{username}", response_model=UserResponse)
+@router.get("/{username}/profile", response_model=UserResponse)
 async def get_user_info_by_username(
     username: str,
     current_user: User = Depends(get_current_user),
-    # user: User = Depends(RoleChecker([RoleEnum.MODER, RoleEnum.USER])),
+    user: User = Depends(RoleChecker([RoleEnum.MODER, RoleEnum.ADMIN])),  # TODO combine dependencies
     db: AsyncSession = Depends(get_db),
 ):
     user_service = UserService(db)
