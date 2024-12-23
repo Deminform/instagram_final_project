@@ -1,8 +1,8 @@
-from typing import Optional
 from datetime import datetime
+from enum import Enum
+from typing import Optional
 
 from pydantic import BaseModel, EmailStr
-from enum import Enum
 
 
 class RoleEnum(Enum):
@@ -59,4 +59,3 @@ class TokenCreate(BaseModel):
     refresh_token: str
     status: bool
     created_date: datetime
-

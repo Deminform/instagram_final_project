@@ -1,12 +1,11 @@
-from fastapi_mail import ConnectionConfig, MessageSchema, FastMail
+from fastapi_mail import ConnectionConfig, FastMail, MessageSchema
 from fastapi_mail.errors import ConnectionErrors
-from pydantic import EmailStr, BaseModel
 from jinja2 import Environment, FileSystemLoader
+from pydantic import BaseModel, EmailStr
 from starlette.datastructures import URL
 
 from conf.config import app_config
 from src.services.auth.auth_service import create_verification_token
-
 
 env = Environment(loader=FileSystemLoader("src/templates"))
 

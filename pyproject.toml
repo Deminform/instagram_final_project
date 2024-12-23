@@ -32,6 +32,8 @@ flake8 = "^7.1.1"
 flake8-async = "^24.11.3"
 faker = "^33.1.0"
 greenlet = "^3.1.1"
+black = "^24.10.0"
+isort = "^5.13.2"
 
 
 [tool.poetry.group.dev.dependencies]

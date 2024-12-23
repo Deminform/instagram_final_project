@@ -1,13 +1,10 @@
-from sqlalchemy import select, and_
+from sqlalchemy import and_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from starlette.datastructures import URL
 
-
-from src.users.models import User, Role, Token
-from src.users.schema import UserCreate, RoleEnum, UserUpdate
-
-
+from src.users.models import Role, Token, User
+from src.users.schema import RoleEnum, UserCreate, UserUpdate
 
 
 class UserRepository:
@@ -20,11 +17,21 @@ class UserRepository:
         return result.scalar_one_or_none()
 
     async def get_user_by_username(self, username: str) -> User | None:
-        query = select(User).options(selectinload(User.role)).where(User.username == username)
+        query = (
+            select(User)
+            .options(selectinload(User.role))
+            .where(User.username == username)
+        )
         result = await self.session.execute(query)
         return result.scalar_one_or_none()
 
-    async def create_user(self, user_create: UserCreate, user_role: Role, avatar: str, password_hashed: str) -> User:
+    async def create_user(
+        self,
+        user_create: UserCreate,
+        user_role: Role,
+        avatar: str,
+        password_hashed: str,
+    ) -> User:
         new_user = User(
             **user_create.model_dump(exclude_unset=True, exclude={"password"}),
             password=password_hashed,
@@ -94,7 +101,9 @@ class TokenRepository:
     def __init__(self, session):
         self.session = session
 
-    async def add_tokens(self, user_id: int, access_token: str, refresh_token: str, status: bool):
+    async def add_tokens(
+        self, user_id: int, access_token: str, refresh_token: str, status: bool
+    ):
         new_tokens = Token(
             user_id=user_id,
             access_token=access_token,
@@ -106,8 +115,11 @@ class TokenRepository:
         await self.session.refresh(new_tokens)
 
     async def get_active_token(self, user_id, token):
-        query = select(Token).where(and_(Token.user_id == user_id),
-                                    (Token.access_token == token), (Token.is_active.is_(True)))
+        query = select(Token).where(
+            and_(Token.user_id == user_id),
+            (Token.access_token == token),
+            (Token.is_active.is_(True)),
+        )
         result = await self.session.execute(query)
         return result.scalar_one_or_none()
 
@@ -134,8 +146,3 @@ class TokenRepository:
                 record.is_active = False
                 await self.session.commit()
                 await self.session.refresh(record)
-
-
-
-
-

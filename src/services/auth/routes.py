@@ -1,18 +1,31 @@
-from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks, Request
-from fastapi.security import OAuth2PasswordRequestForm
-from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime
 
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
+from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from conf.config import app_config
-from conf.messages import (ACCOUNT_EXIST, EMAIL_ALREADY_CONFIRMED, EMAIL_CONFIRMED, EMAIL_NOT_CONFIRMED,
-                           INCORRECT_CREDENTIALS, USER_NOT_FOUND, BANNED)
+from conf.messages import (
+    ACCOUNT_EXIST,
+    BANNED,
+    EMAIL_ALREADY_CONFIRMED,
+    EMAIL_CONFIRMED,
+    EMAIL_NOT_CONFIRMED,
+    INCORRECT_CREDENTIALS,
+    USER_NOT_FOUND,
+)
 from database.db import get_db
-from src.services.auth.auth_service import get_current_user
-from src.users.models import User
-from src.services.auth.auth_service import decode_verification_token, Hash, create_access_token, create_refresh_token, \
-    decode_access_token
+from src.services.auth.auth_service import (
+    Hash,
+    create_access_token,
+    create_refresh_token,
+    decode_access_token,
+    decode_verification_token,
+    get_current_user,
+)
 from src.services.auth.mail_utils import send_verification_email
-from src.users.schema import UserResponse, UserCreate, Token
+from src.users.models import User
+from src.users.schema import Token, UserCreate, UserResponse
 from src.users.users_service import UserService
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -78,9 +91,7 @@ async def login_for_access_token(
             status_code=status.HTTP_401_UNAUTHORIZED, detail=EMAIL_NOT_CONFIRMED
         )
     if user.is_banned:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail=BANNED
-        )
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=BANNED)
     access_token = create_access_token(data={"sub": user.email})
     refresh_token = create_refresh_token(data={"sub": user.email})
 
@@ -112,8 +123,9 @@ async def refresh_tokens(
 
 
 @router.get("/logout")
-async def logout(current_user: User = Depends(get_current_user),
-                 db: AsyncSession = Depends(get_db)):
+async def logout(
+    current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
+):
 
     user_service = UserService(db)
     user = await user_service.get_user_by_email(current_user.email)
@@ -127,7 +139,9 @@ async def logout(current_user: User = Depends(get_current_user),
     print("record", type(token_records))
     print("record", token_records)
     for record in token_records:
-        if (datetime.now() - record.created_at).days > app_config.REFRESH_TOKEN_LIFETIME:
+        if (
+            datetime.now() - record.created_at
+        ).days > app_config.REFRESH_TOKEN_LIFETIME:
             expired_tokens.append(record.id)
             print("record", record.id)
     if expired_tokens:

@@ -1,26 +1,28 @@
-from libgravatar import Gravatar
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import IntegrityError
 from fastapi import HTTPException, status
+from libgravatar import Gravatar
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.datastructures import URL
 
-from conf.messages import USER_NOT_FOUND
+from conf.messages import USER_NOT_FOUND, DATABASE_INTEGRITY_ERROR, DATA_NOT_UNIQUE, ALREADY_BANNED, NOT_BANNED
 from src.services.auth.auth_service import Hash
 from src.users.models import User
-from src.users.repos import UserRepository, RoleRepository, TokenRepository
-from src.users.schema import UserCreate, RoleEnum, UserUpdate
+from src.users.repos import RoleRepository, TokenRepository, UserRepository
+from src.users.schema import RoleEnum, UserCreate, UserUpdate
+
 
 def _handle_integrity_error(e: IntegrityError):
     if "unique" in str(e.orig):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Data already exist.",
+            detail=DATA_NOT_UNIQUE,
         )
     else:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Data integrity error.",
+            detail=DATABASE_INTEGRITY_ERROR,
         )
+
 
 class UserService:
     def __init__(self, db: AsyncSession):
@@ -38,7 +40,9 @@ class UserService:
             print(e)
         password_hashed = Hash().get_password_hash(user_create.password)
 
-        return await self.user_repository.create_user(user_create, user_role, avatar, password_hashed)
+        return await self.user_repository.create_user(
+            user_create, user_role, avatar, password_hashed
+        )
 
     async def get_user_by_id(self, user_id: int) -> User | None:
         return await self.user_repository.get_user_by_id(user_id)
@@ -67,24 +71,25 @@ class UserService:
         user = await self.user_repository.get_user_by_id(user_id)
         if not user:
             raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail=USER_NOT_FOUND)
+                status_code=status.HTTP_404_NOT_FOUND, detail=USER_NOT_FOUND
+            )
         if user.is_banned:
             raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="User is already banned")
+                status_code=status.HTTP_400_BAD_REQUEST, detail=ALREADY_BANNED
+            )
         return await self.user_repository.ban_user(user)
 
     async def unban_user(self, user_id: int):
         user = await self.user_repository.get_user_by_id(user_id)
         if not user:
             raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail=USER_NOT_FOUND)
+                status_code=status.HTTP_404_NOT_FOUND, detail=USER_NOT_FOUND
+            )
         if not user.is_banned:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="User is already not banned")
+                detail=NOT_BANNED,
+            )
         return await self.user_repository.unban_user(user)
 
     async def change_role(self, user_id: int, role: str):
@@ -92,13 +97,16 @@ class UserService:
         user_role = await self.role_repository.get_role_by_name(RoleEnum(role))
         if not user:
             raise HTTPException(
-                    status_code=status.HTTP_404_NOT_FOUND,
-                    detail=USER_NOT_FOUND)
+                status_code=status.HTTP_404_NOT_FOUND, detail=USER_NOT_FOUND
+            )
         return await self.user_repository.change_role(user, user_role)
 
-    async def add_tokens_db(self, user_id: int, access_token: str, refresh_token: str, status: bool):
-        return await self.token_repository.add_tokens(user_id, access_token, refresh_token, status)
-
+    async def add_tokens_db(
+        self, user_id: int, access_token: str, refresh_token: str, status: bool
+    ):
+        return await self.token_repository.add_tokens(
+            user_id, access_token, refresh_token, status
+        )
 
     async def get_user_tokens(self, user_id):
         return await self.token_repository.get_user_tokens(user_id)
@@ -108,12 +116,3 @@ class UserService:
 
     async def deactivate_user_tokens(self, user_id):
         return await self.token_repository.deactivate_user_tokens(user_id)
-
-
-
-
-
-
-
-
-

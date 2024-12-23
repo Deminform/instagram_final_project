@@ -1,18 +1,14 @@
-from fastapi import (
-    APIRouter,
-    Depends,
-    HTTPException, status, UploadFile, File
-)
-from sqlalchemy.ext.asyncio import AsyncSession
 import cloudinary
 import cloudinary.uploader
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from conf.config import app_config
 from conf.messages import USER_NOT_FOUND
 from database.db import get_db
-from src.services.auth.auth_service import get_current_user, RoleChecker
+from src.services.auth.auth_service import RoleChecker, get_current_user
 from src.users.models import User
-from src.users.schema import UserResponse, RoleEnum, UserUpdate
+from src.users.schema import RoleEnum, UserResponse, UserUpdate
 from src.users.users_service import UserService
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -50,7 +46,6 @@ async def get_user_info_by_username(
     return user
 
 
-
 @router.patch("/info", response_model=UserResponse)
 async def update_user_info(
     body: UserUpdate,
@@ -85,7 +80,13 @@ async def update_user_info(
 
     src_url = cloudinary.CloudinaryImage(
         f"Inst_project/{current_user.username}"
-    ).build_url(width=250, height=250, crop="fill", version=r.get("version"), format=r.get("format"))
+    ).build_url(
+        width=250,
+        height=250,
+        crop="fill",
+        version=r.get("version"),
+        format=r.get("format"),
+    )
     user_service = UserService(db)
     user = await user_service.update_avatar(current_user.username, src_url)
     if not user:
@@ -95,12 +96,11 @@ async def update_user_info(
     return user
 
 
-
 @router.post("/ban/{user_id}", status_code=status.HTTP_200_OK)
 async def ban_user(
     user_id: int,
     current_user: User = Depends(get_current_user),
-    user: User = Depends(RoleChecker([RoleEnum.ADMIN])),   # TODO Check admin permission
+    user: User = Depends(RoleChecker([RoleEnum.ADMIN])),  # TODO Check admin permission
     db: AsyncSession = Depends(get_db),
 ):
     user_service = UserService(db)
@@ -112,7 +112,7 @@ async def ban_user(
 async def ban_user(
     user_id: int,
     current_user: User = Depends(get_current_user),
-    user: User = Depends(RoleChecker([RoleEnum.ADMIN])),   # TODO Check admin permission
+    user: User = Depends(RoleChecker([RoleEnum.ADMIN])),  # TODO Check admin permission
     db: AsyncSession = Depends(get_db),
 ):
     user_service = UserService(db)
@@ -131,5 +131,3 @@ async def change_user_role(
     user_service = UserService(db)
     await user_service.change_role(user_id, role)
     return {"message": "Success"}
-
-

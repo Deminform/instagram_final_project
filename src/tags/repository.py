@@ -15,13 +15,11 @@ class TagRepository:
         await self.db.refresh(tag)
         return tag
 
-
     async def get_tags_by_names(self, tags_list: set[str]) -> set[Tag]:
         stmt = select(Tag).where(Tag.name.in_(tags_list))
         result = await self.db.execute(stmt)
         tag = set(result.scalars().all())
         return tag
-
 
     async def delete_tag(self, tag_name: str):
         stmt = select(Tag).where(Tag.name == tag_name)
