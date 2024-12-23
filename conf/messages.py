@@ -17,7 +17,7 @@ INVALID_SCOPE_TOKEN = "Invalid scope token"
 INVALID_TOKEN_DATA = "Invalid token data"
 DATABASE_IS_NOT_AVAILABLE = "Database is not available"
 DATABASE_IS_HEALTHY = "Database is healthy"
-DATABASE_INTEGRITY_ERROR = "Data integrity error."
+DATA_INTEGRITY_ERROR = "Data integrity error."
 DATA_NOT_UNIQUE = "Data already exist."
 
 UPLOAD_IMAGE_ERROR = "Upload image failed"
