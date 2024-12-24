@@ -13,8 +13,8 @@ from src.users.models import User
 class PostService:
     def __init__(self, db: AsyncSession):
         self.image_service = ImageService(db)
-        self.qr_service = QRService
         self.tag_service = TagService(db)
+        self.qr_service = QRService
         self.post_repository = PostRepository(db)
 
     async def _get_post_or_exception(self, post_id: int, user: User):
@@ -31,24 +31,12 @@ class PostService:
             )
         return post
 
-    @staticmethod
-    async def check_and_format_tag(tags: str):
-        tags_set = set(tags.replace(" ", "").split(","))
-        if len(tags_set) > 5:
-            raise ValueError("The maximum number of tags (5) ")
-
-        for tag in tags_set:
-            if not tag or len(tag) > 30:
-                raise ValueError(
-                    f"Invalid tag: {tag}. Each tag must not be empty and must contain between 1 and 30 characters"
-                )
-        return tags_set
 
     async def create_post(
         self, user: User, description: str, image_filter: str, tags: str, image: File
     ):
         image_urls = await self.image_service.get_image_urls(image, image_filter)
-        tags = await self.check_and_format_tag(tags)
+        tags = await self.tag_service.check_and_format_tag(tags)
 
         try:
             tags = await self.tag_service.get_or_create_tags(tags)

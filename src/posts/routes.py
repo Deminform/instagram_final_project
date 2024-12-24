@@ -52,7 +52,7 @@ async def get_post_by_id(
 async def create_post(
     description: str = Form(...),
     image_filter: str | None = Form(None),
-    tags: str = Form(...),
+    tags: str = Form(None, description="Tags may be separated by commas, an example: 'tag1,tag2,tag3', up to 5 tags"),
     image: UploadFile = File(...),
     db: AsyncSession = Depends(get_db),
     user: User = Depends(get_current_user),
