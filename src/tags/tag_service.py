@@ -44,18 +44,19 @@ class TagService:
 
     @staticmethod
     async def check_and_format_tag(tags: str):
+        error_list = []
         tags_set = {tag.lower().strip() for tag in tags.split(",") if tag.strip()}
+
         if len(tags_set) > 5:
+            error_list.append(messages.TAG_NUMBER_LIMIT)
+
+        if any(len(tag) > 30 for tag in tags_set):
+            error_list.append(messages.TAG_NAME_LIMIT)
+
+        if error_list:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Maximum number of tags is 5"
+                detail=error_list
             )
-
-        for tag in tags_set:
-            if len(tag) > 30:
-                raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
-                    detail=f"Incorrect tag name: {tag}. Maximum length is 30 characters"
-                )
         return tags_set
 

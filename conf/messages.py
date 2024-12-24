@@ -21,6 +21,8 @@ DATABASE_IS_NOT_AVAILABLE = "Database is not available"
 DATABASE_IS_HEALTHY = "Database is healthy"
 DATA_INTEGRITY_ERROR = "Data integrity error."
 DATA_NOT_UNIQUE = "Data already exist."
+TAG_NUMBER_LIMIT="Maximum number of tags is 5"
+TAG_NAME_LIMIT="Maximum length of tag name is 30"
 
 UPLOAD_IMAGE_ERROR = "Upload image failed"
 FILTER_IMAGE_ERROR = "Filter image failed"
