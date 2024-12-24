@@ -12,7 +12,7 @@ from conf.messages import (
     EMAIL_CONFIRMED,
     EMAIL_NOT_CONFIRMED,
     INCORRECT_CREDENTIALS,
-    USER_NOT_FOUND,
+    USER_NOT_FOUND, LOGOUT_SUCCESS,
 )
 from database.db import get_db
 from src.services.auth.auth_service import (
@@ -138,6 +138,6 @@ async def logout(
         await user_service.delete_tokens(expired_tokens)
 
     await user_service.deactivate_user_tokens(user.id)
-    return {"message": "Logout Successfully"}
+    return {"message": LOGOUT_SUCCESS}
 
 
