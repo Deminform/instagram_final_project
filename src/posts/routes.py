@@ -24,8 +24,8 @@ router = APIRouter(prefix="/posts", tags=["posts"])
 async def get_posts(
     limit: int = Query(10, ge=10, le=100),
     offset: int = Query(0, ge=0),
-    tag: str = Query(None, description="Search by description or by tags"),
-    keyword: str = Query(None, description="Search by description or by tags"),
+    tag: str = Query(None, description="Search by tags, partial match, case insensitive"),
+    keyword: str = Query(None, description="Search by description, partial match, case insensitive"),
     db: AsyncSession = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
@@ -44,7 +44,7 @@ async def get_post_by_id(
     return post
 
 
-@router.post("/", response_model=PostResponseSchema)
+@router.post("/", response_model=PostResponseSchema, status_code=status.HTTP_201_CREATED)
 async def create_post(
     description: str = Form(...),
     image_filter: str | None = Form(None),
@@ -58,7 +58,7 @@ async def create_post(
     return post
 
 
-@router.post("/{post_id}/qr", response_model=PostResponseSchema)
+@router.post("/{post_id}/qr", response_model=PostResponseSchema, status_code=status.HTTP_201_CREATED)
 async def create_qr(
     post_id: int,
     image_filter: str | None = Query(
@@ -72,21 +72,6 @@ async def create_qr(
     return image_qr
 
 
-@router.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_post(
-    post_id: int,
-    db: AsyncSession = Depends(get_db),
-    user: User = Depends(get_current_user),
-):
-    post_service = PostService(db)
-    post = await post_service.delete_post(user, post_id)
-    if post is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=messages.POST_NOT_FOUND
-        )
-    return post
-
-
 @router.put("/{post_id}", response_model=PostResponseSchema)
 async def edit_post(
     post_id: int,
@@ -96,8 +81,15 @@ async def edit_post(
 ):
     post_service = PostService(db)
     post = await post_service.update_post_description(user, post_id, description)
-    if post is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=messages.POST_NOT_FOUND
-        )
+    return post
+
+
+@router.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_post(
+    post_id: int,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
+):
+    post_service = PostService(db)
+    post = await post_service.delete_post(user, post_id)
     return post

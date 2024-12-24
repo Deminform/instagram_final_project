@@ -8,6 +8,7 @@ from src.images.qr_service import QRService
 from src.posts.repository import PostRepository
 from src.tags.tag_service import TagService
 from src.users.models import User
+from src.users.schema import RoleEnum
 
 
 class PostService:
@@ -24,7 +25,7 @@ class PostService:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=messages.POST_NOT_FOUND,
             )
-        if post.user_id != user.id:
+        if user and post.user_id != user.id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=messages.FORBIDDEN,
@@ -55,20 +56,25 @@ class PostService:
             )
         return post
 
+
     async def get_post_by_id(self, post_id: int):
         post = await self._get_post_or_exception(post_id)
         return post
 
+
     async def get_posts(self, limit: int, offset: int, keyword: str, tag: str):
         return await self.post_repository.get_posts(limit, offset, keyword, tag)
+
 
     async def update_post_description(self, user, post_id: int, description: str):
         post = await self._get_post_or_exception(post_id, user)
         return await self.post_repository.update_post_description(post, description)
 
+
     async def delete_post(self, user: User, post_id: int):
         post = await self._get_post_or_exception(post_id, user)
         return await self.post_repository.delete_post(post)
+
 
     async def create_qr(self, post_id: int, image_filter: str):
         post = await self.post_repository.get_post_by_id(post_id)
