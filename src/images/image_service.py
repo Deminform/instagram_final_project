@@ -1,12 +1,13 @@
 import uuid
 import cloudinary
+from cloudinary.utils import cloudinary_url
 import cloudinary.uploader
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, UploadFile
 
 from conf.config import app_config
 from conf.const import FILTER_DICT
-from conf import messages
+from conf import messages, const
 from src.images.repository import ImageRepository
 
 cloudinary.config(
@@ -16,69 +17,55 @@ cloudinary.config(
     secure=True,
 )
 
+
 class ImageService:
     def __init__(self, db: AsyncSession):
         self.image_repository = ImageRepository(db)
 
     @staticmethod
-    async def image_apply_filter(image_url: str, unique_filename: str, image_filter: str):
-        try:
-            transformation_filter = FILTER_DICT.get(image_filter)
-            if not transformation_filter:
-                return image_url  # No filter applied, return original image URL
-
-            edited_image = cloudinary.uploader.upload(
-                image_url,
-                public_id=unique_filename,
-                overwrite=True,
-                folder=app_config.CLOUDINARY_FOLDER,
-                transformation=transformation_filter,
-            )
-            return edited_image["secure_url"]
-
-        except Exception:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=messages.FILTER_IMAGE_ERROR,
-            )
-
-    async def get_image_urls(self, image_file, image_filter=None):
+    async def get_image_urls(image_file: UploadFile, image_filter: str = None):
         links_dict = {}
         unique_filename = uuid.uuid4().hex
 
         try:
-            original_image = cloudinary.uploader.upload(
-                image_file,
+            original_image_url = cloudinary.uploader.upload(
+                image_file.file,
                 public_id=unique_filename,
                 overwrite=True,
                 folder=app_config.CLOUDINARY_FOLDER,
             )
-            links_dict["original_image_url"] = original_image["secure_url"]
+            links_dict[const.ORIGINAL_IMAGE_URL] = original_image_url["secure_url"]
 
             if image_filter:
-                edited_image_url = await self.image_apply_filter(
-                    original_image["secure_url"], unique_filename, image_filter
-                )
-                links_dict["image_url"] = edited_image_url
-            else:
-                links_dict["image_url"] = original_image["secure_url"]
+                edited_image_url, options = cloudinary_url(original_image_url['public_id'],
+                                                           transformation=[
+                                                               FILTER_DICT.get(image_filter),
+                                                               FILTER_DICT.get('crop'),
 
-        except Exception:
+                                                           ])
+                links_dict[const.EDITED_IMAGE_URL] = edited_image_url
+            else:
+                links_dict[const.ORIGINAL_IMAGE_URL] = original_image_url["secure_url"]
+                links_dict[const.EDITED_IMAGE_URL] = original_image_url["secure_url"]
+
+        except Exception as e:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=messages.UPLOAD_IMAGE_ERROR,
+                detail=f"{messages.UPLOAD_IMAGE_ERROR} -//- {e}"
             )
         return links_dict
 
-    async def create_image(self, post_id: int, image_url: str, image_filter: str):
-        edited_image = await self.image_repository.get_image(post_id, image_filter)
-        if edited_image:
-            return None  # Image already exists
-        return await self.image_repository.add_image(post_id, image_url, image_filter)
-
-    async def check_get_edited_image(self, post_id: int, image_filter: str):
-        edited_image = await self.image_repository.get_image(post_id, image_filter)
-        return edited_image.image_url if edited_image else None
+    # async def create_image(self, post_id: int, image_url: str, image_filter: str):
+    #     edited_image = await self.image_repository.get_image(post_id, image_filter)
+    #     if edited_image:
+    #         return None  # Image already exists
+    #
+    #     result = await self.image_repository.add_image(post_id, image_url, image_filter)
+    #     return result
+    #
+    # async def check_get_edited_image(self, post_id: int, image_filter: str):
+    #     edited_image = await self.image_repository.get_image(post_id, image_filter)
+    #     return edited_image.image_url if edited_image else None
 
 
 

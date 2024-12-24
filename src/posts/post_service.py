@@ -6,7 +6,6 @@ from conf import messages, const
 from src.images.image_service import ImageService
 from src.images.qr_service import QRService
 from src.posts.repository import PostRepository
-from src.posts.schemas import PostSchema
 from src.tags.tag_service import TagService
 from src.users.models import User
 
@@ -33,15 +32,29 @@ class PostService:
             )
         return post
 
-    async def create_post(self, user: User, body: PostSchema, image: File):
-        image_urls = await self.image_service.get_image_urls(image, body.image_filter)
+    @staticmethod
+    async def check_and_format_tag(tags: str):
+        tags_set = set(tags.replace(' ', '').split(','))
+        if len(tags_set) > 5:
+            raise ValueError("The maximum number of tags (5) ")
+
+        for tag in tags_set:
+            if not tag or len(tag) > 30:
+                raise ValueError(
+                    f"Invalid tag: {tag}. Each tag must not be empty and must contain between 1 and 30 characters"
+                )
+        return tags_set
+
+    async def create_post(self, user: User, description: str, image_filter: str, tags: str, image: File):
+        image_urls = await self.image_service.get_image_urls(image, image_filter)
+        tags = await self.check_and_format_tag(tags)
 
         try:
-            tags = await self.tag_service.get_or_create_tags(body.tags)
-            post = await self.post_repository.create_post(user, body.description, tags, image_urls)
+            tags = await self.tag_service.get_or_create_tags(tags)
+            post = await self.post_repository.create_post(user, description, tags, image_urls)
 
-            if image_urls[const.EDITED_IMAGE_URL] != image_urls[const.ORIGINAL_IMAGE_URL]:
-                await self.image_service.create_image(post.id, post.image_url, body.image_filter)
+            # if image_urls[const.EDITED_IMAGE_URL] != image_urls[const.ORIGINAL_IMAGE_URL]:
+            #     await self.image_service.create_image(post.id, post.image_url, image_filter)
 
         except IntegrityError as e:
             await self.post_repository.session.rollback()
@@ -57,7 +70,7 @@ class PostService:
 
 
     async def get_posts(self, limit: int, offset: int, keyword: str, tag: str):
-        return await self.post_repository.get_posts(limit, offset, keyword.strip(), tag.strip())
+        return await self.post_repository.get_posts(limit, offset, keyword, tag)
 
 
     async def update_post_description(self, user, post_id: int, description: str):
@@ -72,5 +85,4 @@ class PostService:
 
     async def create_qr(self, post_id: int, image_filter: str):
         post = await self.post_repository.get_post_by_id(post_id)
-        print('FUNCTION was called ------------------------------------------------------------ generate_qr')
         # return await self.qr_service(post.id, post.original_image_url, image_filter)

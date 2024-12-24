@@ -3,7 +3,7 @@ from fastapi import (
     HTTPException,
     status,
     UploadFile,
-    File,
+    File, Form,
 )
 
 from fastapi import Depends, APIRouter
@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from conf import messages
 from database.db import get_db
 from src.posts.post_service import PostService
-from src.posts.schemas import PostResponseSchema, PostSchema
+from src.posts.schemas import PostResponseSchema
 from src.services.auth.auth_service import get_current_user
 from src.users.models import User
 
@@ -45,13 +45,15 @@ async def get_post_by_id(
 
 @router.post("/", response_model=PostResponseSchema)
 async def create_post(
-    body: PostSchema,
+    description: str = Form(...),
+    image_filter: str | None = Form(None),
+    tags: str = Form(...),
     image: UploadFile = File(...),
     db: AsyncSession = Depends(get_db),
     user: User = Depends(get_current_user),
 ):
     post_service = PostService(db)
-    post = await post_service.create_post(user, body, image)
+    post = await post_service.create_post(user, description, image_filter, tags, image)
     return post
 
 
