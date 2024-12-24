@@ -22,7 +22,7 @@ class Score(ScoreBase):
     id: int = Field(..., description="Unique identifier for the score.")
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class AverageScore(BaseModel):
