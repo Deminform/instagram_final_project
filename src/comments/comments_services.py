@@ -15,20 +15,30 @@ class CommentServices:
     async def add_comment(self, post_id: int, body: CommentBase, user: User) -> Comment:
         return await self.comment_repository.add_comment(post_id, body, user)
 
-    async def edit_comment(self, comment_id: int, body: CommentBase, user: User) -> Comment:
+    async def edit_comment(
+        self, comment_id: int, body: CommentBase, user: User
+    ) -> Comment:
         comment = await self.comment_repository.edit_comment(comment_id, body, user)
         if comment is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.NOT_COMMENT)
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail=messages.NOT_COMMENT
+            )
         return comment
 
     async def delete_comment(self, comment_id: int) -> Comment:
         comment = await self.comment_repository.delete_comment(comment_id)
         if comment is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.NOT_COMMENT)
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail=messages.NOT_COMMENT
+            )
         return comment
 
-    async def get_comment_by_post_all(self, post_id: int, limit: int, offset: int) -> list[Comment]:
-        comment = await self.comment_repository.get_comment_by_post_all(post_id, limit, offset)
+    async def get_comment_by_post_all(
+        self, post_id: int, limit: int, offset: int
+    ) -> list[Comment]:
+        comment = await self.comment_repository.get_comment_by_post_all(
+            post_id, limit, offset
+        )
         return comment
 
     async def get_comment_by_post_user(

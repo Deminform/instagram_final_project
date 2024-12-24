@@ -1,4 +1,3 @@
-import cloudinary
 import cloudinary.uploader
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -20,7 +19,6 @@ router = APIRouter(prefix="/users", tags=["users"])
 async def get_user_info_by_id(
     user_id: int,
     current_user: User = Depends(get_current_user),
-    # user: User = Depends(RoleChecker([RoleEnum.MODER, RoleEnum.USER])),
     db: AsyncSession = Depends(get_db),
 ):
     user_service = UserService(db)
@@ -29,14 +27,16 @@ async def get_user_info_by_id(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=USER_NOT_FOUND
         )
-    return user
+    posts_count = await user_service.get_user_posts_count(user.id)
+    user_response = UserResponse.model_validate(user)
+    user_response.post_count = posts_count if posts_count else 0
+    return user_response
 
 
-@router.get("/{username}", response_model=UserResponse)
+@router.get("/{username}/profile", response_model=UserResponse)
 async def get_user_info_by_username(
     username: str,
     current_user: User = Depends(get_current_user),
-    # user: User = Depends(RoleChecker([RoleEnum.MODER, RoleEnum.USER])),
     db: AsyncSession = Depends(get_db),
 ):
     user_service = UserService(db)
@@ -45,7 +45,10 @@ async def get_user_info_by_username(
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=USER_NOT_FOUND
         )
-    return user
+    posts_count = await user_service.get_user_posts_count(user.id)
+    user_response = UserResponse.model_validate(user)
+    user_response.post_count = posts_count if posts_count else 0
+    return user_response
 
 
 @router.patch("/info", response_model=UserResponse)
@@ -98,11 +101,13 @@ async def update_user_info(
     return user
 
 
-@router.post("/ban/{user_id}", status_code=status.HTTP_200_OK)
+# ------------- ADMIN ROUTES -----------------------------------
+@router.post("/{user_id}/ban", status_code=status.HTTP_200_OK)
 async def ban_user(
     user_id: int,
-    current_user: User = Depends(get_current_user),
-    user: User = Depends(RoleChecker([RoleEnum.ADMIN])),  # TODO Check admin permission
+    current_user: User = Depends(
+        RoleChecker([RoleEnum.ADMIN])
+    ),  # TODO Check admin permission
     db: AsyncSession = Depends(get_db),
 ):
     user_service = UserService(db)
@@ -110,11 +115,12 @@ async def ban_user(
     return {"message": "Success"}
 
 
-@router.post("/unban/{user_id}", status_code=status.HTTP_200_OK)
+@router.post("/{user_id}/unban", status_code=status.HTTP_200_OK)
 async def ban_user(
     user_id: int,
-    current_user: User = Depends(get_current_user),
-    user: User = Depends(RoleChecker([RoleEnum.ADMIN])),  # TODO Check admin permission
+    current_user: User = Depends(
+        RoleChecker([RoleEnum.ADMIN])
+    ),  # TODO Check admin permission
     db: AsyncSession = Depends(get_db),
 ):
     user_service = UserService(db)
@@ -122,15 +128,15 @@ async def ban_user(
     return {"message": "Success"}
 
 
-@router.patch("/role/{user_id}", status_code=status.HTTP_200_OK)
+@router.patch("/{user_id}/role", status_code=status.HTTP_200_OK)
 async def change_user_role(
     user_id: int,
     role: str,
-    # current_user: User = Depends(get_current_user),
-    # user: User = Depends(RoleChecker([RoleEnum.ADMIN])),   # TODO Check admin permission
+    current_user: User = Depends(
+        RoleChecker([RoleEnum.ADMIN])
+    ),  # TODO Check admin permission
     db: AsyncSession = Depends(get_db),
 ):
     user_service = UserService(db)
     await user_service.change_role(user_id, role)
     return {"message": "Success"}
-

@@ -17,7 +17,6 @@ class PostService:
         self.tag_service = TagService(db)
         self.post_repository = PostRepository(db)
 
-
     async def _get_post_or_exception(self, post_id: int, user: User):
         post = await self.post_repository.get_post_by_id(post_id)
         if not post:
@@ -34,7 +33,7 @@ class PostService:
 
     @staticmethod
     async def check_and_format_tag(tags: str):
-        tags_set = set(tags.replace(' ', '').split(','))
+        tags_set = set(tags.replace(" ", "").split(","))
         if len(tags_set) > 5:
             raise ValueError("The maximum number of tags (5) ")
 
@@ -45,13 +44,17 @@ class PostService:
                 )
         return tags_set
 
-    async def create_post(self, user: User, description: str, image_filter: str, tags: str, image: File):
+    async def create_post(
+        self, user: User, description: str, image_filter: str, tags: str, image: File
+    ):
         image_urls = await self.image_service.get_image_urls(image, image_filter)
         tags = await self.check_and_format_tag(tags)
 
         try:
             tags = await self.tag_service.get_or_create_tags(tags)
-            post = await self.post_repository.create_post(user, description, tags, image_urls)
+            post = await self.post_repository.create_post(
+                user, description, tags, image_urls
+            )
 
             # if image_urls[const.EDITED_IMAGE_URL] != image_urls[const.ORIGINAL_IMAGE_URL]:
             #     await self.image_service.create_image(post.id, post.image_url, image_filter)
@@ -64,24 +67,19 @@ class PostService:
             )
         return post
 
-
     async def get_post_by_id(self, post_id: int):
         return await self.post_repository.get_post_by_id(post_id)
 
-
     async def get_posts(self, limit: int, offset: int, keyword: str, tag: str):
         return await self.post_repository.get_posts(limit, offset, keyword, tag)
-
 
     async def update_post_description(self, user, post_id: int, description: str):
         post = await self._get_post_or_exception(post_id, user)
         return await self.post_repository.update_post_description(post, description)
 
-
     async def delete_post(self, user: User, post_id: int):
         post = await self._get_post_or_exception(post_id, user)
         return await self.post_repository.delete_post(post)
-
 
     async def create_qr(self, post_id: int, image_filter: str):
         post = await self.post_repository.get_post_by_id(post_id)

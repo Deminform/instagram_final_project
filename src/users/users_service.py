@@ -4,7 +4,13 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.datastructures import URL
 
-from conf.messages import USER_NOT_FOUND, DATA_INTEGRITY_ERROR, DATA_NOT_UNIQUE, ALREADY_BANNED, NOT_BANNED
+from conf.messages import (
+    USER_NOT_FOUND,
+    DATA_INTEGRITY_ERROR,
+    DATA_NOT_UNIQUE,
+    ALREADY_BANNED,
+    NOT_BANNED,
+)
 from src.services.auth.auth_service import Hash
 from src.users.models import User
 from src.users.repos import RoleRepository, TokenRepository, UserRepository
@@ -50,10 +56,13 @@ class UserService:
     async def get_user_by_email(self, email: str) -> User | None:
         return await self.user_repository.get_user_by_email(email)
 
-    async def get_user_by_username(self, username) -> User | None:
+    async def get_user_by_username(self, username: str) -> User | None:
         return await self.user_repository.get_user_by_username(username)
 
-    async def activate_user(self, user):
+    async def get_user_posts_count(self, user_id: int) -> int:
+        return await self.user_repository.get_user_posts_count(user_id)
+
+    async def activate_user(self, user: User):
         return await self.user_repository.activate_user(user)
 
     async def update_user(self, user_id: int, body: UserUpdate) -> User | None:
@@ -66,23 +75,6 @@ class UserService:
 
     async def update_avatar(self, username: str, url: URL):
         return await self.user_repository.update_avatar_url(username, url)
-
-    async def add_tokens_db(
-        self, user_id: int, access_token: str, refresh_token: str, status: bool):
-        return await self.token_repository.add_tokens(
-            user_id, access_token, refresh_token, status
-        )
-
-    async def get_user_tokens(self, user_id):
-        return await self.token_repository.get_user_tokens(user_id)
-
-    async def delete_tokens(self, expired_tokens):
-        return await self.token_repository.delete_tokens(expired_tokens)
-
-    async def deactivate_user_tokens(self, user_id):
-        return await self.token_repository.deactivate_user_tokens(user_id)
-
-
 
     # -------ADMIN ENDPOINTS-------
 

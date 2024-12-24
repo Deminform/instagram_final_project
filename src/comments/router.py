@@ -78,7 +78,9 @@ async def get_comment_by_post_user(
 ):
 
     comment_service = CommentServices(db)
-    return await comment_service.get_comment_by_post_user(post_id, limit, offset, current_user)
+    return await comment_service.get_comment_by_post_user(
+        post_id, limit, offset, current_user
+    )
 
 
 @router.get(
@@ -98,4 +100,6 @@ async def get_comment_by_post_author(
 ):
 
     comment_service = CommentServices(db)
-    return await comment_service.get_comment_by_post_author(post_id, user_id, limit, offset)
+    return await comment_service.get_comment_by_post_author(
+        post_id, user_id, limit, offset
+    )

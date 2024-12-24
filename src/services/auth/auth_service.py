@@ -1,5 +1,4 @@
 from datetime import datetime, timedelta, timezone
-from functools import wraps
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -9,17 +8,23 @@ from pydantic import EmailStr
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from conf.config import app_config
-from conf.messages import FORBIDDEN, INCORRECT_CREDENTIALS, INVALID_TOKEN_DATA, USER_NOT_FOUND, BANNED
+from conf.messages import (
+    FORBIDDEN,
+    INCORRECT_CREDENTIALS,
+    INVALID_TOKEN_DATA,
+    USER_NOT_FOUND,
+    BANNED,
+)
 from database.db import get_db
 from src.users.models import User
 from src.users.repos import TokenRepository, UserRepository
 from src.users.schema import RoleEnum, TokenData
 
+
 class UnauthorizedException(HTTPException):
     def __init__(self, detail: str):
         super().__init__(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=INCORRECT_CREDENTIALS,
             headers={"WWW-Authenticate": "Bearer"},
         )
 
@@ -142,3 +147,24 @@ class RoleChecker:
                 detail=FORBIDDEN,
             )
         return user
+
+
+class AuthService:
+    def __init__(self, db: AsyncSession):
+        self.token_repository = TokenRepository(db)
+
+    async def add_tokens_db(
+        self, user_id: int, access_token: str, refresh_token: str, status: bool
+    ):
+        return await self.token_repository.add_tokens(
+            user_id, access_token, refresh_token, status
+        )
+
+    async def get_user_tokens(self, user_id: int) -> list:
+        return await self.token_repository.get_user_tokens(user_id)
+
+    async def delete_tokens(self, expired_tokens: list):
+        return await self.token_repository.delete_tokens(expired_tokens)
+
+    async def deactivate_user_tokens(self, user_id: int):
+        return await self.token_repository.deactivate_user_tokens(user_id)

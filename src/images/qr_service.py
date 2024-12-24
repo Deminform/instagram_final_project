@@ -28,8 +28,12 @@ class QRService:
     #     return buffer
 
     @staticmethod
-    async def generate_qr(self, post_id: int, original_image_url: str, image_filter: str):
-        print('FUNCTION was called ------------------------------------------------------------ generate_qr')
+    async def generate_qr(
+        self, post_id: int, original_image_url: str, image_filter: str
+    ):
+        print(
+            "FUNCTION was called ------------------------------------------------------------ generate_qr"
+        )
         # edited_image_url = await self.image_service.check_get_edited_image(post_id, image_filter)
         # if edited_image_url:
         #     return await self.create_qr(edited_image_url)

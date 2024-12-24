@@ -1,8 +1,9 @@
-from sqlalchemy import and_, select
+from sqlalchemy import and_, select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from starlette.datastructures import URL
 
+from src.posts.models import Post
 from src.users.models import Role, Token, User
 from src.users.schema import RoleEnum, UserCreate, UserUpdate
 
@@ -61,7 +62,7 @@ class UserRepository:
         await self.session.refresh(user)
         return user
 
-    async def update_avatar_url(self, username: str, url: URL):
+    async def update_avatar_url(self, username: str, url: URL) -> User:
         user = await self.get_user_by_username(username)
         user.avatar_url = url
         await self.session.commit()
@@ -82,6 +83,14 @@ class UserRepository:
         user.role_id = user_role.id
         await self.session.commit()
         await self.session.refresh(user)
+
+    async def get_user_posts_count(self, user_id):
+        query = select(func.count(Post.id)).where(Post.user_id == user_id)
+        result = await self.session.execute(query)
+        # print(f"lalalalal {res}")
+        return result.scalar()
+        # query = select(User).options(selectinload(User.role)).where(User.id == user_id)
+        # query = select(User).options(selectinload(User.posts)).where(User.id == user_id)
 
 
 class RoleRepository:
@@ -113,7 +122,7 @@ class TokenRepository:
         await self.session.commit()
         await self.session.refresh(new_tokens)
 
-    async def get_active_token(self, user_id, token):
+    async def get_active_token(self, user_id: int, token: str) -> str | None:
         query = select(Token).where(
             and_(Token.user_id == user_id),
             (Token.access_token == token),
@@ -122,12 +131,12 @@ class TokenRepository:
         result = await self.session.execute(query)
         return result.scalar_one_or_none()
 
-    async def get_user_tokens(self, user_id):
+    async def get_user_tokens(self, user_id: int) -> list:
         query = select(Token).where(Token.user_id == user_id)
         result = await self.session.execute(query)
         return result.scalars().all()
 
-    async def delete_tokens(self, expired_tokens):
+    async def delete_tokens(self, expired_tokens: list):
         query = select(Token).where(Token.id.in_(expired_tokens))
         result = await self.session.execute(query)
         result = result.scalars().all()
@@ -136,7 +145,7 @@ class TokenRepository:
                 await self.session.delete(record)
                 await self.session.commit()
 
-    async def deactivate_user_tokens(self, user_id):
+    async def deactivate_user_tokens(self, user_id: int):
         query = select(Token).where(Token.user_id == user_id)
         result = await self.session.execute(query)
         result = result.scalars().all()

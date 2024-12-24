@@ -28,7 +28,9 @@ class CommentRepository:
         await self.db.refresh(comment)
         return comment
 
-    async def edit_comment(self, comment_id: int, body: CommentBase, user: User) -> Comment:
+    async def edit_comment(
+        self, comment_id: int, body: CommentBase, user: User
+    ) -> Comment:
         """
         The edit_comment function allows a user to edit their own comment.
 
@@ -37,7 +39,9 @@ class CommentRepository:
         :param user: User: Get the user_id from the logged in user
         :return: Modified comment object
         """
-        stmt = select(Comment).filter(Comment.id == comment_id, Comment.user_id == user.id)
+        stmt = select(Comment).filter(
+            Comment.id == comment_id, Comment.user_id == user.id
+        )
         result = await self.db.execute(stmt)
         comment = result.scalar_one_or_none()
         if comment:
@@ -63,7 +67,9 @@ class CommentRepository:
             await self.db.commit()
         return comment
 
-    async def get_comment_by_post_all(self, post_id: int, limit: int, offset: int) -> list[Comment]:
+    async def get_comment_by_post_all(
+        self, post_id: int, limit: int, offset: int
+    ) -> list[Comment]:
         """
         The get_comment_by_post_all function returns all comments to a post from the database.
 

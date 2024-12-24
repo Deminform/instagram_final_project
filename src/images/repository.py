@@ -3,7 +3,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.images.models import EditedImage
 
 
-
 class ImageRepository:
     def __init__(self, db: AsyncSession):
         self.session = db
