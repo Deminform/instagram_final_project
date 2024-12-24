@@ -33,12 +33,10 @@ class PostRepository:
         post = await self.session.execute(stmt)
         return post.scalars().unique().one_or_none()
 
-
     async def delete_post(self, post: Post):
         await self.session.delete(post)
         await self.session.commit()
         return post
-
 
     async def update_post_description(self, post: Post, description: str):
         post.description = description

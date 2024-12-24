@@ -8,17 +8,23 @@ from pydantic import EmailStr
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from conf.config import app_config
-from conf.messages import FORBIDDEN, INCORRECT_CREDENTIALS, INVALID_TOKEN_DATA, USER_NOT_FOUND, BANNED
+from conf.messages import (
+    FORBIDDEN,
+    INCORRECT_CREDENTIALS,
+    INVALID_TOKEN_DATA,
+    USER_NOT_FOUND,
+    BANNED,
+)
 from database.db import get_db
 from src.users.models import User
 from src.users.repos import TokenRepository, UserRepository
 from src.users.schema import RoleEnum, TokenData
 
+
 class UnauthorizedException(HTTPException):
     def __init__(self, detail: str):
         super().__init__(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=INCORRECT_CREDENTIALS,
             headers={"WWW-Authenticate": "Bearer"},
         )
 
@@ -148,7 +154,8 @@ class AuthService:
         self.token_repository = TokenRepository(db)
 
     async def add_tokens_db(
-            self, user_id: int, access_token: str, refresh_token: str, status: bool):
+        self, user_id: int, access_token: str, refresh_token: str, status: bool
+    ):
         return await self.token_repository.add_tokens(
             user_id, access_token, refresh_token, status
         )
@@ -161,4 +168,3 @@ class AuthService:
 
     async def deactivate_user_tokens(self, user_id: int):
         return await self.token_repository.deactivate_user_tokens(user_id)
-

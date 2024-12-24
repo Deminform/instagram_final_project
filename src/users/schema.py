@@ -27,6 +27,7 @@ class UserResponse(UserBase):
     avatar_url: str
     id: int
     role_name: Optional[str] = None
+    post_count: Optional[int] = None
     is_confirmed: bool
     is_banned: bool
     created_at: datetime

@@ -12,7 +12,6 @@ class PostSchema(BaseModel):
     image_filter: str | None
 
 
-
 class PostResponseSchema(BaseModel):
     id: int
     image_url: str

@@ -1,8 +1,9 @@
-from sqlalchemy import and_, select
+from sqlalchemy import and_, select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from starlette.datastructures import URL
 
+from src.posts.models import Post
 from src.users.models import Role, Token, User
 from src.users.schema import RoleEnum, UserCreate, UserUpdate
 
@@ -82,6 +83,14 @@ class UserRepository:
         user.role_id = user_role.id
         await self.session.commit()
         await self.session.refresh(user)
+
+    async def get_user_posts_count(self, user_id):
+        query = select(func.count(Post.id)).where(Post.user_id == user_id)
+        result = await self.session.execute(query)
+        # print(f"lalalalal {res}")
+        return result.scalar()
+        # query = select(User).options(selectinload(User.role)).where(User.id == user_id)
+        # query = select(User).options(selectinload(User.posts)).where(User.id == user_id)
 
 
 class RoleRepository:
