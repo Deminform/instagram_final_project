@@ -31,7 +31,7 @@ class PostRepository:
     async def get_post_by_id(self, post_id: int):
         stmt = select(Post).where(Post.id == post_id)
         post = await self.session.execute(stmt)
-        return post.scalar_one_or_none()
+        return post.scalars().unique().one_or_none()
 
 
     async def delete_post(self, post: Post):

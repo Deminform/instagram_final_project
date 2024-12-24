@@ -19,4 +19,5 @@ FILTER_DICT = {
     "thumbnail": {"width": 150, "height": 150, "crop": "thumb"},
     "blur": {"effect": "blur:100"},
     "sepia": {"effect": "sepia"},
+    "crop": {"width": 800, "height": 1200, "crop": "fill"}
 }
