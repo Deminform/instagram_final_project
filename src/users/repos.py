@@ -87,10 +87,7 @@ class UserRepository:
     async def get_user_posts_count(self, user_id):
         query = select(func.count(Post.id)).where(Post.user_id == user_id)
         result = await self.session.execute(query)
-        # print(f"lalalalal {res}")
         return result.scalar()
-        # query = select(User).options(selectinload(User.role)).where(User.id == user_id)
-        # query = select(User).options(selectinload(User.posts)).where(User.id == user_id)
 
 
 class RoleRepository:
