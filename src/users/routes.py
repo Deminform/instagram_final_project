@@ -95,7 +95,7 @@ async def update_user_info(
     return user
 
 # ------------- ADMIN ROUTES -----------------------------------
-@router.post("/ban/{user_id}", status_code=status.HTTP_200_OK)
+@router.post("/{user_id}/ban", status_code=status.HTTP_200_OK)
 async def ban_user(
     user_id: int,
     current_user: User = Depends(RoleChecker([RoleEnum.ADMIN])),  # TODO Check admin permission
@@ -106,7 +106,7 @@ async def ban_user(
     return {"message": "Success"}
 
 
-@router.post("/unban/{user_id}", status_code=status.HTTP_200_OK)
+@router.post("/{user_id}/unban", status_code=status.HTTP_200_OK)
 async def ban_user(
     user_id: int,
     current_user: User = Depends(RoleChecker([RoleEnum.ADMIN])),  # TODO Check admin permission
@@ -117,7 +117,7 @@ async def ban_user(
     return {"message": "Success"}
 
 
-@router.patch("/role/{user_id}", status_code=status.HTTP_200_OK)
+@router.patch("/{user_id}/role", status_code=status.HTTP_200_OK)
 async def change_user_role(
     user_id: int,
     role: str,
