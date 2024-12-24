@@ -17,7 +17,7 @@ class PostService:
         self.qr_service = QRService
         self.post_repository = PostRepository(db)
 
-    async def _get_post_or_exception(self, post_id: int, user: User):
+    async def _get_post_or_exception(self, post_id: int, user: User = None):
         post = await self.post_repository.get_post_by_id(post_id)
         if not post:
             raise HTTPException(
@@ -56,7 +56,8 @@ class PostService:
         return post
 
     async def get_post_by_id(self, post_id: int):
-        return await self.post_repository.get_post_by_id(post_id)
+        post = await self._get_post_or_exception(post_id)
+        return post
 
     async def get_posts(self, limit: int, offset: int, keyword: str, tag: str):
         return await self.post_repository.get_posts(limit, offset, keyword, tag)

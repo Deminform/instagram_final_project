@@ -14,11 +14,6 @@ class TagService:
 
 
     async def get_or_create_tags(self, tags: set[str]):
-        if len(tags) > 5:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="Maximum number of tags is 5",
-            )
         tags_list = await self.tag_repository.get_tags_by_names(tags)
         existing_tag_names = {tag.name for tag in tags_list}
         not_existing_tag_names = [tag for tag in tags if tag not in existing_tag_names]

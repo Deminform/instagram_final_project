@@ -41,10 +41,6 @@ async def get_post_by_id(
 ):
     post_service = PostService(db)
     post = await post_service.get_post_by_id(post_id)
-    if post is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=messages.POST_NOT_FOUND
-        )
     return post
 
 
