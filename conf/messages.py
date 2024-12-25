@@ -1,3 +1,5 @@
+from conf import const
+
 ACCOUNT_EXIST = "Account already exists"
 INCORRECT_CREDENTIALS = "Incorrect username or password"
 EMAIL_NOT_CONFIRMED = "Email not confirmed"
@@ -21,11 +23,16 @@ DATABASE_IS_NOT_AVAILABLE = "Database is not available"
 DATABASE_IS_HEALTHY = "Database is healthy"
 DATA_INTEGRITY_ERROR = "Data integrity error."
 DATA_NOT_UNIQUE = "Data already exist."
-TAG_NUMBER_LIMIT="Maximum number of tags is 5"
-TAG_NAME_LIMIT="Maximum length of tag name is 30"
+TAG_NUMBER_LIMIT = f"Maximum number of tags is {const.TAG_NUMBER_LIMIT}"
+TAG_NAME_LIMIT = f"Maximum length of tag name is {const.TAG_MAX_LENGTH}"
+TAG_DESCRIPTION = f"Tags may be separated by commas, an example: 'tag1,tag2,tag3', up to {const.TAG_NUMBER_LIMIT} tags"
+IMAGE_FILTER_DESCRIPTION = "Image filter, an example: 'blur'"
+POST_DESCRIPTION = f"Post description, an example: 'This is a test post', minimum {const.POST_DESCRIPTION_MIN_LENGTH} character, up to {const.POST_DESCRIPTION_MAX_LENGTH} characters and can`t be empty"
 
 UPLOAD_IMAGE_ERROR = "Upload image failed"
 FILTER_IMAGE_ERROR = "Filter image failed"
+FILTER_IMAGE_ERROR_DETAIL = "Name of filter is incorrect"
+
 QR_NOT_FOUND = "QR code not found"
 
 NOT_COMMENT = "Comment not found or not available."

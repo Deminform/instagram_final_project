@@ -8,7 +8,6 @@ from src.images.qr_service import QRService
 from src.posts.repository import PostRepository
 from src.tags.tag_service import TagService
 from src.users.models import User
-from src.users.schema import RoleEnum
 
 
 class PostService:
@@ -33,17 +32,23 @@ class PostService:
         return post
 
 
-    async def create_post(
-        self, user: User, description: str, image_filter: str, tags: str, image: File
-    ):
+    async def create_post(self, user: User, description: str, image_filter: str, tags: str, image: File):
+        if const.POST_DESCRIPTION_MIN_LENGTH > len(description) or len(description) > const.POST_DESCRIPTION_MAX_LENGTH or not description:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=messages.POST_DESCRIPTION
+            )
+        if image_filter and image_filter not in const.FILTER_DICT:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=messages.FILTER_IMAGE_ERROR_DETAIL
+            )
         image_urls = await self.image_service.get_image_urls(image, image_filter)
         tags = await self.tag_service.check_and_format_tag(tags)
 
         try:
             tags = await self.tag_service.get_or_create_tags(tags)
-            post = await self.post_repository.create_post(
-                user, description, tags, image_urls
-            )
+            post = await self.post_repository.create_post(user, description, tags, image_urls)
 
             # if image_urls[const.EDITED_IMAGE_URL] != image_urls[const.ORIGINAL_IMAGE_URL]:
             #     await self.image_service.create_image(post.id, post.image_url, image_filter)

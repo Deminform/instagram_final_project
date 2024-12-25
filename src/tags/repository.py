@@ -11,8 +11,6 @@ class TagRepository:
     async def create_tag(self, tag_name: str):
         tag = Tag(name=tag_name)
         self.session.add(tag)
-        await self.session.commit()
-        await self.session.refresh(tag)
         return tag
 
     async def get_tags_by_names(self, tags_list: set[str]) -> set[Tag]:

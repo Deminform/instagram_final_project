@@ -10,7 +10,7 @@ from fastapi import (
 from fastapi import Depends, APIRouter
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from conf import messages
+from conf import messages, const
 from database.db import get_db
 from src.posts.post_service import PostService
 from src.posts.schemas import PostResponseSchema
@@ -22,12 +22,12 @@ router = APIRouter(prefix="/posts", tags=["posts"])
 
 @router.get("/", response_model=list[PostResponseSchema])
 async def get_posts(
-    limit: int = Query(10, ge=10, le=100),
-    offset: int = Query(0, ge=0),
-    tag: str = Query(None, description="Search by tags, partial match, case insensitive"),
-    keyword: str = Query(None, description="Search by description, partial match, case insensitive"),
-    db: AsyncSession = Depends(get_db),
-    user: User = Depends(get_current_user),
+        limit: int = Query(10, ge=10, le=100),
+        offset: int = Query(0, ge=0),
+        tag: str = Query(None, description="Search by tags, partial match, case insensitive"),
+        keyword: str = Query(None, description="Search by description, partial match, case insensitive"),
+        db: AsyncSession = Depends(get_db),
+        user: User = Depends(get_current_user),
 ):
     post_service = PostService(db)
     return await post_service.get_posts(limit, offset, keyword, tag)
@@ -35,9 +35,9 @@ async def get_posts(
 
 @router.get("/{post_id}", response_model=PostResponseSchema)
 async def get_post_by_id(
-    post_id: int,
-    db: AsyncSession = Depends(get_db),
-    user: User = Depends(get_current_user),
+        post_id: int,
+        db: AsyncSession = Depends(get_db),
+        user: User = Depends(get_current_user),
 ):
     post_service = PostService(db)
     post = await post_service.get_post_by_id(post_id)
@@ -46,12 +46,17 @@ async def get_post_by_id(
 
 @router.post("/", response_model=PostResponseSchema, status_code=status.HTTP_201_CREATED)
 async def create_post(
-    description: str = Form(...),
-    image_filter: str | None = Form(None),
-    tags: str = Form(None, description="Tags may be separated by commas, an example: 'tag1,tag2,tag3', up to 5 tags"),
-    image: UploadFile = File(...),
-    db: AsyncSession = Depends(get_db),
-    user: User = Depends(get_current_user),
+        description: str = Form(...,
+            min_length=const.POST_DESCRIPTION_MIN_LENGTH,
+            max_length=const.POST_DESCRIPTION_MAX_LENGTH,
+            description=messages.POST_DESCRIPTION
+),
+        image_filter: str | None = Form(None),
+        tags: str = Form(None,
+                         description=messages.TAG_DESCRIPTION),
+        image: UploadFile = File(...),
+        db: AsyncSession = Depends(get_db),
+        user: User = Depends(get_current_user),
 ):
     post_service = PostService(db)
     post = await post_service.create_post(user, description, image_filter, tags, image)
@@ -60,12 +65,12 @@ async def create_post(
 
 @router.post("/{post_id}/qr", response_model=PostResponseSchema, status_code=status.HTTP_201_CREATED)
 async def create_qr(
-    post_id: int,
-    image_filter: str | None = Query(
-        None, description="Image filter, an example: 'blur'"
-    ),
-    db: AsyncSession = Depends(get_db),
-    user: User = Depends(get_current_user),
+        post_id: int,
+        image_filter: str | None = Query(
+            None, description=messages.IMAGE_FILTER_DESCRIPTION
+        ),
+        db: AsyncSession = Depends(get_db),
+        user: User = Depends(get_current_user),
 ):
     post_service = PostService(db)
     image_qr = await post_service.create_qr(post_id, image_filter)
@@ -74,10 +79,10 @@ async def create_qr(
 
 @router.put("/{post_id}", response_model=PostResponseSchema)
 async def edit_post(
-    post_id: int,
-    description: str,
-    db: AsyncSession = Depends(get_db),
-    user: User = Depends(get_current_user),
+        post_id: int,
+        description: str,
+        db: AsyncSession = Depends(get_db),
+        user: User = Depends(get_current_user),
 ):
     post_service = PostService(db)
     post = await post_service.update_post_description(user, post_id, description)
@@ -86,9 +91,9 @@ async def edit_post(
 
 @router.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_post(
-    post_id: int,
-    db: AsyncSession = Depends(get_db),
-    user: User = Depends(get_current_user),
+        post_id: int,
+        db: AsyncSession = Depends(get_db),
+        user: User = Depends(get_current_user),
 ):
     post_service = PostService(db)
     post = await post_service.delete_post(user, post_id)
