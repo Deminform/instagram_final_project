@@ -24,6 +24,5 @@ class Post(Base):
         "Tag",
         secondary="post_tag",
         backref="posts",
-        lazy="joined",
-        cascade="all, delete"
+        lazy="joined"
     )
