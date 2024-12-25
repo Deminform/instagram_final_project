@@ -17,7 +17,7 @@ class PostRepository:
         conditions = []
 
         if tag:
-            conditions.append(Post.tags.any(Tag.name == tag))
+            conditions.append(Post.tags.any(Tag.name.ilike(f"%{tag}%")))
         if keyword:
             conditions.append(Post.description.ilike(f"%{keyword}%"))
         if conditions:

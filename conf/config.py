@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     # JWT Key --------------------------------------------------------------------------------------
     JWT_SECRET_KEY: str = "0123a654b987c"
     ALGORITHM: str = "HS256"
-    TOKEN_LIFETIME: int = 15  # Minutes
+    TOKEN_LIFETIME: int = 60  # Minutes
     REFRESH_TOKEN_LIFETIME: int = 7  # Days
 
     # Redis --------------------------------------------------------------------------------------
