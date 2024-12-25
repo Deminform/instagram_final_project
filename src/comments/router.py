@@ -16,7 +16,7 @@ from src.services.auth.auth_service import RoleChecker
 router = APIRouter(prefix="/comments", tags=["comments"])
 
 
-@router.post("/{post_id}", response_model=CommentResponse)
+@router.post("/", response_model=CommentResponse)
 async def add_comment(
     post_id: int,
     body: CommentBase,
@@ -41,21 +41,20 @@ async def edit_comment(
 @router.delete(
     "/{comment_id}",
     status_code=status.HTTP_204_NO_CONTENT,
-    # dependencies=[
-    #     Depends(RoleChecker([RoleEnum.MODER, RoleEnum.ADMIN])),
-    # ],
+    dependencies=[
+        Depends(RoleChecker([RoleEnum.MODER, RoleEnum.ADMIN])),
+    ],
 )
 async def delete_comment(
     comment_id: int = Path(ge=1),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(auth_service.get_current_user),
 ):
-
     comment_service = CommentServices(db)
     return await comment_service.delete_comment(comment_id)
 
 
-@router.get("/all/{post_id}", response_model=list[CommentUpdateResponse])
+@router.get("/", response_model=list[CommentUpdateResponse])
 async def get_comment_by_post_all(
     post_id: int,
     limit: int = Query(10, ge=10, le=500),
@@ -63,12 +62,11 @@ async def get_comment_by_post_all(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(auth_service.get_current_user),
 ):
-
     comment_service = CommentServices(db)
     return await comment_service.get_comment_by_post_all(post_id, limit, offset)
 
 
-@router.get("/user/{post_id}", response_model=list[CommentUpdateResponse])
+@router.get("/{post_id}/user", response_model=list[CommentUpdateResponse])
 async def get_comment_by_post_user(
     post_id: int,
     limit: int = Query(10, ge=10, le=500),
@@ -76,19 +74,16 @@ async def get_comment_by_post_user(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(auth_service.get_current_user),
 ):
-
     comment_service = CommentServices(db)
-    return await comment_service.get_comment_by_post_user(
-        post_id, limit, offset, current_user
-    )
+    return await comment_service.get_comment_by_post_user(post_id, limit, offset, current_user)
 
 
 @router.get(
-    "/author/{post_id}/{user_id}",
+    "/{post_id}/{user_id}/admin",
     response_model=list[CommentUpdateResponse],
-    # dependencies=[
-    #     Depends(RoleChecker([RoleEnum.MODER, RoleEnum.ADMIN])),
-    # ],
+    dependencies=[
+        Depends(RoleChecker([RoleEnum.MODER, RoleEnum.ADMIN])),
+    ],
 )
 async def get_comment_by_post_author(
     post_id: int,
@@ -98,8 +93,5 @@ async def get_comment_by_post_author(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(auth_service.get_current_user),
 ):
-
     comment_service = CommentServices(db)
-    return await comment_service.get_comment_by_post_author(
-        post_id, user_id, limit, offset
-    )
+    return await comment_service.get_comment_by_post_author(post_id, user_id, limit, offset)
