@@ -33,16 +33,9 @@ class PostService:
 
 
     async def create_post(self, user: User, description: str, image_filter: str, tags: str, image: File):
-        if const.POST_DESCRIPTION_MIN_LENGTH > len(description) or len(description) > const.POST_DESCRIPTION_MAX_LENGTH or not description:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=messages.POST_DESCRIPTION
-            )
-        if image_filter and image_filter not in const.FILTER_DICT:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=messages.FILTER_IMAGE_ERROR_DETAIL
-            )
+        await self.check_description(description)
+        await self.check_image_filter(image_filter)
+
         image_urls = await self.image_service.get_image_urls(image, image_filter)
         tags = await self.tag_service.check_and_format_tag(tags)
 
@@ -72,6 +65,7 @@ class PostService:
 
 
     async def update_post_description(self, user, post_id: int, description: str):
+        await self.check_description(description)
         post = await self._get_post_or_exception(post_id, user)
         return await self.post_repository.update_post_description(post, description)
 
@@ -84,3 +78,21 @@ class PostService:
     async def create_qr(self, post_id: int, image_filter: str):
         post = await self.post_repository.get_post_by_id(post_id)
         # return await self.qr_service(post.id, post.original_image_url, image_filter)
+
+
+    @staticmethod
+    async def check_description(description):
+        if const.POST_DESCRIPTION_MIN_LENGTH > len(description) or len(description) > const.POST_DESCRIPTION_MAX_LENGTH or not description:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=messages.POST_DESCRIPTION
+            )
+
+
+    @staticmethod
+    async def check_image_filter(image_filter):
+        if image_filter and image_filter not in const.FILTER_DICT:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=messages.FILTER_IMAGE_ERROR_DETAIL
+            )
