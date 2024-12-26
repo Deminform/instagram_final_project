@@ -1,4 +1,4 @@
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, UploadFile
 from libgravatar import Gravatar
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,6 +15,7 @@ from src.services.auth.auth_service import Hash
 from src.users.models import User
 from src.users.repos import RoleRepository, TokenRepository, UserRepository
 from src.users.schema import RoleEnum, UserCreate, UserUpdate
+from src.services.cloudinary_service import CloudinaryService
 
 
 def _handle_integrity_error(e: IntegrityError):
@@ -35,6 +36,7 @@ class UserService:
         self.user_repository = UserRepository(db)
         self.role_repository = RoleRepository(db)
         self.token_repository = TokenRepository(db)
+        self.cloudinary_service = CloudinaryService()
 
     async def create_user(self, user_create: UserCreate) -> User:
         avatar = None
@@ -73,8 +75,9 @@ class UserService:
         except IntegrityError as e:
             _handle_integrity_error(e)
 
-    async def update_avatar(self, username: str, url: URL):
-        return await self.user_repository.update_avatar_url(username, url)
+    async def update_avatar(self, username: str, avatar_file: UploadFile):
+        avatar_url = await self.cloudinary_service.get_avatar_url(avatar_file, username)
+        return await self.user_repository.update_avatar_url(username, avatar_url)
 
     # -------ADMIN ENDPOINTS-------
 
