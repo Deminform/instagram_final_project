@@ -8,11 +8,13 @@ from src.images.qr_service import QRService
 from src.posts.repository import PostRepository
 from src.tags.tag_service import TagService
 from src.users.models import User
+from src.services.cloudinary_service import CloudinaryService
 
 
 class PostService:
     def __init__(self, db: AsyncSession):
         self.image_service = ImageService(db)
+        self.cloudinary_service = CloudinaryService
         self.tag_service = TagService(db)
         self.qr_service = QRService
         self.post_repository = PostRepository(db)
@@ -36,15 +38,15 @@ class PostService:
         await self.check_description(description)
         await self.check_image_filter(image_filter)
 
-        image_urls = await self.image_service.get_image_urls(image, image_filter)
+        image_urls = await self.cloudinary_service.get_image_urls(image, image_filter)
         tags = await self.tag_service.check_and_format_tag(tags)
 
         try:
             tags = await self.tag_service.get_or_create_tags(tags)
             post = await self.post_repository.create_post(user, description, tags, image_urls)
 
-            # if image_urls[const.EDITED_IMAGE_URL] != image_urls[const.ORIGINAL_IMAGE_URL]:
-            #     await self.image_service.create_image(post.id, post.image_url, image_filter)
+            if image_urls[const.EDITED_IMAGE_URL] != image_urls[const.ORIGINAL_IMAGE_URL]:
+                await self.image_service.create_image(post.id, post.image_url, image_filter)
 
         except IntegrityError as e:
             await self.post_repository.session.rollback()

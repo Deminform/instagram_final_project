@@ -72,28 +72,8 @@ async def update_user_info(
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),
 ) -> User:
-    cloudinary.config(
-        cloud_name=app_config.CLOUDINARY_NAME,
-        api_key=app_config.CLOUDINARY_API_KEY,
-        api_secret=app_config.CLOUDINARY_API_SECRET,
-        secure=True,
-    )
-
-    r = cloudinary.uploader.upload(
-        file.file, public_id=f"Inst_project/{current_user.username}", overwrite=True
-    )
-
-    src_url = cloudinary.CloudinaryImage(
-        f"Inst_project/{current_user.username}"
-    ).build_url(
-        width=250,
-        height=250,
-        crop="fill",
-        version=r.get("version"),
-        format=r.get("format"),
-    )
     user_service = UserService(db)
-    user = await user_service.update_avatar(current_user.username, src_url)
+    user = await user_service.update_avatar(current_user.username, file)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail=USER_NOT_FOUND
