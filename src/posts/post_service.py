@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from conf import messages, const
 from src.images.image_service import ImageService
-from src.images.qr_service import QRService
+from src.services.qr_service import QRService
 from src.posts.repository import PostRepository
 from src.tags.tag_service import TagService
 from src.users.models import User
@@ -78,8 +78,9 @@ class PostService:
 
 
     async def create_qr(self, post_id: int, image_filter: str):
-        post = await self.post_repository.get_post_by_id(post_id)
-        # return await self.qr_service(post.id, post.original_image_url, image_filter)
+        await self.check_image_filter(image_filter)
+        post = await self._get_post_or_exception(post_id)
+        return await self.image_service.generate_qr(post.id, post.original_image_url, image_filter)
 
 
     @staticmethod

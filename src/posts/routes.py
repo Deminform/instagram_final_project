@@ -8,6 +8,7 @@ from fastapi import (
 )
 
 from fastapi import Depends, APIRouter
+from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from conf import messages, const
@@ -62,7 +63,7 @@ async def create_post(
     return post
 
 
-@router.post("/{post_id}/qr", response_model=PostResponseSchema, status_code=status.HTTP_201_CREATED)
+@router.post("/{post_id}/qr", status_code=status.HTTP_201_CREATED)
 async def create_qr(
         post_id: int,
         image_filter: str | None = Query(
@@ -73,7 +74,7 @@ async def create_qr(
 ):
     post_service = PostService(db)
     image_qr = await post_service.create_qr(post_id, image_filter)
-    return image_qr
+    return StreamingResponse(image_qr, media_type="image/png")
 
 
 @router.put("/{post_id}", response_model=PostResponseSchema)

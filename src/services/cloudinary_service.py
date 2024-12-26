@@ -19,6 +19,17 @@ cloudinary.config(
 class CloudinaryService:
 
     @staticmethod
+    async def apply_filter(original_image_url, filter_name: str):
+        edited_image_url, options = cloudinary_url(
+            original_image_url,
+            transformation=[
+                FILTER_DICT.get(filter_name),
+                FILTER_DICT.get("crop"),
+            ],
+        )
+        return edited_image_url
+
+    @staticmethod
     async def get_image_urls(image_file: UploadFile, image_filter: str = None):
         links_dict = {}
         unique_filename = uuid.uuid4().hex
@@ -33,13 +44,8 @@ class CloudinaryService:
             links_dict[const.ORIGINAL_IMAGE_URL] = original_image_url["secure_url"]
 
             if image_filter:
-                edited_image_url, options = cloudinary_url(
-                    original_image_url["public_id"],
-                    transformation=[
-                        FILTER_DICT.get(image_filter),
-                        FILTER_DICT.get("crop"),
-                    ],
-                )
+                edited_image_url = await CloudinaryService.apply_filter(original_image_url, image_filter)
+
                 links_dict[const.EDITED_IMAGE_URL] = edited_image_url
             else:
                 links_dict[const.ORIGINAL_IMAGE_URL] = original_image_url["secure_url"]
@@ -51,6 +57,7 @@ class CloudinaryService:
                 detail=f"{messages.UPLOAD_IMAGE_ERROR} -//- {e}",
             )
         return links_dict
+
 
     @staticmethod
     async def get_avatar_url(avatar_file: UploadFile, username):
