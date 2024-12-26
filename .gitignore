@@ -23,7 +23,7 @@ venv.bak/
 postgres-data/
 
 # Poetry
-# poetry.lock
+poetry.lock
 
 # PyCharm
 .idea/

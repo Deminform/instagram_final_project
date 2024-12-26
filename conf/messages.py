@@ -31,7 +31,7 @@ POST_DESCRIPTION = f"Post description, an example: 'This is a test post', minimu
 
 UPLOAD_IMAGE_ERROR = "Upload image failed"
 FILTER_IMAGE_ERROR = "Filter image failed"
-FILTER_IMAGE_ERROR_DETAIL = "Name of filter is incorrect"
+FILTER_IMAGE_ERROR_DETAIL = "Filter name is incorrect"
 
 QR_NOT_FOUND = "QR code not found"
 
