@@ -73,6 +73,11 @@ class UserRepository:
         await self.session.refresh(user)
         return user
 
+    async def get_user_posts_count(self, user_id):
+        query = select(func.count(Post.id)).where(Post.user_id == user_id)
+        result = await self.session.execute(query)
+        return result.scalar()
+
     async def ban_user(self, user: User):
         user.is_banned = True
         await self.session.commit()
@@ -88,10 +93,6 @@ class UserRepository:
         await self.session.commit()
         await self.session.refresh(user)
 
-    async def get_user_posts_count(self, user_id):
-        query = select(func.count(Post.id)).where(Post.user_id == user_id)
-        result = await self.session.execute(query)
-        return result.scalar()
 
 
 class RoleRepository:
