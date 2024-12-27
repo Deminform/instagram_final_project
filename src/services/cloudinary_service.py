@@ -44,8 +44,7 @@ class CloudinaryService:
             links_dict[const.ORIGINAL_IMAGE_URL] = original_image_url["secure_url"]
 
             if image_filter:
-                edited_image_url = await CloudinaryService.apply_filter(original_image_url, image_filter)
-
+                edited_image_url = await CloudinaryService.apply_filter(original_image_url["secure_url"], image_filter)
                 links_dict[const.EDITED_IMAGE_URL] = edited_image_url
             else:
                 links_dict[const.ORIGINAL_IMAGE_URL] = original_image_url["secure_url"]
