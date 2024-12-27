@@ -39,7 +39,7 @@ async def lifespan(fastapi_app: FastAPI):
     await redis.close()
 
 
-app = FastAPI(title="Contact Application", lifespan=lifespan)
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,

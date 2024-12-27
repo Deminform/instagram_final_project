@@ -13,7 +13,9 @@ from conf.config import Base, app_config
 from database.db import get_db
 from src.users.schemas import RoleEnum
 
-TEST_DB_URL = app_config.DATABASE_TEST_URL
+
+TEST_DB_URL = "GBPLTW"
+print("DATABASE_TEST_URL:", TEST_DB_URL)
 engine = create_async_engine(TEST_DB_URL, echo=True)
 AsyncSessionLocal = async_sessionmaker(
     autocommit=False,

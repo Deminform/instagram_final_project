@@ -10,6 +10,11 @@ class Base(DeclarativeBase):
 
 
 class Settings(BaseSettings):
+    # # Database settings -----------------------------------------------------------------------------
+    # POSTGRES_TEST_DB: str = "test_db"
+    # DATABASE_TEST_URL: str = "postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_TEST_DB}"
+
+
     # Database settings -----------------------------------------------------------------------------
     POSTGRES_USER: str = "username"
     POSTGRES_PASSWORD: str = "9876543210"
@@ -57,9 +62,6 @@ class Settings(BaseSettings):
     TEMP_CODE_LIFETIME: int = 15  # minutes
 
     BASE_DIR: Path | None = Path(__file__).parent.parent
-
-    # Test database
-    DATABASE_TEST_URL: str
 
     @field_validator("ALGORITHM")
     @classmethod
