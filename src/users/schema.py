@@ -32,7 +32,7 @@ class UserResponse(UserBase):
     is_banned: bool
     created_at: datetime
 
-    class Config:
+    class ConfigDict:
         from_attributes = True
 
 
