@@ -9,7 +9,7 @@ from conf.messages import USER_NOT_FOUND
 from database.db import get_db
 from src.services.auth.auth_service import RoleChecker, get_current_user
 from src.users.models import User
-from src.users.schema import RoleEnum, UserResponse, UserUpdate
+from src.users.schemas import RoleEnum, UserResponse, UserUpdate
 from src.users.users_service import UserService
 
 router = APIRouter(prefix="/users", tags=["users"])

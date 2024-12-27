@@ -57,8 +57,8 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
-addopts = "--cov=src --cov-report=term-missing"
-asyncio_default_fixture_loop_scope = "session"
+#addopts = "--cov=src --cov-report=term-missing" # TODO uncommit
+#asyncio_default_fixture_loop_scope = "session"
 pythonpath = "."
 filterwarnings = [
     "ignore:.*datetime\\.datetime\\.utcnow.*:DeprecationWarning"

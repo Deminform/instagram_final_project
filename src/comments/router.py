@@ -9,7 +9,7 @@ from src.services.auth import auth_service
 from src.comments.schema import CommentResponse, CommentUpdateResponse, CommentBase
 from src.comments.comments_services import CommentServices
 
-from src.users.schema import RoleEnum
+from src.users.schemas import RoleEnum
 from src.services.auth.auth_service import RoleChecker
 
 

@@ -1,6 +1,5 @@
 from fastapi import (
     Query,
-    HTTPException,
     status,
     UploadFile,
     File,

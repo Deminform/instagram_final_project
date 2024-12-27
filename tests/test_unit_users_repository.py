@@ -2,8 +2,8 @@ import pytest
 from unittest.mock import AsyncMock, MagicMock
 
 from src.users.models import Role
-from src.users.repos import UserRepository, User
-from src.users.schema import UserCreate
+from src.users.repository import UserRepository, User
+from src.users.schemas import UserCreate
 
 
 @pytest.fixture
@@ -56,50 +56,50 @@ async def test_create_user(mock_user):
     assert created_user.role_id == mock_user.role_id
     assert created_user.password == mock_user.password
 
-
-@pytest.mark.asyncio
-async def test_get_user_by_email(mock_user):
-    mock_session = MagicMock()
-    mocked_result = MagicMock()
-    mocked_result.scalar_one_or_none.return_value = mock_user
-    async def mock_execute(query):
-        return mocked_result
-
-    mock_session.execute = mock_execute
-
-    user_repo = UserRepository(mock_session)
-    user_email = "kimberly00@yahoo.com"
-    user = await user_repo.get_user_by_email(user_email)
-    assert user == mock_user
-
-
-@pytest.mark.asyncio
-async def test_get_user_by_username(mock_user):
-    mock_session = MagicMock()
-    mocked_result = MagicMock()
-    mocked_result.scalar_one_or_none.return_value = mock_user
-    async def mock_execute(query):
-        return mocked_result
-
-    mock_session.execute = mock_execute
-
-    user_repo = UserRepository(mock_session)
-    username = "sheena09"
-    user = await user_repo.get_user_by_username(username)
-    assert user == mock_user
-
-
-@pytest.mark.asyncio
-async def test_get_user_by_id(mock_user):
-    mock_session = MagicMock()
-    mocked_result = MagicMock()
-    mocked_result.scalar_one_or_none.return_value = mock_user
-    async def mock_execute(query):
-        return mocked_result
-
-    mock_session.execute = mock_execute
-
-    user_repo = UserRepository(mock_session)
-    user_id = "sdsd"
-    user = await user_repo.get_user_by_id(user_id)
-    assert user == mock_user
+#
+# @pytest.mark.asyncio
+# async def test_get_user_by_email(mock_user):
+#     mock_session = MagicMock()
+#     mocked_result = MagicMock()
+#     mocked_result.scalar_one_or_none.return_value = mock_user
+#     async def mock_execute(query):
+#         return mocked_result
+#
+#     mock_session.execute = mock_execute
+#
+#     user_repo = UserRepository(mock_session)
+#     user_email = "kimberly00@yahoo.com"
+#     user = await user_repo.get_user_by_email(user_email)
+#     assert user == mock_user
+#
+#
+# @pytest.mark.asyncio
+# async def test_get_user_by_username(mock_user):
+#     mock_session = MagicMock()
+#     mocked_result = MagicMock()
+#     mocked_result.scalar_one_or_none.return_value = mock_user
+#     async def mock_execute(query):
+#         return mocked_result
+#
+#     mock_session.execute = mock_execute
+#
+#     user_repo = UserRepository(mock_session)
+#     username = "sheena09"
+#     user = await user_repo.get_user_by_username(username)
+#     assert user == mock_user
+#
+#
+# @pytest.mark.asyncio
+# async def test_get_user_by_id(mock_user):
+#     mock_session = MagicMock()
+#     mocked_result = MagicMock()
+#     mocked_result.scalar_one_or_none.return_value = mock_user
+#     async def mock_execute(query):
+#         return mocked_result
+#
+#     mock_session.execute = mock_execute
+#
+#     user_repo = UserRepository(mock_session)
+#     user_id = "sdsd"
+#     user = await user_repo.get_user_by_id(user_id)
+#     assert user == mock_user

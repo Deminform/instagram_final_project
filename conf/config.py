@@ -58,6 +58,9 @@ class Settings(BaseSettings):
 
     BASE_DIR: Path | None = Path(__file__).parent.parent
 
+    # Test database
+    DATABASE_TEST_URL: str
+
     @field_validator("ALGORITHM")
     @classmethod
     def validate_algorithm(cls, v):

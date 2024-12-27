@@ -13,8 +13,8 @@ from conf.messages import (
 )
 from src.services.auth.auth_service import Hash
 from src.users.models import User
-from src.users.repos import RoleRepository, TokenRepository, UserRepository
-from src.users.schema import RoleEnum, UserCreate, UserUpdate
+from src.users.repository import RoleRepository, TokenRepository, UserRepository
+from src.users.schemas import RoleEnum, UserCreate, UserUpdate
 from src.services.cloudinary_service import CloudinaryService
 
 
