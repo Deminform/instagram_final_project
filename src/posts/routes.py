@@ -18,7 +18,20 @@ from src.services.auth.auth_service import get_current_user
 from src.users.models import User
 
 router = APIRouter(prefix="/posts", tags=["posts"])
+router_admin = APIRouter(prefix="/admin/posts", tags=["posts"])
 
+
+@router_admin.get("/", response_model=list[PostResponseSchema])
+async def get_posts(
+        limit: int = Query(10, ge=10, le=100),
+        offset: int = Query(0, ge=0),
+        tag: str = Query(None, description="Search by tags, partial match, case insensitive"),
+        keyword: str = Query(None, description="Search by description, partial match, case insensitive"),
+        db: AsyncSession = Depends(get_db),
+        user: User = Depends(get_current_user),
+):
+    post_service = PostService(db)
+    return await post_service.get_posts(limit, offset, keyword, tag)
 
 @router.get("/", response_model=list[PostResponseSchema])
 async def get_posts(
