@@ -55,7 +55,6 @@ app.include_router(auth_router, prefix="/api")
 app.include_router(posts_router, prefix="/api")
 app.include_router(posts_router_admin, prefix="/api")
 app.include_router(users_router, prefix="/api")
-app.include_router(users_router_admin, prefix="/api")
 app.include_router(scores_router, prefix="/api")
 app.include_router(comment_router, prefix="/api")
 
