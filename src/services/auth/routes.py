@@ -27,7 +27,7 @@ from src.services.auth.auth_service import (
 )
 from src.services.auth.mail_utils import send_verification_email
 from src.users.models import User
-from src.users.schema import Token, UserCreate, UserResponse
+from src.users.schemas import Token, UserCreate, UserResponse
 from src.users.users_service import UserService
 
 router = APIRouter(prefix="/auth", tags=["auth"])

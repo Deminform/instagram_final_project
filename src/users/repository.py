@@ -5,7 +5,7 @@ from starlette.datastructures import URL
 
 from src.posts.models import Post
 from src.users.models import Role, Token, User
-from src.users.schema import RoleEnum, UserCreate, UserUpdate
+from src.users.schemas import RoleEnum, UserCreate, UserUpdate
 
 
 class UserRepository:

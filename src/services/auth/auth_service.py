@@ -17,8 +17,8 @@ from conf.messages import (
 )
 from database.db import get_db
 from src.users.models import User
-from src.users.repos import TokenRepository, UserRepository
-from src.users.schema import RoleEnum, TokenData
+from src.users.repository import TokenRepository, UserRepository
+from src.users.schemas import RoleEnum, TokenData
 
 
 class UnauthorizedException(HTTPException):
