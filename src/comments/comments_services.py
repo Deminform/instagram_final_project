@@ -2,20 +2,20 @@ from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from conf import messages
+from src.posts.repository import PostRepository
 from src.users.models import User
 from src.comments.models import Comment
 from src.comments.schema import CommentBase
 from src.comments.repository import CommentRepository
-from src.posts.post_service import PostService
 
 
 class CommentService:
     def __init__(self, db: AsyncSession):
         self.comment_repository = CommentRepository(db)
-        self.services_post = PostService(db)
+        self.post_repository = PostRepository(db)
 
     async def add_comment(self, post_id: int, body: CommentBase, user: User) -> Comment:
-        post = await self.services_post.get_post_by_id(post_id)
+        post = await self.post_repository.get_post_by_id(post_id)
         if post:
             return await self.comment_repository.add_comment(post_id, body, user)
 

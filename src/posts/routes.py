@@ -66,14 +66,12 @@ async def create_post(
 @router.post("/{post_id}/qr", status_code=status.HTTP_201_CREATED)
 async def create_qr(
         post_id: int,
-        image_filter: str | None = Query(
-            None, description=messages.IMAGE_FILTER_DESCRIPTION
-        ),
+        image_filter: str = Query(..., description=messages.IMAGE_FILTER_DESCRIPTION),
         db: AsyncSession = Depends(get_db),
         user: User = Depends(get_current_user),
 ):
     post_service = PostService(db)
-    image_qr = await post_service.create_qr(post_id, image_filter)
+    image_qr = await post_service.create_qr(user, post_id, image_filter)
     return StreamingResponse(image_qr, media_type="image/png")
 
 
