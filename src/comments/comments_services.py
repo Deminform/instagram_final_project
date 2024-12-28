@@ -31,6 +31,12 @@ class CommentServices:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.NOT_COMMENT)
         return comment
 
+    async def delete_comment_by_post(self, pist_id: int):
+        deleted_count = await self.comment_repository.delete_comment_by_post(pist_id)
+        if deleted_count == 0:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.NOT_COMMENT)
+        return {"message": f"Deleted {deleted_count} comments"}
+
     async def get_comment_by_post_all(self, post_id: int, limit: int, offset: int) -> list[Comment]:
         comment = await self.comment_repository.get_comment_by_post_all(post_id, limit, offset)
         return comment
