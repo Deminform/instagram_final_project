@@ -9,9 +9,9 @@ from fastapi_limiter import FastAPILimiter
 from redis import asyncio as aioredis
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
-
-
 from fastapi.responses import HTMLResponse
+
+
 from conf.config import app_config
 from src.services import healthchecker
 from src.services.auth.routes import router as auth_router
@@ -39,7 +39,7 @@ async def lifespan(fastapi_app: FastAPI):
     await redis.close()
 
 
-app = FastAPI(title="Contact Application", lifespan=lifespan)
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
