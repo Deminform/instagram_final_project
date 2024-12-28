@@ -1,15 +1,32 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.services.auth.auth_service import get_current_user
+from src.users.schema import UserResponse, RoleEnum
 from src.scores.schemas import ScoreCreate, ScoreUpdate, Score, AverageScore
 from database.db import get_db
 from src.scores.score_service import ScoreService
+
 
 router = APIRouter(prefix="/scores", tags=["Scores"])
 
 def get_score_service(db: AsyncSession = Depends(get_db)) -> ScoreService:
     """Dependency for getting ScoreService instance."""
     return ScoreService(db)
+
+def is_admin_or_moderator(user: UserResponse):
+    """
+    Check if the user has admin or moderator privilages.
+
+    :param user: UserResponse - user information including role.
+    :return: True if user is admin or moderator,otherwise raise HTTPException.
+    """
+    if user.role_name not in {RoleEnum.ADMIN.value, RoleEnum.MODER.value}:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not have permission to perform this action"
+        )
+    return True
 
 
 @router.get("/{score_id}", response_model=Score)
@@ -51,7 +68,12 @@ async def update_existing_score(
 
 
 @router.delete("/{score_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_existing_score(score_id: int, service: ScoreService = Depends(get_score_service)):
+async def delete_existing_score(
+    score_id: int, 
+    current_user: UserResponse = Depends(get_current_user),
+    service: ScoreService = Depends(get_score_service)
+):
+    is_admin_or_moderator(current_user)
     await service.delete_existing_score(score_id)
     return {"message": "Score deleted successfully"}
 

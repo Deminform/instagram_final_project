@@ -9,9 +9,11 @@ from src.scores.repository import (
     create_score,
     update_score,
     delete_score,
-    get_average_score_by_post_id
+    get_average_score_by_post_id,
+    score_exists
 )
 from src.scores.schemas import ScoreCreate, ScoreUpdate
+from src.posts.repository import PostRepository
 
 
 class ScoreService:
@@ -59,6 +61,18 @@ class ScoreService:
         :param score_data: ScoreCreate - data for creating a score.
         :return: created score.
         """
+        if await score_exists(self.db, score_data.user_id, score_data.post_id):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="User has already scored this post"
+            )
+        
+        post = await PostRepository.get_post_by_id(self.db, score_data.post_id)
+        if post.user_id == score_data.user_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Users cannot score their posts"
+            )
         return await create_score(self.db, score_data)
     
     async def update_existing_score(self, score_id: int, score_data: ScoreUpdate):
@@ -68,7 +82,7 @@ class ScoreService:
         :param score_data: ScoreUpdate - new data for update.
         :return: updated score or HTTP 404 exception.
         """
-        return await update_score(self.db, score_id, score_data.score)
+        return await update_score(self.db, score_id, score_data)
     
     async def delete_existing_score(self, score_id: int):
         """

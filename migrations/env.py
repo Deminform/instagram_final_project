@@ -7,6 +7,13 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 
+from src.comments.models import Comment
+from src.images.models import Image
+from src.tags.models import Tag
+from src.scores.models import Score
+from src.users.models import User, Role
+from src.posts.models import Post, PostTag
+
 from conf.config import app_config
 from conf.config import Base
 

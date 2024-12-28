@@ -64,3 +64,10 @@ async def get_average_score_by_post_id(db: AsyncSession, post_id: int):
     result = await db.execute(stmt)
     average_score = result.scalar_one_or_none()
     return average_score
+
+
+async def score_exists(db: AsyncSession, user_id: int, post_id: int):
+    stmt = select(Score).where(Score.user_id == user_id, 
+                               Score.post_id == post_id)
+    result = await db.execute(stmt)
+    return result.scalar_one_or_none() is not None
