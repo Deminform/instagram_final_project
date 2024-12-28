@@ -7,7 +7,7 @@ from src.users.models import User
 from conf import messages
 from src.services.auth import auth_service
 from src.comments.schema import CommentResponse, CommentUpdateResponse, CommentBase, MessageResponse
-from src.comments.comments_services import CommentServices
+from src.comments.comments_services import CommentService
 
 from src.users.schemas import RoleEnum
 from src.services.auth.auth_service import RoleChecker
@@ -23,7 +23,7 @@ async def add_comment(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(auth_service.get_current_user),
 ):
-    comment_service = CommentServices(db)
+    comment_service = CommentService(db)
     return await comment_service.add_comment(post_id, body, current_user)
 
 
@@ -34,7 +34,7 @@ async def edit_comment(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(auth_service.get_current_user),
 ):
-    comment_service = CommentServices(db)
+    comment_service = CommentService(db)
     return await comment_service.edit_comment(comment_id, body, current_user)
 
 
@@ -50,7 +50,7 @@ async def delete_comment(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(auth_service.get_current_user),
 ):
-    comment_service = CommentServices(db)
+    comment_service = CommentService(db)
     return await comment_service.delete_comment(comment_id)
 
 
@@ -62,7 +62,7 @@ async def get_comment_by_post_all(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(auth_service.get_current_user),
 ):
-    comment_service = CommentServices(db)
+    comment_service = CommentService(db)
     return await comment_service.get_comment_by_post_all(post_id, limit, offset)
 
 
@@ -74,7 +74,7 @@ async def get_comment_by_post_user(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(auth_service.get_current_user),
 ):
-    comment_service = CommentServices(db)
+    comment_service = CommentService(db)
     return await comment_service.get_comment_by_post_user(post_id, limit, offset, current_user)
 
 
@@ -93,5 +93,5 @@ async def get_comment_by_post_author(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(auth_service.get_current_user),
 ):
-    comment_service = CommentServices(db)
+    comment_service = CommentService(db)
     return await comment_service.get_comment_by_post_author(post_id, user_id, limit, offset)

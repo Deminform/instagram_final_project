@@ -1,13 +1,14 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.images.repository import ImageRepository
+from src.urls.models import URLs
+from src.urls.repository import URLRepository
 from src.services.cloudinary_service import CloudinaryService
 from src.services.qr_service import QRService
 
 
-class ImageService:
+class URLService:
     def __init__(self, db: AsyncSession):
-        self.image_repository = ImageRepository(db)
+        self.image_repository = URLRepository(db)
         self.qr_service = QRService
         self.cloudinary_service = CloudinaryService
 
@@ -33,3 +34,9 @@ class ImageService:
         new_image_url = await self.cloudinary_service.apply_filter(original_image_url, image_filter)
         await self.create_image(post_id, new_image_url, image_filter)
         return await self.qr_service.create_qr(new_image_url)
+
+    async def delete_urls_by_post_id(self, post_id) -> list[URLs]:
+        # delete all URLs by post_id
+        # returns a list of deleted URLs
+        # NOT USED COMMIT FUNCTION (only session.delete(url))
+        pass
