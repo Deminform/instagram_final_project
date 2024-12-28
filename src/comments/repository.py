@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.users.models import User
@@ -36,6 +36,12 @@ class CommentRepository:
             await self.db.delete(comment)
             await self.db.commit()
         return comment
+
+    async def delete_comment_by_post(self, post_id: int) -> int:
+        stmt = delete(Comment).filter(Comment.post_id == post_id)
+        result = await self.db.execute(stmt)
+        await self.db.commit()
+        return result.rowcount
 
     async def get_comment_by_post_all(self, post_id: int, limit: int, offset: int) -> list[Comment]:
         stmt = select(Comment).filter_by(post_id=post_id).offset(offset).limit(limit)

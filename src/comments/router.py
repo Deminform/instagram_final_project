@@ -6,7 +6,7 @@ from database.db import get_db
 from src.users.models import User
 from conf import messages
 from src.services.auth import auth_service
-from src.comments.schema import CommentResponse, CommentUpdateResponse, CommentBase
+from src.comments.schema import CommentResponse, CommentUpdateResponse, CommentBase, MessageResponse
 from src.comments.comments_services import CommentServices
 
 from src.users.schemas import RoleEnum

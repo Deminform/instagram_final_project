@@ -21,3 +21,7 @@ class CommentResponse(BaseModel):
 class CommentUpdateResponse(CommentResponse):
     is_update: bool = False
     updated_at: Optional[datetime]
+
+
+class MessageResponse(BaseModel):
+    message: str
