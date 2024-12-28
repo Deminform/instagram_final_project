@@ -11,6 +11,7 @@ __pycache__/
 *.whl
 *.manifest
 *.spec
+versions/
 
 # Virtual environments
 .venv/
@@ -22,7 +23,7 @@ venv.bak/
 postgres-data/
 
 # Poetry
-# poetry.lock
+poetry.lock
 
 # PyCharm
 .idea/
@@ -56,3 +57,6 @@ dmypy.json
 
 # Database Settings
 .env
+
+# Makefile
+*Makefile
