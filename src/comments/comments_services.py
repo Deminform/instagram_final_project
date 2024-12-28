@@ -9,7 +9,7 @@ from src.comments.repository import CommentRepository
 from src.posts.post_service import PostService
 
 
-class CommentServices:
+class CommentService:
     def __init__(self, db: AsyncSession):
         self.comment_repository = CommentRepository(db)
         self.services_post = PostService(db)
@@ -56,3 +56,9 @@ class CommentServices:
             post_id, user_id, limit, offset
         )
         return comment
+
+    async def delete_comments_by_post_id(self, post_id) -> list[Comment]:
+        # delete all comments by post_id
+        # returns a list of deleted comments
+        # NOT USED COMMIT FUNCTION (only session.delete(comment))
+        pass
