@@ -11,6 +11,8 @@ class PostSchema(BaseModel):
     description: str = Field(min_length=5, max_length=500)
     image_filter: str | None
 
+class PostUpdateRequest(BaseModel):
+    description: str
 
 class PostResponseSchema(BaseModel):
     id: int
