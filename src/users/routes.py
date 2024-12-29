@@ -13,6 +13,7 @@ from src.users.schemas import RoleEnum, UserResponse, UserUpdate
 from src.users.users_service import UserService
 
 router = APIRouter(prefix="/users", tags=["users"])
+router_admin = APIRouter(prefix="/admin/user", tags=["users"])
 
 
 @router.get("/{user_id}", response_model=UserResponse)
@@ -84,7 +85,7 @@ async def update_user_info(
 
 
 # ------------- ADMIN ROUTES -----------------------------------
-@router.post("/{user_id}/ban", status_code=status.HTTP_200_OK)
+@router_admin.post("/{user_id}/ban", status_code=status.HTTP_200_OK, description="For 'admin' role only")
 async def ban_user(
     user_id: int,
     current_user: User = Depends(
@@ -97,7 +98,7 @@ async def ban_user(
     return {"message": "Success"}
 
 
-@router.post("/{user_id}/unban", status_code=status.HTTP_200_OK)
+@router_admin.post("/{user_id}/unban", status_code=status.HTTP_200_OK, description="For 'admin' role only")
 async def ban_user(
     user_id: int,
     current_user: User = Depends(
@@ -110,7 +111,7 @@ async def ban_user(
     return {"message": "Success"}
 
 
-@router.patch("/{user_id}/role", status_code=status.HTTP_200_OK)
+@router_admin.patch("/{user_id}/role", status_code=status.HTTP_200_OK, description="For 'admin' role only")
 async def change_user_role(
     user_id: int,
     role: str,

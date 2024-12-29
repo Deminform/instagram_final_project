@@ -16,6 +16,7 @@ from conf.config import app_config
 from src.services import healthchecker
 from src.services.auth.routes import router as auth_router
 from src.users.routes import router as users_router
+from src.users.routes import router_admin as users_router_admin
 from src.posts.routes import router as posts_router
 from src.posts.routes import router_admin as posts_router_admin
 from src.scores.routes import router as scores_router
@@ -55,6 +56,7 @@ app.include_router(auth_router, prefix="/api")
 app.include_router(posts_router, prefix="/api")
 app.include_router(posts_router_admin, prefix="/api")
 app.include_router(users_router, prefix="/api")
+app.include_router(users_router_admin, prefix="/api")
 app.include_router(scores_router, prefix="/api")
 app.include_router(comment_router, prefix="/api")
 
