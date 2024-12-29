@@ -1,4 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from fastapi import HTTPException, status
 
 from src.scores.models import Score
@@ -9,9 +10,11 @@ from src.scores.repository import (
     create_score,
     update_score,
     delete_score,
-    get_average_score_by_post_id
+    get_average_score_by_post_id,
+    score_exists
 )
 from src.scores.schemas import ScoreCreate, ScoreUpdate
+from src.posts.repository import PostRepository
 
 
 class ScoreService:
@@ -21,7 +24,7 @@ class ScoreService:
         :param db: AsyncSession - object of the db session.
         """
         self.db = db
-    
+
     async def fetch_score_by_id(self, score_id: int):
         """
         Get a Score by ID.
@@ -30,10 +33,14 @@ class ScoreService:
         """
         score = await get_score_by_id(self.db, score_id)
         if not score:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Score not found")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail="Score not found"
+            )
         return score
-    
-    async def fetch_scores_by_user(self, user_id: int, limit: int = 10, offset: int = 0):
+
+    async def fetch_scores_by_user(
+        self, user_id: int, limit: int = 10, offset: int = 0
+    ):
         """
         Get the list of scores by user's ID.
         :param user_id: int - user's ID.
@@ -42,8 +49,10 @@ class ScoreService:
         :return: list of scores.
         """
         return await get_scores_by_user_id(self.db, user_id, limit, offset)
-    
-    async def fetch_scores_by_post(self, post_id: int, limit: int = 10, offset: int = 0):
+
+    async def fetch_scores_by_post(
+        self, post_id: int, limit: int = 10, offset: int = 0
+    ):
         """
         Get the list of the Score by post's ID.
         :param post_id: int - post's ID.
@@ -52,16 +61,26 @@ class ScoreService:
         :return: score list.
         """
         return await get_scores_by_post_id(self.db, post_id, limit, offset)
-    
+
     async def create_new_score(self, score_data: ScoreCreate, user, post):
         """
         Create a new Score.
         :param score_data: ScoreCreate - data for creating a score.
-        :param user: User - the user who created the score.
-        :param post: Post - the post to which the score relates.
         :return: created score.
         """
-        return await create_score(self.db, score_data, user, post)
+        if await score_exists(self.db, score_data.user_id, score_data.post_id):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="User has already scored this post"
+            )
+        
+        post = await PostRepository.get_post_by_id(self.db, score_data.post_id)
+        if post.user_id == score_data.user_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Users cannot score their posts"
+            )
+        return await create_score(self.db, score_data)
     
     async def update_existing_score(self, score_id: int, score_data: ScoreUpdate):
         """
@@ -70,8 +89,8 @@ class ScoreService:
         :param score_data: ScoreUpdate - new data for update.
         :return: updated score or HTTP 404 exception.
         """
-        return await update_score(self.db, score_id, score_data.score)
-    
+        return await update_score(self.db, score_id, score_data)
+
     async def delete_existing_score(self, score_id: int):
         """
         Delete existing Score.
@@ -80,7 +99,7 @@ class ScoreService:
         """
         score = await self.fetch_score_by_id(score_id)
         return await delete_score(self.db, score)
-    
+
     async def calculate_average_score(self, post_id: int):
         """
         Calculate average score for the post.
@@ -89,6 +108,8 @@ class ScoreService:
         """
         average_score = await get_average_score_by_post_id(self.db, post_id)
         if average_score is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No scores available for this post")
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="No scores available for this post",
+            )
         return average_score
-        

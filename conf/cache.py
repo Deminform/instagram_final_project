@@ -1,15 +1,16 @@
 import inspect
-from typing import Callable, Any, Optional, Tuple, Dict, Awaitable, Union
+from typing import Any, Awaitable, Callable, Dict, Optional, Tuple, Union
 
 from fastapi_cache import FastAPICache
 from starlette.requests import Request
 from starlette.responses import Response
 
+
 class CustomKeyBuilder:
     def __call__(
         self,
         __function: Callable[..., Any],
-        __namespace: str = '',
+        __namespace: str = "",
         *,
         request: Optional[Request] = None,
         response: Optional[Response] = None,
@@ -46,6 +47,7 @@ class CustomKeyBuilder:
 
         cache_key = ":".join(key_parts)
         return cache_key
+
 
 # async def clear_cache(user_id):
 #     await FastAPICache.clear(namespace=f'get_my_contacts:user={user_id}')
