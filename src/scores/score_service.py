@@ -1,4 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from fastapi import HTTPException, status
 
 from src.scores.models import Score
@@ -10,8 +11,10 @@ from src.scores.repository import (
     update_score,
     delete_score,
     get_average_score_by_post_id,
+    score_exists
 )
 from src.scores.schemas import ScoreCreate, ScoreUpdate
+from src.posts.repository import PostRepository
 
 
 class ScoreService:
@@ -63,12 +66,22 @@ class ScoreService:
         """
         Create a new Score.
         :param score_data: ScoreCreate - data for creating a score.
-        :param user: User - the user who created the score.
-        :param post: Post - the post to which the score relates.
         :return: created score.
         """
-        return await create_score(self.db, score_data, user, post)
-
+        if await score_exists(self.db, score_data.user_id, score_data.post_id):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="User has already scored this post"
+            )
+        
+        post = await PostRepository.get_post_by_id(self.db, score_data.post_id)
+        if post.user_id == score_data.user_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Users cannot score their posts"
+            )
+        return await create_score(self.db, score_data)
+    
     async def update_existing_score(self, score_id: int, score_data: ScoreUpdate):
         """
         Update existing score.
@@ -76,7 +89,7 @@ class ScoreService:
         :param score_data: ScoreUpdate - new data for update.
         :return: updated score or HTTP 404 exception.
         """
-        return await update_score(self.db, score_id, score_data.score)
+        return await update_score(self.db, score_id, score_data)
 
     async def delete_existing_score(self, score_id: int):
         """
@@ -100,11 +113,3 @@ class ScoreService:
                 detail="No scores available for this post",
             )
         return average_score
-
-    async def delete_scores_by_post_id(self, post_id) -> list[Score]:
-        # delete all scores by post_id
-        # returns a list of deleted scores
-        # NOT USED COMMIT FUNCTION (only session.delete)
-        pass
-
-
