@@ -114,12 +114,13 @@ class ScoreService:
             )
         return average_score
 
-    async def delete_scores_by_id(db: AsyncSession, post_id: int) -> list[Score]:
-        stmt = select(Score).where(Score.post_id == post_id)
-        result = await db.execute(stmt)
-        scores = result.scalars().all()
 
-        for score in scores:
-            await db.delete(score)
-
-        return scores
+    async def delete_scores_by_post_id(self, post_id: int) -> list[Score]:
+        ...
+        # async def self.scores_service.delete_scores_by_post_id(post_id):
+        #     ...
+        #
+        # for score in scores:
+        #     await db.delete(score)
+        #
+        # return scores
