@@ -98,3 +98,11 @@ class ScoreService:
                 detail="No scores available for this post",
             )
         return average_score
+
+    async def delete_scores_by_post_id(self, post_id) -> list[Score]:
+        # delete all scores by post_id
+        # returns a list of deleted scores
+        # NOT USED COMMIT FUNCTION (only session.delete)
+        pass
+
+

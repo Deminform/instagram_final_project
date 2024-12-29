@@ -4,7 +4,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from conf.config import Base
 
 
-class EditedImage(Base):
+class URLs(Base):
     __tablename__ = "edited_images"
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     post_id: Mapped[int] = mapped_column(

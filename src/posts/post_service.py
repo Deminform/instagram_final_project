@@ -3,7 +3,9 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from conf import messages, const
-from src.images.image_service import ImageService
+from src.comments.comments_services import CommentService
+from src.urls.image_service import URLService
+from src.scores.score_service import ScoreService
 from src.services.qr_service import QRService
 from src.posts.repository import PostRepository
 from src.tags.tag_service import TagService
@@ -13,11 +15,13 @@ from src.services.cloudinary_service import CloudinaryService
 
 class PostService:
     def __init__(self, db: AsyncSession):
-        self.image_service = ImageService(db)
+        self.image_service = URLService(db)
         self.cloudinary_service = CloudinaryService
         self.tag_service = TagService(db)
         self.qr_service = QRService
         self.post_repository = PostRepository(db)
+        self.score_service = ScoreService(db)
+        self.comments_service = CommentService(db)
 
     async def _get_post_or_exception(self, post_id: int, user: User = None):
         post = await self.post_repository.get_post_by_id(post_id)
@@ -73,13 +77,35 @@ class PostService:
 
 
     async def delete_post(self, user: User, post_id: int):
-        post = await self._get_post_or_exception(post_id, user)
-        return await self.post_repository.delete_post(post)
+
+        try:
+            # delete all rating
+            scores_list = await self.score_service.delete_scores_by_post_id(post_id)
+
+            # delete all comments
+            comments_list = await self.comments_service.delete_comments_by_post_id(post_id)
+
+            # delete all URLs/urls
+            urls_list = await self.image_service.delete_urls_by_post_id(post_id)
+
+            # delete post
+            post = await self._get_post_or_exception(post_id)
+            await self.post_repository.delete_post(post)
+
+            # commit
+            await self.post_repository.session.commit()
+        except IntegrityError as e:
+            await self.post_repository.session.rollback()
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"{messages.DATA_INTEGRITY_ERROR}. -//- {e}",
+            )
+        return post
 
 
-    async def create_qr(self, post_id: int, image_filter: str):
+    async def create_qr(self, user, post_id: int, image_filter: str):
         await self.check_image_filter(image_filter)
-        post = await self._get_post_or_exception(post_id)
+        post = await self._get_post_or_exception(post_id, user)
         return await self.image_service.generate_qr(post.id, post.original_image_url, image_filter)
 
 

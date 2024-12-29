@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from fastapi_mail import ConnectionConfig, FastMail, MessageSchema
 from fastapi_mail.errors import ConnectionErrors
 from jinja2 import Environment, FileSystemLoader
@@ -18,11 +20,13 @@ mail_conf = ConnectionConfig(
     MAIL_USERNAME=app_config.MAIL_USERNAME,
     MAIL_PASSWORD=app_config.MAIL_PASSWORD,
     MAIL_FROM=app_config.MAIL_FROM,
-    MAIL_PORT=app_config.MAIL_PORT,
+    MAIL_FROM_NAME='Insta - Final Project',
+    MAIL_PORT=app_config.MAIL_IMAP_PORT,
     MAIL_SERVER=app_config.MAIL_SERVER,
     MAIL_STARTTLS=False,
-    MAIL_SSL_TLS=False,
+    MAIL_SSL_TLS=True,
     USE_CREDENTIALS=True,
+    VALIDATE_CERTS=True,
 )
 
 

@@ -10,14 +10,25 @@ class Base(DeclarativeBase):
 
 
 class Settings(BaseSettings):
+
     # Database settings -----------------------------------------------------------------------------
     POSTGRES_USER: str = "username"
     POSTGRES_PASSWORD: str = "9876543210"
     POSTGRES_DBNAME: str = "database_name"
     POSTGRES_HOST: str = "localhost"
-    POSTGRES_PORT: str = "5432"
+    POSTGRES_PORT: int = 5432
     DB_URL: str = (
         "postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DBNAME}"
+    )
+
+    # Database settings -----------------------------------------------------------------------------
+    TEST_POSTGRES_USER: str = "<DB_USERNAME>"
+    TEST_POSTGRES_PASSWORD: str = "<PASSWORD>"
+    TEST_POSTGRES_DBNAME: str = "<DB_NAME>"
+    TEST_POSTGRES_HOST: str = "<DB_HOST>"
+    TEST_POSTGRES_PORT: int = 5432
+    TEST_DB_URL: str = (
+        "postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_TEST_DB}"
     )
 
     # Mail settings ----------------------------------------------------------------------------------
@@ -26,8 +37,8 @@ class Settings(BaseSettings):
     MAIL_PASSWORD: str = "9876543210"
     MAIL_SERVER: str = "mail.example.com"
     MAIL_PORT: int = 1025
-    # MAIL_SMTP_PORT: str = '993'
-    # MAIL_IMAP_PORT: str = '465'
+    MAIL_SMTP_PORT: str = '993'
+    MAIL_IMAP_PORT: str = '465'
     VERIFY_EMAIL_TOKEN_LIFETIME: int = 24  # Hours
 
     # JWT Key --------------------------------------------------------------------------------------
@@ -38,8 +49,8 @@ class Settings(BaseSettings):
 
     # Redis --------------------------------------------------------------------------------------
     REDIS_DOMAIN: str = "localhost"
-    REDIS_PORT: str = "6379"
-    REDIS_PASSWORD: str | None = None
+    REDIS_PORT: int = 6379
+    # REDIS_PASSWORD: str | None = None
     REDIS_URL: str = (
         "redis://${REDIS_USER}:${REDIS_PASSWORD}@${REDIS_DOMAIN}:${REDIS_PORT}/${REDIS_DB}"
     )
@@ -58,9 +69,6 @@ class Settings(BaseSettings):
 
     BASE_DIR: Path | None = Path(__file__).parent.parent
 
-    # Test database
-    DATABASE_TEST_URL: str
-
     @field_validator("ALGORITHM")
     @classmethod
     def validate_algorithm(cls, v):
@@ -69,7 +77,7 @@ class Settings(BaseSettings):
         return v
 
     model_config = ConfigDict(
-        extra="ignore", env_file=".env", env_file_encoding="utf-8"
+        extra="ignore", env_file=str(BASE_DIR / ".env"), env_file_encoding="utf-8"
     )  # noqa
 
 
