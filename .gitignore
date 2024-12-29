@@ -58,3 +58,5 @@ dmypy.json
 
 # Makefile
 *Makefile
+/tests/test.db
+/test.db
