@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.services.auth.auth_service import get_current_user
-from src.users.schema import UserResponse, RoleEnum
+from src.users.schemas import UserResponse, RoleEnum
 from src.scores.schemas import ScoreCreate, ScoreUpdate, Score, AverageScore
 from database.db import get_db
 from src.scores.score_service import ScoreService
