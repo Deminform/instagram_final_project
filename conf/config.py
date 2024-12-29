@@ -27,9 +27,7 @@ class Settings(BaseSettings):
     TEST_POSTGRES_DBNAME: str = "<DB_NAME>"
     TEST_POSTGRES_HOST: str = "<DB_HOST>"
     TEST_POSTGRES_PORT: int = 5432
-    TEST_DB_URL: str = (
-        "postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_TEST_DB}"
-    )
+    TEST_DB_URL: str = "postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_TEST_DB}"
 
     # Mail settings ----------------------------------------------------------------------------------
     MAIL_USERNAME: EmailStr = "email@example.com"
