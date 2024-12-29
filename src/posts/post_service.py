@@ -89,7 +89,7 @@ class PostService:
             urls_list = await self.image_service.delete_urls_by_post_id(post_id)
 
             # delete post
-            post = await self._get_post_or_exception(post_id)
+            post = await self._get_post_or_exception(post_id, user)
             await self.post_repository.delete_post(post)
 
             # commit
