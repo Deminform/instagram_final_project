@@ -1,76 +1,89 @@
-from pathlib import Path
-
 from fastapi import (
-    HTTPException,
-    Depends,
-    status,
-    APIRouter,
-    Security,
-    BackgroundTasks,
-    Request,
-    Form,
     Query,
+    status,
+    UploadFile,
+    File,
+    Form,
 )
 
-import cloudinary
-import cloudinary.uploader
-from fastapi import Depends, APIRouter, UploadFile, File, status
-from fastapi_limiter.depends import RateLimiter
-from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles
-from fastapi.responses import HTMLResponse
-from fastapi_limiter.depends import RateLimiter
-from jose import JWTError
+from fastapi import Depends, APIRouter
+from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from conf import messages
+from conf import messages, const
 from database.db import get_db
-from src.posts.schemas import PostResponseSchema, PostSchema, PostUpdateSchema
-from src.posts import repository as posts_repository
-from src.users.models import User
-from src.services.auth.utils import get_current_user
 from src.posts.post_service import PostService
+from src.posts.schemas import PostResponseSchema, PostUpdateRequest
+from src.services.auth.auth_service import get_current_user
+from src.users.models import User
 
 router = APIRouter(prefix="/posts", tags=["posts"])
-
+router_admin = APIRouter(prefix="/admin/posts", tags=["posts"])
 
 
 @router.get("/", response_model=list[PostResponseSchema])
 async def get_posts(
         limit: int = Query(10, ge=10, le=100),
         offset: int = Query(0, ge=0),
+        tag: str = Query(None, description="Search by tags, partial match, case insensitive"),
+        keyword: str = Query(None, description="Search by description, partial match, case insensitive"),
         db: AsyncSession = Depends(get_db),
         user: User = Depends(get_current_user),
 ):
     post_service = PostService(db)
-    return await post_service.get_posts(limit, offset)
+    return await post_service.get_posts(limit, offset, keyword, tag)
 
 
 @router.get("/{post_id}", response_model=PostResponseSchema)
 async def get_post_by_id(
         post_id: int,
         db: AsyncSession = Depends(get_db),
-        user: User = Depends(get_current_user)
+        user: User = Depends(get_current_user),
 ):
     post_service = PostService(db)
     post = await post_service.get_post_by_id(post_id)
-    if post is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=messages.POST_NOT_FOUND
-        )
     return post
 
 
-@router.post("/", response_model=PostResponseSchema)
+@router.post("/", response_model=PostResponseSchema, status_code=status.HTTP_201_CREATED)
 async def create_post(
-        body: PostSchema,
+        description: str = Form(...,
+            min_length=const.POST_DESCRIPTION_MIN_LENGTH,
+            max_length=const.POST_DESCRIPTION_MAX_LENGTH,
+            description=messages.POST_DESCRIPTION
+),
+        image_filter: str | None = Form(None),
+        tags: str = Form(None, description=messages.TAG_DESCRIPTION),
         image: UploadFile = File(...),
         db: AsyncSession = Depends(get_db),
         user: User = Depends(get_current_user),
 ):
     post_service = PostService(db)
-    post = await post_service.create_post(body, image)
+    post = await post_service.create_post(user, description, image_filter, tags, image)
+    return post
+
+
+@router.post("/{post_id}/qr", status_code=status.HTTP_200_OK)
+async def create_qr(
+        post_id: int,
+        image_filter: str = Query(..., description=messages.IMAGE_FILTER_DESCRIPTION),
+        db: AsyncSession = Depends(get_db),
+        user: User = Depends(get_current_user),
+):
+    post_service = PostService(db)
+    image_qr = await post_service.create_qr(user, post_id, image_filter)
+    return StreamingResponse(image_qr, media_type="image/png")
+
+
+@router.put("/{post_id}", response_model=PostResponseSchema)
+async def edit_post(
+        post_id: int,
+        body: PostUpdateRequest,
+        db: AsyncSession = Depends(get_db),
+        user: User = Depends(get_current_user),
+):
+    post_service = PostService(db)
+    post = await post_service.update_post_description(user, post_id, body.description)
     return post
 
 
@@ -82,33 +95,4 @@ async def delete_post(
 ):
     post_service = PostService(db)
     post = await post_service.delete_post(user, post_id)
-    if post is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=messages.POST_NOT_FOUND
-        )
     return post
-
-
-@router.put("/{post_id}", response_model=PostResponseSchema)
-async def edit_post(
-        post_id: int,
-        body: PostUpdateSchema,
-        db: AsyncSession = Depends(get_db),
-        user: User = Depends(get_current_user),
-):
-    post = await posts_repository.get_post_by_id(db, user, post_id)
-    if post is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=messages.POST_NOT_FOUND
-        )
-
-    post = await posts_repository.update_post(db, user, post_id, body)
-
-
-
-        # - get_post_by_filter()
-        # - get_post_by_id()
-        # - get_post_by_user_id() - ADMIN + MODER
-        # - create_post()
-        # - delete_post()
-        # - edit_post()

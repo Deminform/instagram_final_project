@@ -1,9 +1,10 @@
 [tool.poetry]
-name = "arpixe"
+name = "Insta - Final Project"
 version = "0.1.0"
 description = ""
 authors = ["Deminform <deminform@gmail.com>"]
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.12"
@@ -32,6 +33,11 @@ flake8 = "^7.1.1"
 flake8-async = "^24.11.3"
 faker = "^33.1.0"
 greenlet = "^3.1.1"
+black = "^24.10.0"
+isort = "^5.13.2"
+qrcode = {extras = ["pil"], version = "^8.0"}
+
+
 
 
 [tool.poetry.group.dev.dependencies]
@@ -43,6 +49,7 @@ aiosqlite = "^0.20.0"
 pytest-asyncio = "^0.24.0"
 pytest-cov = "^6.0.0"
 pytest = "^8.3.4"
+pytest-faker = "^2.0.0"
 httpx = "^0.28.0"
 
 [build-system]
@@ -50,8 +57,10 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
-addopts = "--cov=src --cov-report=term-missing"
-asyncio_default_fixture_loop_scope = "session"
+addopts = "--cov=src --cov-report=term-missing" # TODO uncommit
+#asyncio_default_fixture_loop_scope = "session"
+#asyncio_mode = "auto"
+#asyncio_default_fixture_loop_scope = "function"
 pythonpath = "."
 filterwarnings = [
     "ignore:.*datetime\\.datetime\\.utcnow.*:DeprecationWarning"

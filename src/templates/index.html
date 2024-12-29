@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{page_title}}</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+    }
+    body {
+      background: url("../static/images/compressed_super_nuts.jpg") no-repeat center center/cover;
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+    .button-container {
+      position: absolute;
+      bottom: 50px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 20px;
+    }
+    .btn {
+      display: inline-block;
+      font-size: 20px;
+      padding: 20px 40px;
+      border: none;
+      border-radius: 8px;
+      background-color: #333;
+      color: #fff;
+      text-decoration: none;
+      cursor: pointer;
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+      text-align: center;
+    }
+    .btn:hover {
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+      background-color: #444;
+    }
+    .btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      background-color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="button-container">
+    <a href="/docs#/" class="btn">Swagger UI</a>
+  </div>
+</body>
+</html>
