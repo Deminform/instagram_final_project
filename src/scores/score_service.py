@@ -3,16 +3,7 @@ from sqlalchemy import select
 from fastapi import HTTPException, status
 
 from src.scores.models import Score
-from src.scores.repository import (
-    get_score_by_id,
-    get_scores_by_user_id,
-    get_scores_by_post_id,
-    create_score,
-    update_score,
-    delete_score,
-    get_average_score_by_post_id,
-    score_exists
-)
+from src.scores.repository import ScoreRepository
 from src.scores.schemas import ScoreCreate, ScoreUpdate
 from src.posts.repository import PostRepository
 
@@ -23,7 +14,9 @@ class ScoreService:
         Initialization the Scores services.
         :param db: AsyncSession - object of the db session.
         """
-        self.db = db
+        self.score_repository = ScoreRepository(db)
+
+
 
     async def fetch_score_by_id(self, score_id: int):
         """
@@ -31,7 +24,7 @@ class ScoreService:
         :param score_id: int - ID score.
         :return: Score or HTTP 404 exception.
         """
-        score = await get_score_by_id(self.db, score_id)
+        score = await self.score_repository.get_score_by_id(score_id)
         if not score:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="Score not found"
@@ -62,7 +55,7 @@ class ScoreService:
         """
         return await get_scores_by_post_id(self.db, post_id, limit, offset)
 
-    async def create_new_score(self, score_data: ScoreCreate, user, post):
+    async def create_new_score(self, score_data: ScoreCreate):
         """
         Create a new Score.
         :param score_data: ScoreCreate - data for creating a score.
@@ -74,7 +67,7 @@ class ScoreService:
                 detail="User has already scored this post"
             )
         
-        post = await PostRepository.get_post_by_id(self.db, score_data.post_id)
+        post = await PostRepository.get_post_by_id(score_data.post_id)
         if post.user_id == score_data.user_id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -114,12 +107,15 @@ class ScoreService:
             )
         return average_score
 
-    async def delete_scores_by_id(db: AsyncSession, post_id: int) -> list[Score]:
-        stmt = select(Score).where(Score.post_id == post_id)
-        result = await db.execute(stmt)
-        scores = result.scalars().all()
 
-        for score in scores:
-            await db.delete(score)
-
-        return scores
+    async def delete_scores_by_post_id(self, post_id: int) -> list[Score]:
+        score = await self.score_repository.get_score_by_post_id(post_id)
+        score = await self.score_repository.delete_score(score)
+        ...
+        # async def self.scores_service.delete_scores_by_post_id(post_id):
+        #     ...
+        #
+        # for score in scores:
+        #     await db.delete(score)
+        #
+        # return scores
