@@ -4,7 +4,7 @@ from typing import Optional
 from typing_extensions import Annotated
 import re
 
-from pydantic import BaseModel, EmailStr, BeforeValidator, ValidationError
+from pydantic import BaseModel, EmailStr, BeforeValidator
 
 
 class RoleEnum(Enum):

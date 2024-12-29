@@ -28,7 +28,8 @@ async def get_user_info_by_id(
             status_code=status.HTTP_404_NOT_FOUND, detail=USER_NOT_FOUND
         )
     posts_count = await user_service.get_user_posts_count(user.id)
-    user_response = UserResponse.model_validate(user)
+    user_dict = user.__dict__
+    user_response = UserResponse(**user_dict)
     user_response.post_count = posts_count if posts_count else 0
     return user_response
 
@@ -46,7 +47,8 @@ async def get_user_info_by_username(
             status_code=status.HTTP_404_NOT_FOUND, detail=USER_NOT_FOUND
         )
     posts_count = await user_service.get_user_posts_count(user.id)
-    user_response = UserResponse.model_validate(user)
+    user_dict = user.__dict__
+    user_response = UserResponse(**user_dict)
     user_response.post_count = posts_count if posts_count else 0
     return user_response
 
