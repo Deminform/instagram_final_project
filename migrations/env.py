@@ -12,6 +12,7 @@ from src.urls.models import URLs
 from src.posts.models import Post, PostTag
 from src.tags.models import Tag
 from src.users.models import Role, Token, User
+from src.scores.models import Score
 
 
 # this is the Alembic Config object, which provides
