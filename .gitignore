@@ -60,3 +60,4 @@ dmypy.json
 
 # Makefile
 *Makefile
+.test.db

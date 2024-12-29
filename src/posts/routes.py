@@ -13,7 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from conf import messages, const
 from database.db import get_db
 from src.posts.post_service import PostService
-from src.posts.schemas import PostResponseSchema
+from src.posts.schemas import PostResponseSchema, PostUpdateRequest
 from src.services.auth.auth_service import get_current_user
 from src.users.models import User
 
@@ -63,7 +63,7 @@ async def create_post(
     return post
 
 
-@router.post("/{post_id}/qr", status_code=status.HTTP_201_CREATED)
+@router.post("/{post_id}/qr", status_code=status.HTTP_200_OK)
 async def create_qr(
         post_id: int,
         image_filter: str = Query(..., description=messages.IMAGE_FILTER_DESCRIPTION),
@@ -78,12 +78,12 @@ async def create_qr(
 @router.put("/{post_id}", response_model=PostResponseSchema)
 async def edit_post(
         post_id: int,
-        description: str,
+        body: PostUpdateRequest,
         db: AsyncSession = Depends(get_db),
         user: User = Depends(get_current_user),
 ):
     post_service = PostService(db)
-    post = await post_service.update_post_description(user, post_id, description)
+    post = await post_service.update_post_description(user, post_id, body.description)
     return post
 
 

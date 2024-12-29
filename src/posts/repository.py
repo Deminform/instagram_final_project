@@ -9,6 +9,7 @@ from src.users.models import User
 
 
 class PostRepository:
+
     def __init__(self, db: AsyncSession):
         self.session = db
 
@@ -55,5 +56,4 @@ class PostRepository:
 
     async def delete_post(self, post: Post):
         await self.session.delete(post)
-        await self.session.commit()
         return post

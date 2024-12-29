@@ -177,7 +177,6 @@ class TestContacts(unittest.IsolatedAsyncioTestCase):
     async def test_delete_post(self):
         post = await self.post_repository.delete_post(self.post)
         self.session.delete.assert_called_once_with(post)
-        self.session.commit.assert_called_once()
         self.assertEqual(post.description, self.post.description)
         self.assertIsInstance(post, Post)
 
