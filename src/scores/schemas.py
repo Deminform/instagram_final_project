@@ -5,7 +5,9 @@ from typing import Optional
 class ScoreBase(BaseModel):
     post_id: int = Field(..., description="ID of the post associate with the score")
     user_id: int = Field(..., description="ID of the user who provided the score")
-    score: int = Field(..., ge=1, le=5, description="Score value (must be between 1 and 5)")
+    score: int = Field(
+        ..., ge=1, le=5, description="Score value (must be between 1 and 5)"
+    )
 
 
 class ScoreCreate(ScoreBase):
@@ -19,7 +21,10 @@ class ScoreCreate(ScoreBase):
 
 class ScoreUpdate(BaseModel):
     """Schema for updating an existing score."""
-    score: int = Field(..., ge=1, le=5, description="Updated score value (must be between 1 and 5)")
+
+    score: int = Field(
+        ..., ge=1, le=5, description="Updated score value (must be between 1 and 5)"
+    )
 
 
 class Score(ScoreBase):
@@ -30,5 +35,7 @@ class Score(ScoreBase):
 
 
 class AverageScore(BaseModel):
-    post_id: int = Field(..., description="ID of the post for which the average score is calculated.")
+    post_id: int = Field(
+        ..., description="ID of the post for which the average score is calculated."
+    )
     average_score: float = Field(..., description="The average score for the post")

@@ -10,6 +10,7 @@ from src.scores.score_service import ScoreService
 
 router = APIRouter(prefix="/scores", tags=["Scores"])
 
+
 def get_score_service(db: AsyncSession = Depends(get_db)) -> ScoreService:
     """Dependency for getting ScoreService instance."""
     return ScoreService(db)
@@ -36,24 +37,27 @@ async def read_score(score_id: int, service: ScoreService = Depends(get_score_se
 
 @router.get("/user/{user_id}", response_model=list[Score])
 async def read_scores_by_user(
-    user_id: int, limit: int = 10, offset: int = 0,
-    service: ScoreService = Depends(get_score_service)
+    user_id: int,
+    limit: int = 10,
+    offset: int = 0,
+    service: ScoreService = Depends(get_score_service),
 ):
     return await service.fetch_scores_by_user(user_id, limit, offset)
 
 
 @router.get("/post/{post_id}", response_model=list[Score])
 async def read_scores_by_post(
-    post_id: int, limit: int = 10, offset: int = 0, 
-    service: ScoreService = Depends(get_score_service)
+    post_id: int,
+    limit: int = 10,
+    offset: int = 0,
+    service: ScoreService = Depends(get_score_service),
 ):
     return await service.fetch_scores_by_post(post_id, limit, offset)
 
 
 @router.post("/", response_model=Score, status_code=status.HTTP_201_CREATED)
 async def create_new_score(
-    score_data: ScoreCreate,
-    service: ScoreService = Depends(get_score_service)
+    score_data: ScoreCreate, service: ScoreService = Depends(get_score_service)
 ):
     return await service.create_new_score(score_data)
 
@@ -62,7 +66,7 @@ async def create_new_score(
 async def update_existing_score(
     score_id: int,
     score_data: ScoreUpdate,
-    service: ScoreService = Depends(get_score_service)
+    service: ScoreService = Depends(get_score_service),
 ):
     return await service.update_existing_score(score_id, score_data)
 
@@ -79,6 +83,8 @@ async def delete_existing_score(
 
 
 @router.get("/post/{post_id}/average", response_model=AverageScore)
-async def get_post_average_score(post_id: int, service: ScoreService = Depends(get_score_service)):
+async def get_post_average_score(
+    post_id: int, service: ScoreService = Depends(get_score_service)
+):
     average_score = await service.calculate_average_score(post_id)
     return AverageScore(post_id=post_id, average_score=average_score)
