@@ -2,7 +2,6 @@ from fastapi import HTTPException, status, UploadFile
 from libgravatar import Gravatar
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette.datastructures import URL
 
 from conf.messages import (
     USER_NOT_FOUND,

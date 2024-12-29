@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy import and_, select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -58,6 +60,7 @@ class UserRepository:
         updated_data = body.model_dump(exclude_unset=True)
         for key, value in updated_data.items():
             setattr(user, key, value)
+        user.updated_at = datetime.now()
         await self.session.commit()
         await self.session.refresh(user)
         return user
@@ -65,6 +68,7 @@ class UserRepository:
     async def update_avatar_url(self, username: str, url: URL) -> User:
         user = await self.get_user_by_username(username)
         user.avatar_url = url
+        user.updated_at = datetime.now()
         await self.session.commit()
         await self.session.refresh(user)
         return user
