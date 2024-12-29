@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional
 
 
@@ -15,8 +15,7 @@ class ScoreCreate(ScoreBase):
     post_id: int
     score: int = Field(..., ge=1, le=5)
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ScoreUpdate(BaseModel):
