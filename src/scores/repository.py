@@ -71,3 +71,14 @@ async def score_exists(db: AsyncSession, user_id: int, post_id: int):
                                Score.post_id == post_id)
     result = await db.execute(stmt)
     return result.scalar_one_or_none() is not None
+
+
+async def delete_scores_by_id(db: AsyncSession, post_id: int) -> list[Score]:
+    stmt = select(Score).where(Score.post_id == post_id)
+    result = await db.execute(stmt)
+    scores = result.scalars().all()
+
+    for score in scores:
+        await db.delete(score)
+
+    return scores
