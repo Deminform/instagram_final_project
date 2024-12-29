@@ -30,14 +30,14 @@ templates = Jinja2Templates(directory=templates_path)
 
 @asynccontextmanager
 async def lifespan(fastapi_app: FastAPI):
-    redis = aioredis.from_url(app_config.REDIS_URL, encoding="utf8")
-    FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
-    await FastAPILimiter.init(redis)
+    # redis = aioredis.from_url(app_config.REDIS_URL, encoding="utf8")
+    # FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
+    # await FastAPILimiter.init(redis)
 
     yield
 
-    await redis.close()
-
+    # await redis.close()
+#
 
 app = FastAPI(lifespan=lifespan)
 
