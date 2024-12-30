@@ -62,7 +62,7 @@ class ScoreService:
         """
         return await get_scores_by_post_id(self.db, post_id, limit, offset)
 
-    async def create_new_score(self, score_data: ScoreCreate, user, post):
+    async def create_new_score(self, score_data: ScoreCreate):
         """
         Create a new Score.
         :param score_data: ScoreCreate - data for creating a score.
