@@ -12,13 +12,12 @@ class Base(DeclarativeBase):
 class Settings(BaseSettings):
 
     # Database settings -----------------------------------------------------------------------------
-    POSTGRES_USER: str = "username"
-    POSTGRES_PASSWORD: str = "9876543210"
-    POSTGRES_DBNAME: str = "database_name"
-    POSTGRES_HOST: str = "localhost"
-    POSTGRES_PORT: int = 5432
+    DATABASE_USER: str = "username"
+    DATABASE_PASSWORD: str = "9876543210"
+    DATABASE_NAME: str = "database_name"
+    DATABASE_HOST: str = "localhost"
     DB_URL: str = (
-        "postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DBNAME}"
+        "postgresql+asyncpg://${POSTGRES_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}/${DATABASE_NAME}"
     )
 
     # Database settings -----------------------------------------------------------------------------
@@ -27,9 +26,7 @@ class Settings(BaseSettings):
     TEST_POSTGRES_DBNAME: str = "<DB_NAME>"
     TEST_POSTGRES_HOST: str = "<DB_HOST>"
     TEST_POSTGRES_PORT: int = 5432
-    TEST_DB_URL: str = (
-        "postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_TEST_DB}"
-    )
+    TEST_DB_URL: str = "postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_TEST_DB}"
 
     # Mail settings ----------------------------------------------------------------------------------
     MAIL_USERNAME: EmailStr = "email@example.com"
