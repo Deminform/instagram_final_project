@@ -1,11 +1,6 @@
-import cloudinary.uploader
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
-import cloudinary
-import cloudinary.uploader
 
-from conf.config import app_config
-from conf.messages import USER_NOT_FOUND
 from database.db import get_db
 from src.services.auth.auth_service import RoleChecker, get_current_user
 from src.users.models import User
@@ -24,15 +19,8 @@ async def get_user_info_by_id(
 ):
     user_service = UserService(db)
     user = await user_service.get_user_by_id(user_id)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=USER_NOT_FOUND
-        )
-    posts_count = await user_service.get_user_posts_count(user.id)
-    user_dict = user.__dict__
-    user_response = UserResponse(**user_dict)
-    user_response.post_count = posts_count if posts_count else 0
-    return user_response
+
+    return user
 
 
 @router.get("/{username}/profile", response_model=UserResponse)
@@ -43,15 +31,8 @@ async def get_user_info_by_username(
 ):
     user_service = UserService(db)
     user = await user_service.get_user_by_username(username)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=USER_NOT_FOUND
-        )
-    posts_count = await user_service.get_user_posts_count(user.id)
-    user_dict = user.__dict__
-    user_response = UserResponse(**user_dict)
-    user_response.post_count = posts_count if posts_count else 0
-    return user_response
+
+    return user
 
 
 @router.patch("/info", response_model=UserResponse)
@@ -62,10 +43,7 @@ async def update_user_info(
 ) -> User:
     user_service = UserService(db)
     user = await user_service.update_user(current_user.id, body)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=USER_NOT_FOUND
-        )
+
     return user
 
 
@@ -77,10 +55,7 @@ async def update_user_info(
 ) -> User:
     user_service = UserService(db)
     user = await user_service.update_avatar(current_user.username, file)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail=USER_NOT_FOUND
-        )
+
     return user
 
 
