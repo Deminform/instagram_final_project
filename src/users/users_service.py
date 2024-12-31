@@ -65,12 +65,9 @@ class UserService:
 
     async def get_user_by_username(self, username: str) -> UserResponse | None:
         user = await self.user_repository.get_user_by_username(username)
-        if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail=USER_NOT_FOUND
-            )
-        posts_count = await self.user_repository.get_user_posts_count(user.id)
-        return UserResponse.from_user(user, posts_count)
+        if user:
+            posts_count = await self.user_repository.get_user_posts_count(user.id)
+            return UserResponse.from_user(user, posts_count)
 
     async def activate_user(self, user: User):
         return await self.user_repository.activate_user(user)
