@@ -141,7 +141,7 @@ async def delete_post(
         post_id: int,
         db: AsyncSession = Depends(get_db),
         user: User = Depends(get_current_user),
-) -> Post:
+):
     """
     Delete a specific post by its ID along with associated data.
 
