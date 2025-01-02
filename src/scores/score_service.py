@@ -15,6 +15,7 @@ class ScoreService:
         :param db: AsyncSession - object of the db session.
         """
         self.score_repository = ScoreRepository(db)
+        self.post_repository = PostRepository(db)
 
 
 
@@ -41,7 +42,7 @@ class ScoreService:
         :param offset: int = pagination distance (0 by default).
         :return: list of scores.
         """
-        return await get_scores_by_user_id(self.db, user_id, limit, offset)
+        return await self.score_repository.get_scores_by_user_id(user_id, limit, offset)
 
     async def fetch_scores_by_post(
         self, post_id: int, limit: int = 10, offset: int = 0
@@ -53,7 +54,7 @@ class ScoreService:
         :param offset: int - pagination rate (0 by default).
         :return: score list.
         """
-        return await get_scores_by_post_id(self.db, post_id, limit, offset)
+        return await self.score_repository.get_scores_by_post_id(post_id, limit, offset)
 
     async def create_new_score(self, score_data: ScoreCreate):
         """
@@ -61,19 +62,19 @@ class ScoreService:
         :param score_data: ScoreCreate - data for creating a score.
         :return: created score.
         """
-        if await score_exists(self.db, score_data.user_id, score_data.post_id):
+        if await self.score_repository.score_exists(score_data.user_id, score_data.post_id):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="User has already scored this post"
             )
         
-        post = await PostRepository.get_post_by_id(score_data.post_id)
+        post = await self.post_repository.get_post_by_id(score_data.post_id)
         if post.user_id == score_data.user_id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Users cannot score their posts"
             )
-        return await create_score(self.db, score_data)
+        return await self.score_repository.create_score(score_data)
     
     async def update_existing_score(self, score_id: int, score_data: ScoreUpdate):
         """
@@ -82,7 +83,7 @@ class ScoreService:
         :param score_data: ScoreUpdate - new data for update.
         :return: updated score or HTTP 404 exception.
         """
-        return await update_score(self.db, score_id, score_data)
+        return await self.score_repository.update_score(score_id, score_data)
 
     async def delete_existing_score(self, score_id: int):
         """
@@ -91,7 +92,7 @@ class ScoreService:
         :return: deleted score or HTTP 404 exception.
         """
         score = await self.fetch_score_by_id(score_id)
-        return await delete_score(self.db, score)
+        return await self.score_repository.delete_score(score)
 
     async def calculate_average_score(self, post_id: int):
         """
@@ -99,7 +100,7 @@ class ScoreService:
         :param post_id: int - post's ID.
         :return: average score or HTTP 404 exception, if there is no score.
         """
-        average_score = await get_average_score_by_post_id(self.db, post_id)
+        average_score = await self.score_repository.get_average_score_by_post_id(post_id)
         if average_score is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -109,13 +110,7 @@ class ScoreService:
 
 
     async def delete_scores_by_post_id(self, post_id: int) -> list[Score]:
-        score = await self.score_repository.get_score_by_post_id(post_id)
-        score = await self.score_repository.delete_score(score)
-        ...
-        # async def self.scores_service.delete_scores_by_post_id(post_id):
-        #     ...
-        #
-        # for score in scores:
-        #     await db.delete(score)
-        #
-        # return scores
+        scores = await self.score_repository.get_scores_by_post_id(post_id)
+        for score in scores:
+            await self.score_repository.delete_score(score)
+        return scores
