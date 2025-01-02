@@ -16,7 +16,7 @@ class RoleEnum(Enum):
 
 
 def validate_phone(phone: str) -> str:
-    phone_regex = r"^\+?[1-9]\d{1,14}$"
+    phone_regex = r"^\+?[1-9]\d{9,14}$"
     if not re.match(phone_regex, phone):
         raise ValueError("Invalid phone number format")
     return phone

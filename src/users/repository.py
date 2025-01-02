@@ -1,6 +1,7 @@
 from datetime import datetime
+from typing import Sequence
 
-from sqlalchemy import and_, select, func
+from sqlalchemy import and_, select, func, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from starlette.datastructures import URL
@@ -92,6 +93,29 @@ class UserRepository:
         query = select(func.count(Post.id)).where(Post.user_id == user_id)
         result = await self.session.execute(query)
         return result.scalar()
+
+    async def search_users(self, param: str, has_posts: bool, offset: int, limit: int) -> Sequence[User]:
+        query = (
+            select(User)
+            .outerjoin(Post)
+            .filter(
+                or_(
+                    User.first_name.ilike(f"%{param}%"),
+                    User.last_name.ilike(f"&{param}%"),
+                    User.email.ilike(f"%{param}%"),
+                )
+            )
+            .group_by(User.id)
+        )
+        if has_posts:
+            query = query.having(func.count(Post.id) > 0)
+        else:
+            query = query.having(func.count(Post.id) == 0)
+
+        query = query.offset(offset).limit(limit)
+
+        result = await self.session.execute(query)
+        return result.scalars().all()
 
 
 class RoleRepository:

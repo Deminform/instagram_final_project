@@ -1,3 +1,5 @@
+from typing import Sequence
+
 from fastapi import HTTPException, status, UploadFile
 from libgravatar import Gravatar
 from sqlalchemy.exc import IntegrityError
@@ -124,3 +126,6 @@ class UserService:
                 status_code=status.HTTP_404_NOT_FOUND, detail=USER_NOT_FOUND
             )
         return await self.user_repository.change_role(user, user_role)
+
+    async def search_users(self, param: str, has_posts: bool, offset: int, limit: int) -> Sequence[UserResponse] | None:
+        return await self.user_repository.search_users(param, has_posts, offset, limit)
