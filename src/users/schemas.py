@@ -6,6 +6,8 @@ import re
 
 from pydantic import BaseModel, EmailStr, BeforeValidator
 
+from src.users.models import User
+
 
 class RoleEnum(Enum):
     USER = "user"
@@ -45,6 +47,13 @@ class UserResponse(UserBase):
     class ConfigDict:
         from_attributes = True
 
+    @classmethod
+    def from_user(cls, user: User, post_count: int = 0) -> "UserResponse":
+        return cls(
+            **user.__dict__,
+            role_name=user.role.name if user.role else None,
+            post_count=post_count,
+        )
 
 class UserUpdate(BaseModel):
     first_name: Optional[str] = None

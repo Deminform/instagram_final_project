@@ -13,7 +13,7 @@ from conf.messages import (
 from src.services.auth.auth_service import Hash
 from src.users.models import User
 from src.users.repository import RoleRepository, TokenRepository, UserRepository
-from src.users.schemas import RoleEnum, UserCreate, UserUpdate
+from src.users.schemas import RoleEnum, UserCreate, UserUpdate, UserResponse
 from src.services.cloudinary_service import CloudinaryService
 
 
@@ -51,26 +51,37 @@ class UserService:
             user_create, user_role, avatar, password_hashed
         )
 
-    async def get_user_by_id(self, user_id: int) -> User | None:
-        return await self.user_repository.get_user_by_id(user_id)
+    async def get_user_by_id(self, user_id: int) -> UserResponse | None:
+        user = await self.user_repository.get_user_by_id(user_id)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail=USER_NOT_FOUND
+            )
+        posts_count = await self.user_repository.get_user_posts_count(user.id)
+        return UserResponse.from_user(user, posts_count)
 
     async def get_user_by_email(self, email: str) -> User | None:
         return await self.user_repository.get_user_by_email(email)
 
-    async def get_user_by_username(self, username: str) -> User | None:
-        return await self.user_repository.get_user_by_username(username)
-
-    async def get_user_posts_count(self, user_id: int) -> int:
-        return await self.user_repository.get_user_posts_count(user_id)
+    async def get_user_by_username(self, username: str) -> UserResponse | None:
+        user = await self.user_repository.get_user_by_username(username)
+        if user:
+            posts_count = await self.user_repository.get_user_posts_count(user.id)
+            return UserResponse.from_user(user, posts_count)
 
     async def activate_user(self, user: User):
         return await self.user_repository.activate_user(user)
 
-    async def update_user(self, user_id: int, body: UserUpdate) -> User | None:
+    async def update_user(self, user_id: int, body: UserUpdate) -> UserResponse | None:
         user = await self.user_repository.get_user_by_id(user_id)
+        if not user:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND, detail=USER_NOT_FOUND
+            )
         try:
-            if user:
-                return await self.user_repository.update_user(user, body)
+            update_user = await self.user_repository.update_user(user, body)
+            posts_count = await self.user_repository.get_user_posts_count(user.id)
+            return UserResponse.from_user(update_user, posts_count)
         except IntegrityError as e:
             _handle_integrity_error(e)
 
