@@ -1,5 +1,4 @@
 from typing import Optional
-
 from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -37,7 +36,7 @@ class ScoreRepository:
 
 
     async def create_score(self, score_data: ScoreCreate):
-        score = Score(post_id=score_data.post.id, user_id=score_data.user.id, score=score_data.score)
+        score = Score(post_id=score_data.post_id, user_id=score_data.user_id, score=score_data.score)
         self.session.add(score)
         await self.session.commit()
         await self.session.refresh(score)
