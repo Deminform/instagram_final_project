@@ -16,7 +16,7 @@ from src.services.auth.auth_service import RoleChecker
 router = APIRouter(prefix="/comments", tags=["comments"])
 
 
-@router.post("/", response_model=CommentResponse)
+@router.post("/{post_id}", response_model=CommentResponse)
 async def add_comment(
     post_id: int,
     body: CommentBase,
@@ -54,7 +54,7 @@ async def delete_comment(
     return await comment_service.delete_comment(comment_id)
 
 
-@router.get("/", response_model=list[CommentUpdateResponse])
+@router.get("/{post_id}", response_model=list[CommentUpdateResponse])
 async def get_comment_by_post_all(
     post_id: int,
     limit: int = Query(10, ge=10, le=500),
@@ -66,7 +66,7 @@ async def get_comment_by_post_all(
     return await comment_service.get_comment_by_post_all(post_id, limit, offset)
 
 
-@router.get("/{post_id}/user", response_model=list[CommentUpdateResponse])
+@router.get("/user/{post_id}", response_model=list[CommentUpdateResponse])
 async def get_comment_by_post_user(
     post_id: int,
     limit: int = Query(10, ge=10, le=500),
@@ -79,7 +79,7 @@ async def get_comment_by_post_user(
 
 
 @router.get(
-    "/{post_id}/{user_id}/admin",
+    "/admin/{post_id}/{user_id}",
     response_model=list[CommentUpdateResponse],
     dependencies=[
         Depends(RoleChecker([RoleEnum.MODER, RoleEnum.ADMIN])),
