@@ -8,7 +8,7 @@ from starlette.datastructures import URL
 
 from src.posts.models import Post
 from src.users.models import Role, Token, User
-from src.users.schemas import RoleEnum, UserCreate, UserUpdate
+from src.users.schemas import RoleEnum, UserCreate, UserUpdate, UserResponse
 
 
 class UserRepository:
@@ -95,27 +95,26 @@ class UserRepository:
         return result.scalar()
 
     async def search_users(self, param: str, has_posts: bool, offset: int, limit: int) -> Sequence[User]:
-        query = (
-            select(User)
-            .outerjoin(Post)
-            .filter(
-                or_(
-                    User.first_name.ilike(f"%{param}%"),
-                    User.last_name.ilike(f"&{param}%"),
-                    User.email.ilike(f"%{param}%"),
+        query = select(User, func.count(Post.id).label("posts_count")).outerjoin(Post).group_by(User.id)
+        if param:
+            query = query.filter(
+                    or_(
+                        User.first_name.ilike(f"%{param}%"),
+                        User.last_name.ilike(f"%{param}%"),
+                        User.email.ilike(f"%{param}%"),
+                    )
                 )
-            )
-            .group_by(User.id)
-        )
-        if has_posts:
+
+        if has_posts is True:
             query = query.having(func.count(Post.id) > 0)
-        else:
+        elif has_posts is False:
             query = query.having(func.count(Post.id) == 0)
 
         query = query.offset(offset).limit(limit)
 
         result = await self.session.execute(query)
-        return result.scalars().all()
+        rows = result.all()
+        return [UserResponse.from_user(row.User, row.posts_count) for row in rows]
 
 
 class RoleRepository:

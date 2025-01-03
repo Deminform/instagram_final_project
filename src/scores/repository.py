@@ -1,6 +1,5 @@
 from typing import Optional
-
-from sqlalchemy import select, func
+from sqlalchemy import select, func, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.scores.models import Score
@@ -37,7 +36,7 @@ class ScoreRepository:
 
 
     async def create_score(self, score_data: ScoreCreate):
-        score = Score(post_id=score_data.post.id, user_id=score_data.user.id, score=score_data.score)
+        score = Score(post_id=score_data.post_id, user_id=score_data.user_id, score=score_data.score)
         self.session.add(score)
         await self.session.commit()
         await self.session.refresh(score)
@@ -81,3 +80,9 @@ class ScoreRepository:
                                    Score.post_id == post_id)
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none() is not None
+    
+
+    async def delete_scores_by_post_id(self, post_id: int):
+        stmt = delete(Score).filter(Score.post_id == post_id)
+        await self.session.execute(stmt)
+
