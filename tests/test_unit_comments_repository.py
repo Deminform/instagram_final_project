@@ -12,7 +12,6 @@ from src.posts.models import Post
 from src.comments.schema import CommentBase
 from src.comments.repository import CommentRepository
 from src.comments.models import Comment
-from src.comments.comments_services import CommentService
 
 
 class TestAsyncComments(unittest.IsolatedAsyncioTestCase):

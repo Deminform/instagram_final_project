@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from fastapi import HTTPException, status
 
 from src.scores.models import Score
@@ -45,16 +45,14 @@ class ScoreService:
         return await self.score_repository.get_scores_by_user_id(user_id, limit, offset)
 
     async def fetch_scores_by_post(
-        self, post_id: int, limit: int = 10, offset: int = 0
+        self, post_id: int
     ):
         """
         Get the list of the Score by post's ID.
         :param post_id: int - post's ID.
-        :param limit: int - max result counts (10 by default).
-        :param offset: int - pagination rate (0 by default).
         :return: score list.
         """
-        return await self.score_repository.get_scores_by_post_id(post_id, limit, offset)
+        return await self.score_repository.get_scores_by_post_id(post_id)
 
     async def create_new_score(self, score_data: ScoreCreate):
         """
@@ -109,8 +107,3 @@ class ScoreService:
         return average_score
 
 
-    async def delete_scores_by_post_id(self, post_id: int) -> list[Score]:
-        scores = await self.score_repository.get_scores_by_post_id(post_id)
-        for score in scores:
-            await self.score_repository.delete_score(score)
-        return scores
