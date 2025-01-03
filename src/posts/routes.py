@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from conf import messages, const
 from database.db import get_db
+from src.posts.models import Post
 from src.posts.post_service import PostService
 from src.posts.schemas import PostResponseSchema, PostUpdateRequest
 from src.services.auth.auth_service import get_current_user
@@ -29,7 +30,18 @@ async def get_posts(
         keyword: str = Query(None, description="Search by description, partial match, case insensitive"),
         db: AsyncSession = Depends(get_db),
         user: User = Depends(get_current_user),
-):
+) -> list[PostResponseSchema]:
+    """
+    Retrieve a list of posts with optional filters and pagination.
+
+    :param limit: Maximum number of posts to retrieve, default is 10.
+    :param offset: Number of posts to skip, default is 0.
+    :param tag: Filter posts by tags (partial match, case insensitive).
+    :param keyword: Filter posts by description (partial match, case insensitive).
+    :param db: Database session dependency.
+    :param user: Current authenticated user dependency.
+    :return: List of posts matching the criteria.
+    """
     post_service = PostService(db)
     return await post_service.get_posts(limit, offset, keyword, tag)
 
@@ -39,7 +51,15 @@ async def get_post_by_id(
         post_id: int,
         db: AsyncSession = Depends(get_db),
         user: User = Depends(get_current_user),
-):
+) -> Post:
+    """
+    Retrieve a specific post by its ID.
+
+    :param post_id: The unique identifier of the post.
+    :param db: Database session dependency.
+    :param user: Current authenticated user dependency.
+    :return: The post matching the provided ID.
+    """
     post_service = PostService(db)
     post = await post_service.get_post_by_id(post_id)
     return post
@@ -57,7 +77,18 @@ async def create_post(
         image: UploadFile = File(...),
         db: AsyncSession = Depends(get_db),
         user: User = Depends(get_current_user),
-):
+) -> Post:
+    """
+    Create a new post with the provided description, image, tags, and filter.
+
+    :param description: Description of the post, required with length constraints.
+    :param image_filter: Optional image filter to apply.
+    :param tags: Optional comma-separated tags for the post.
+    :param image: The uploaded image file.
+    :param db: Database session dependency.
+    :param user: Current authenticated user dependency.
+    :return: The created post.
+    """
     post_service = PostService(db)
     post = await post_service.create_post(user, description, image_filter, tags, image)
     return post
@@ -70,6 +101,15 @@ async def create_qr(
         db: AsyncSession = Depends(get_db),
         user: User = Depends(get_current_user),
 ):
+    """
+    Generate a QR code for a specific post.
+
+    :param post_id: The unique identifier of the post.
+    :param image_filter: Filter to apply to the QR code image.
+    :param db: Database session dependency.
+    :param user: Current authenticated user dependency.
+    :return: Streaming response containing the QR code image.
+    """
     post_service = PostService(db)
     image_qr = await post_service.create_qr(user, post_id, image_filter)
     return StreamingResponse(image_qr, media_type="image/png")
@@ -81,7 +121,16 @@ async def edit_post(
         body: PostUpdateRequest,
         db: AsyncSession = Depends(get_db),
         user: User = Depends(get_current_user),
-):
+) -> Post:
+    """
+    Update the description of a specific post.
+
+    :param post_id: The unique identifier of the post to update.
+    :param body: Request body containing the new description.
+    :param db: Database session dependency.
+    :param user: Current authenticated user dependency.
+    :return: The updated post.
+    """
     post_service = PostService(db)
     post = await post_service.update_post_description(user, post_id, body.description)
     return post
@@ -93,6 +142,14 @@ async def delete_post(
         db: AsyncSession = Depends(get_db),
         user: User = Depends(get_current_user),
 ):
+    """
+    Delete a specific post by its ID along with associated data.
+
+    :param post_id: The unique identifier of the post to delete.
+    :param db: Database session dependency.
+    :param user: Current authenticated user dependency.
+    :return: The deleted post instance.
+    """
     post_service = PostService(db)
     post = await post_service.delete_post(user, post_id)
     return post
