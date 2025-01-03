@@ -8,7 +8,7 @@ from database.db import get_db
 from src.scores.score_service import ScoreService
 
 
-router = APIRouter(prefix="/scores", tags=["Scores"])
+router = APIRouter(prefix="/scores", tags=["scores"])
 
 
 def get_score_service(db: AsyncSession = Depends(get_db)) -> ScoreService:

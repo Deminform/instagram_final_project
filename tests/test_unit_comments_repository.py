@@ -10,7 +10,6 @@ from src.users.models import Role, Token, User
 from src.comments.schema import CommentBase
 from src.comments.repository import CommentRepository
 from src.comments.models import Comment
-from src.comments.comments_services import CommentServices
 
 
 class TestAsyncComments(unittest.IsolatedAsyncioTestCase):

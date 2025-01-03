@@ -46,6 +46,7 @@ coverage/
 nosetests.xml
 coverage.xml
 *.cover
+.coverage
 
 # MyPy
 .mypy_cache/
@@ -61,3 +62,6 @@ dmypy.json
 # Makefile
 *Makefile
 .test.db
+test.db
+
+test_e2e_scores_routes.py
