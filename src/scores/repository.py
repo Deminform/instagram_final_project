@@ -27,7 +27,7 @@ class ScoreRepository:
 
 
     async def get_scores_by_post_id(
-        self, post_id: int
+        self, post_id: int, limit: int = 10, offset: int = 0
     ):
         stmt = select(Score).where(Score.post_id == post_id)
         result = await self.session.execute(stmt)

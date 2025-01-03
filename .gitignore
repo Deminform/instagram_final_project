@@ -66,4 +66,4 @@ dmypy.json
 .test.db
 test.db
 
-test_e2e_scores_routes.py
+tests/test_e2e_scores_routes.py
