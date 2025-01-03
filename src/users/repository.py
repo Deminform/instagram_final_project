@@ -1,13 +1,14 @@
 from datetime import datetime
+from typing import Sequence
 
-from sqlalchemy import and_, select, func
+from sqlalchemy import and_, select, func, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 from starlette.datastructures import URL
 
 from src.posts.models import Post
 from src.users.models import Role, Token, User
-from src.users.schemas import RoleEnum, UserCreate, UserUpdate
+from src.users.schemas import RoleEnum, UserCreate, UserUpdate, UserResponse
 
 
 class UserRepository:
@@ -92,6 +93,28 @@ class UserRepository:
         query = select(func.count(Post.id)).where(Post.user_id == user_id)
         result = await self.session.execute(query)
         return result.scalar()
+
+    async def search_users(self, param: str, has_posts: bool, offset: int, limit: int) -> Sequence[User]:
+        query = select(User, func.count(Post.id).label("posts_count")).outerjoin(Post).group_by(User.id)
+        if param:
+            query = query.filter(
+                    or_(
+                        User.first_name.ilike(f"%{param}%"),
+                        User.last_name.ilike(f"%{param}%"),
+                        User.email.ilike(f"%{param}%"),
+                    )
+                )
+
+        if has_posts is True:
+            query = query.having(func.count(Post.id) > 0)
+        elif has_posts is False:
+            query = query.having(func.count(Post.id) == 0)
+
+        query = query.offset(offset).limit(limit)
+
+        result = await self.session.execute(query)
+        rows = result.all()
+        return [UserResponse.from_user(row.User, row.posts_count) for row in rows]
 
 
 class RoleRepository:
