@@ -3,12 +3,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from conf import messages, const
-from src.comments.comments_services import CommentService
 from src.comments.repository import CommentRepository
 from src.posts.models import Post
 from src.scores.repository import ScoreRepository
 from src.urls.image_service import URLService
-from src.scores.score_service import ScoreService
 from src.services.qr_service import QRService
 from src.posts.repository import PostRepository
 from src.tags.tag_service import TagService
@@ -26,9 +24,7 @@ class PostService:
         self.tag_service = TagService(db)
         self.qr_service = QRService
         self.post_repository = PostRepository(db)
-        self.score_service = ScoreService(db)
         self.score_repository = ScoreRepository(db)
-        self.comment_service = CommentService(db)
         self.comment_repository = CommentRepository(db)
 
     async def _get_post_or_exception(self, post_id: int, user: User = None) -> Post:
