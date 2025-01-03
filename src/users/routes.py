@@ -105,7 +105,7 @@ async def change_user_role(
 @router_admin.get("/search", response_model=Sequence[UserResponse], status_code=status.HTTP_200_OK)
 async def search_users(
         search_param: str = Query(None, description="Search by first name or last name or email"),
-        has_posts: bool = True,
+        has_posts: bool = None,
         offset: int = Query(default=0, ge=0),
         limit: int = Query(default=10, le=100, ge=10),
         current_user: User = Depends(RoleChecker([RoleEnum.ADMIN, RoleEnum.MODER])),  # TODO Check admin permission
