@@ -3,26 +3,29 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from conf import messages, const
-from src.comments.comments_services import CommentService
+from src.comments.repository import CommentRepository
 from src.posts.models import Post
+from src.scores.repository import ScoreRepository
 from src.urls.image_service import URLService
-from src.scores.score_service import ScoreService
 from src.services.qr_service import QRService
 from src.posts.repository import PostRepository
 from src.tags.tag_service import TagService
+from src.urls.repository import URLRepository
 from src.users.models import User
 from src.services.cloudinary_service import CloudinaryService
+from src.users.schemas import RoleEnum
 
 
 class PostService:
     def __init__(self, db: AsyncSession):
         self.image_service = URLService(db)
+        self.image_repository = URLRepository(db)
         self.cloudinary_service = CloudinaryService
         self.tag_service = TagService(db)
         self.qr_service = QRService
         self.post_repository = PostRepository(db)
-        self.score_service = ScoreService(db)
-        self.comments_service = CommentService(db)
+        self.score_repository = ScoreRepository(db)
+        self.comment_repository = CommentRepository(db)
 
     async def _get_post_or_exception(self, post_id: int, user: User = None) -> Post:
         """
@@ -38,7 +41,7 @@ class PostService:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=messages.POST_NOT_FOUND,
             )
-        if user and post.user_id != user.id:
+        if user and post.user_id != user.id and user.role_name != RoleEnum.ADMIN.value:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail=messages.FORBIDDEN,
@@ -128,13 +131,13 @@ class PostService:
 
         try:
             # delete all rating
-            scores_list = await self.score_service.delete_scores_by_post_id(post_id)
+            scores_list = await self.score_repository.delete_scores_by_post_id(post_id)
 
             # delete all comments
-            comments_list = await self.comments_service.delete_comments_by_post_id(post_id)
+            comments_list = await self.comment_repository.delete_comment_by_post_id(post_id)
 
             # delete all URLs/urls
-            urls_list = await self.image_service.delete_urls_by_post_id(post_id)
+            urls_list = await self.image_repository.delete_urls_by_post_id(post_id)
 
             # delete post
             post = await self._get_post_or_exception(post_id, user)
