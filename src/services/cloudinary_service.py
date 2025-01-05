@@ -23,10 +23,11 @@ class CloudinaryService:
         edited_image_url, options = cloudinary_url(
             original_image_url,
             transformation=[
+                {"width": 1080, "height": 1080, "crop": "fill"},
                 FILTER_DICT.get(filter_name),
-                FILTER_DICT.get("crop"),
             ]
         )
+        print(edited_image_url)
         return edited_image_url
 
     @staticmethod
@@ -41,14 +42,17 @@ class CloudinaryService:
                 overwrite=True,
                 folder=app_config.CLOUDINARY_FOLDER,
             )
-            links_dict[const.ORIGINAL_IMAGE_URL] = original_image_url["public_id"]
+            links_dict[const.ORIGINAL_IMAGE_URL] = original_image_url["secure_url"]
+            print(original_image_url["secure_url"])
 
             if image_filter:
                 edited_image_url = await CloudinaryService.apply_filter(original_image_url["public_id"], image_filter)
                 links_dict[const.EDITED_IMAGE_URL] = edited_image_url
+                print('filter here')
             else:
-                links_dict[const.ORIGINAL_IMAGE_URL] = original_image_url["public_id"]
+                links_dict[const.ORIGINAL_IMAGE_URL] = original_image_url["secure_url"]
                 links_dict[const.EDITED_IMAGE_URL] = original_image_url["secure_url"]
+                print('filter is not here')
 
         except Exception as e:
             raise HTTPException(
