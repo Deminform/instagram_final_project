@@ -57,9 +57,11 @@ async def read_scores_by_post(
 
 @router.post("/", response_model=Score, status_code=status.HTTP_201_CREATED)
 async def create_new_score(
-    score_data: ScoreCreate, service: ScoreService = Depends(get_score_service)
+        score_data: ScoreCreate,
+        service: ScoreService = Depends(get_score_service),
+        current_user: UserResponse = Depends(get_current_user)
 ):
-    return await service.create_new_score(score_data)
+    return await service.create_new_score(score_data, current_user)
 
 
 @router.put("/{score_id}", response_model=Score)

@@ -29,6 +29,8 @@ TAG_DESCRIPTION = f"Tags may be separated by commas, an example: 'tag1,tag2,tag3
 IMAGE_FILTER_DESCRIPTION = "Image filter, an example: 'blur'"
 POST_DESCRIPTION = f"Post description, an example: 'This is a test post', minimum {const.POST_DESCRIPTION_MIN_LENGTH} character, up to {const.POST_DESCRIPTION_MAX_LENGTH} characters and can`t be empty"
 
+SCORE_WARNING_SELF_SCORE="Users cannot score their posts"
+
 UPLOAD_IMAGE_ERROR = "Upload image failed"
 FILTER_IMAGE_ERROR = "Filter image failed"
 FILTER_IMAGE_ERROR_DETAIL = "Filter name is incorrect"

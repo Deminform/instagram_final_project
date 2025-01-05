@@ -35,8 +35,8 @@ class ScoreRepository:
         return scores
 
 
-    async def create_score(self, score_data: ScoreCreate):
-        score = Score(post_id=score_data.post_id, user_id=score_data.user_id, score=score_data.score)
+    async def create_score(self, score_data: ScoreCreate, user_id: int):
+        score = Score(post_id=score_data.post_id, user_id=user_id, score=score_data.score)
         self.session.add(score)
         await self.session.commit()
         await self.session.refresh(score)
