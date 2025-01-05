@@ -1,13 +1,19 @@
 import asyncio
 
+import pytest
 from unittest.mock import patch
 
+import pytest_asyncio
 from fastapi import BackgroundTasks
 
 from conf.messages import EMAIL_CONFIRMED
 from src.services.auth.auth_service import create_verification_token, Hash
+from src.users.models import Role, User
 from src.users.repository import UserRepository
 from tests.conftest import TestingSessionLocal
+
+
+# TODO Refresh
 
 
 def test_user_registration(client, faker):
