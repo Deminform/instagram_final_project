@@ -13,7 +13,7 @@ from conf.config import Base, app_config
 from database.db import get_db
 from main import app
 from src.posts.models import Post
-from src.services.auth.auth_service import Hash, create_refresh_token, create_access_token, TokenRepository
+from src.services.auth.auth_service import Hash, create_refresh_token, create_access_token
 from src.users.models import User, Role, Token
 from src.users.repository import UserRepository, TokenRepository
 
