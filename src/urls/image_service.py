@@ -35,8 +35,3 @@ class URLService:
         await self.create_image(post_id, new_image_url, image_filter)
         return await self.qr_service.create_qr(new_image_url)
 
-    async def delete_urls_by_post_id(self, post_id) -> list[URLs]:
-        # delete all URLs by post_id
-        # returns a list of deleted URLs
-        # NOT USED COMMIT FUNCTION (only session.delete(url))
-        pass

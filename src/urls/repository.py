@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.urls.models import URLs
 
@@ -22,3 +22,7 @@ class URLRepository:
         stmt = select(URLs).filter_by(post_id=post_id, image_filter=image_filter)
         edited_image = await self.session.execute(stmt)
         return edited_image.scalar_one_or_none()
+
+    async def delete_urls_by_post_id(self, post_id: int):
+        stmt = delete(URLs).filter(URLs.post_id == post_id)
+        await self.session.execute(stmt)
