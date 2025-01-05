@@ -2,10 +2,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
 from fastapi import HTTPException, status
 
+from conf import messages
 from src.scores.models import Score
 from src.scores.repository import ScoreRepository
 from src.scores.schemas import ScoreCreate, ScoreUpdate
 from src.posts.repository import PostRepository
+from src.users.models import User
 
 
 class ScoreService:
@@ -54,25 +56,21 @@ class ScoreService:
         """
         return await self.score_repository.get_scores_by_post_id(post_id, limit, offset)
 
-    async def create_new_score(self, score_data: ScoreCreate):
-        """
-        Create a new Score.
-        :param score_data: ScoreCreate - data for creating a score.
-        :return: created score.
-        """
-        if await self.score_repository.score_exists(score_data.user_id, score_data.post_id):
+    async def create_new_score(self, score_data: ScoreCreate, user: User):
+
+        if await self.score_repository.score_exists(user.id, score_data.post_id):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="User has already scored this post"
             )
         
         post = await self.post_repository.get_post_by_id(score_data.post_id)
-        if post.user_id == score_data.user_id:
+        if post.user_id == user.id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="Users cannot score their posts"
+                detail=messages.SCORE_WARNING_SELF_SCORE
             )
-        return await self.score_repository.create_score(score_data)
+        return await self.score_repository.create_score(score_data, user.id)
     
     async def update_existing_score(self, score_id: int, score_data: ScoreUpdate):
         """

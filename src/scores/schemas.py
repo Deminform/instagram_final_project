@@ -10,7 +10,7 @@ class ScoreBase(BaseModel):
     )
 
 
-class ScoreCreate(ScoreBase):
+class ScoreCreate(BaseModel):
     """Schema for creating a new score."""
     post_id: int
     score: int = Field(..., ge=1, le=5)
