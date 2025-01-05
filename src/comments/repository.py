@@ -49,7 +49,6 @@ class CommentRepository:
         The delete_comment function deletes a comment from the database.
 
         :param comment_id: int: Find the comment in the database
-        :param user: User: Get the user_id from the logged in user
         :return: Deletes comment object
         """
         stmt = select(Comment).filter_by(id=comment_id)
@@ -60,11 +59,11 @@ class CommentRepository:
             await self.db.commit()
         return comment
 
-    async def delete_comment_by_post_id(self, post_id: int) -> int:
+    async def delete_comment_by_post_id(self, post_id: int) -> None:
         """
         The delete_comment function deletes a comment from the database.
 
-        :param comment_id: int: Find the comment in the database
+        :param post_id: int: Find the comment in the database
         """
         stmt = delete(Comment).filter(Comment.post_id == post_id)
         result = await self.db.execute(stmt)
@@ -74,9 +73,8 @@ class CommentRepository:
         The get_comment_by_post_all function returns all comments to a post from the database.
 
         :param post_id: int: Identifies the post for which we are looking for all comments
-        :param limit (int, optional): [description]. Defaults to Query(10, ge=10, le=500).
-        :param offset (int, optional): [description]. Defaults to Query(0, ge=0)
-        :param user: User: Get the user_id from the logged in user
+        :param limit: int: Defaults to Query(10, ge=10, le=500).
+        :param offset: int: Defaults to Query(0, ge=0)
         :return: All comment object
         """
         stmt = select(Comment).filter_by(post_id=post_id).offset(offset).limit(limit)
@@ -90,8 +88,8 @@ class CommentRepository:
         The get_comment_by_post_user function returns all user comments on a post from the database.
 
         :param post_id: int: specifies the post for which we are looking for all comments
-        :param limit (int, optional): [description]. Defaults to Query(10, ge=10, le=500).
-        :param offset (int, optional): [description]. Defaults to Query(0, ge=0)
+        :param limit: int: Defaults to Query(10, ge=10, le=500).
+        :param offset: int: Defaults to Query(0, ge=0)
         :param user: User: gets the user_id from the logged in user
         :return: all user comment objects
         """
