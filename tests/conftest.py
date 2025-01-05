@@ -17,6 +17,8 @@ from src.services.auth.auth_service import Hash, create_refresh_token, create_ac
 from src.users.models import User, Role, Token
 from src.users.repository import UserRepository, TokenRepository
 
+from src.scores.models import Score
+
 SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite:///./test.db"
 
 engine = create_async_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}, poolclass=StaticPool)
@@ -63,6 +65,15 @@ def init_models_wrap():
             session.add(role_admin)
             session.add(user)
             await session.commit()
+
+        # Додавання тестового запису scores
+            score = Score(post_id=1, user_id=user.id, score=4, id=1)
+            session.add(score)
+            score1 = Score(post_id=1, user_id=user.id, score=5, id=2)
+            session.add(score1)
+
+            await session.commit()
+
     asyncio.run(init_models())
 
 @pytest.fixture(scope="module")
@@ -104,10 +115,7 @@ async def get_user_tokens():
         await TokenRepository(session).add_tokens(1, access_token, refresh_token, True)
         return {"access_token": access_token, "refresh_token": refresh_token}
 
-
-
-# ----------------------------------------------
-
+      
 @pytest.fixture(scope="module")
 def user_password(faker):
     password = faker.password()

@@ -45,14 +45,14 @@ class ScoreService:
         return await self.score_repository.get_scores_by_user_id(user_id, limit, offset)
 
     async def fetch_scores_by_post(
-        self, post_id: int
+        self, post_id: int, limit: int = 10, offset: int = 0
     ):
         """
         Get the list of the Score by post's ID.
         :param post_id: int - post's ID.
         :return: score list.
         """
-        return await self.score_repository.get_scores_by_post_id(post_id)
+        return await self.score_repository.get_scores_by_post_id(post_id, limit, offset)
 
     async def create_new_score(self, score_data: ScoreCreate):
         """
