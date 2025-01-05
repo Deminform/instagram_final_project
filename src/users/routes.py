@@ -50,7 +50,7 @@ async def update_user_info(
 
 
 @router.patch("/avatar", response_model=UserResponse)
-async def update_user_info(
+async def update_user_avatar(
     file: UploadFile = File(),
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db),

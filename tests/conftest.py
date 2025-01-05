@@ -5,14 +5,16 @@ import pytest
 import pytest_asyncio
 from PIL import Image
 from fastapi.testclient import TestClient
+from sqlalchemy.sql import text
 from sqlalchemy.pool import StaticPool
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 
 from conf.config import Base, app_config
 from database.db import get_db
 from main import app
-from src.services.auth.auth_service import Hash, create_refresh_token, create_access_token, TokenRepository
-from src.users.models import User, Role
+from src.posts.models import Post
+from src.services.auth.auth_service import Hash, create_refresh_token, create_access_token
+from src.users.models import User, Role, Token
 from src.users.repository import UserRepository, TokenRepository
 
 from src.scores.models import Score
@@ -55,7 +57,7 @@ def init_models_wrap():
                 is_banned=False,
                 is_confirmed=True,
             )
-            role_guest = Role(name='guest')
+            role_guest = Role(name='moderator')
             role_user = Role(name='user')
             role_admin = Role(name='admin')
             session.add(role_guest)
@@ -112,3 +114,87 @@ async def get_user_tokens():
         refresh_token = create_refresh_token(data={"sub": test_user_dict['email']})
         await TokenRepository(session).add_tokens(1, access_token, refresh_token, True)
         return {"access_token": access_token, "refresh_token": refresh_token}
+
+      
+@pytest.fixture(scope="module")
+def user_password(faker):
+    password = faker.password()
+    return password
+
+
+@pytest_asyncio.fixture(scope="module")
+async def test_user_auth(init_models_wrap, user_password, faker):
+    async with TestingSessionLocal() as session:
+        hashed_password = Hash().get_password_hash(user_password)
+        user = User(
+                first_name="Melanie",
+                last_name="Grant",
+                phone="+380993332233",
+                username="sheena09",
+                email="kimberly00@yahoo.com",
+                avatar_url="https://www.gravatar.com/avatar/1234",
+                role_id=2,
+                password=hashed_password,
+                is_banned=False,
+                is_confirmed=True
+        )
+        session.add(user)
+        await session.commit()
+        await session.refresh(user)
+        return user
+
+@pytest_asyncio.fixture(scope="function")
+async def auth_header(test_user_auth):
+    async with TestingSessionLocal() as session:
+        access_token = create_access_token(data={"sub": test_user_auth.email})
+        refresh_token = create_refresh_token(data={"sub": test_user_auth.email})
+        token = Token(
+            user_id=test_user_auth.id,
+            access_token=access_token,
+            refresh_token=refresh_token,
+            is_active=True
+        )
+        session.add(token)
+        await session.commit()
+        await session.refresh(token)
+        return {"access_token": access_token, "refresh_token": refresh_token}
+
+
+@pytest_asyncio.fixture(autouse=True)
+async def cleanup_user_tokens(request, test_user_auth):
+
+    async with TestingSessionLocal() as session:
+        query = text("DELETE FROM tokens WHERE user_id = :user_id")
+        await session.execute(query, {"user_id": test_user_auth.id})
+        await session.commit()
+
+
+@pytest_asyncio.fixture(scope="module")
+async def get_test_user_auth():
+    async def _get_test_user_auth(user_id: int):
+        async with TestingSessionLocal() as session:
+            return await UserRepository(session).get_user_by_id(user_id)
+    return _get_test_user_auth
+
+
+@pytest_asyncio.fixture(scope="function")
+async def create_post(test_user_auth):
+    async with TestingSessionLocal() as session:
+        post = Post(description="My post description",
+                    user_id=test_user_auth.id,
+                    original_image_url="https://res.cloudinary.com/example/my_image.jpg",
+                    image_url="https://res.cloudinary.com/example/my_edited_image.jpg",
+                    )
+        session.add(post)
+        await session.commit()
+        await session.refresh(post)
+        return post
+
+
+@pytest_asyncio.fixture(scope="module")
+async def get_test_user_token():
+    async def _get_test_user_token(user_id: int):
+        async with TestingSessionLocal() as session:
+            return await TokenRepository(session).get_user_tokens(user_id)
+    return _get_test_user_token
+

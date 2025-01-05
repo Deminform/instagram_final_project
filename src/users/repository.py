@@ -146,7 +146,7 @@ class TokenRepository:
         await self.session.commit()
         await self.session.refresh(new_tokens)
 
-    async def get_active_token(self, user_id: int, token: str) -> str | None:
+    async def get_active_token(self, user_id: int, token: str) -> Token | None:
         query = select(Token).where(
             and_(Token.user_id == user_id),
             (Token.access_token == token),
