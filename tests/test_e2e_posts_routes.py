@@ -36,7 +36,6 @@ from src.users.models import User
 #         assert data["user_id"] == test_user.id
 
 
-
 def test_create_post_success(client, get_user_tokens, file_fixture):
     payload = {
         "description": "Test post description",
@@ -44,7 +43,7 @@ def test_create_post_success(client, get_user_tokens, file_fixture):
         "image_filter": "sepia",
         "original_image_url": "https://res.cloudinary.com/example/original.jpg",
         "image_url": "https://res.cloudinary.com/example/edited.jpg",
-        "tags": ("tag_1", "tag_2")
+        "tags": ("tag_1", "tag_2"),
     }
 
     response = client.post(
@@ -66,7 +65,7 @@ def test_create_post_bad_filter(client, get_user_tokens, file_fixture):
     payload = {
         "description": "Bad filter test",
         "image_filter": "bad_filter",
-        "tags": ("tag_1", "tag_2")
+        "tags": ("tag_1", "tag_2"),
     }
 
     response = client.post(
@@ -81,10 +80,7 @@ def test_create_post_bad_filter(client, get_user_tokens, file_fixture):
 
 
 def test_create_post_too_short_description(client, get_user_tokens, file_fixture):
-    payload = {
-        "description": "H",
-        "tags": ("tag_1", "tag_2")
-    }
+    payload = {"description": "H", "tags": ("tag_1", "tag_2")}
     response = client.post(
         "api/posts/",
         data=payload,
@@ -97,10 +93,7 @@ def test_create_post_too_short_description(client, get_user_tokens, file_fixture
 
 
 def test_create_post_no_auth(client, file_fixture):
-    payload = {
-        "description": "No auth description",
-        "tags": ("tag_1", "tag_2")
-    }
+    payload = {"description": "No auth description", "tags": ("tag_1", "tag_2")}
     response = client.post(
         "api/posts/",
         data=payload,
