@@ -1,10 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-import redis
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from conf import messages
-from conf.config import app_config
 from database.db import get_db
 
 router = APIRouter(prefix="/healthchecker", tags=["healthchecker"])

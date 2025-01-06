@@ -47,7 +47,6 @@ async def lifespan(fastapi_app: FastAPI):
     yield
 
     # await redis.close()
-#
 
 app = FastAPI(lifespan=lifespan)
 
