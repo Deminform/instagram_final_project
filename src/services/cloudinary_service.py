@@ -17,9 +17,22 @@ cloudinary.config(
 
 
 class CloudinaryService:
+    """
+    A service class for interacting with Cloudinary to upload, transform, and retrieve image URLs.
+    """
 
     @staticmethod
-    async def apply_filter(original_image_url, filter_name: str):
+    async def apply_filter(original_image_url: str, filter_name: str):
+        """
+        Apply a filter to an image and return the URL of the edited image.
+
+        Args:
+            original_image_url (str): URL or public ID of the original image on Cloudinary.
+            filter_name (str): The name of the filter to apply.
+
+        Returns:
+            str: The URL of the edited image.
+        """
         edited_image_url, options = cloudinary_url(
             original_image_url,
             transformation=[
@@ -27,11 +40,20 @@ class CloudinaryService:
                 FILTER_DICT.get(filter_name),
             ]
         )
-        print(edited_image_url)
         return edited_image_url
 
     @staticmethod
     async def get_image_urls(image_file: UploadFile, image_filter: str = None):
+        """
+        Upload an image to Cloudinary, optionally apply a filter, and return URLs for the original and edited images.
+
+        Args:
+            image_file (UploadFile): The image file to upload.
+            image_filter (str, optional): The filter to apply to the image.
+
+        Returns:
+            dict: A dictionary containing URLs for the original and optionally the edited image.
+        """
         links_dict = {}
         unique_filename = uuid.uuid4().hex
 
@@ -43,16 +65,12 @@ class CloudinaryService:
                 folder=app_config.CLOUDINARY_FOLDER,
             )
             links_dict[const.ORIGINAL_IMAGE_URL] = original_image_url["secure_url"]
-            print(original_image_url["secure_url"])
-
             if image_filter:
                 edited_image_url = await CloudinaryService.apply_filter(original_image_url["public_id"], image_filter)
                 links_dict[const.EDITED_IMAGE_URL] = edited_image_url
-                print('filter here')
             else:
                 links_dict[const.ORIGINAL_IMAGE_URL] = original_image_url["secure_url"]
                 links_dict[const.EDITED_IMAGE_URL] = original_image_url["secure_url"]
-                print('filter is not here')
 
         except Exception as e:
             raise HTTPException(
@@ -61,12 +79,22 @@ class CloudinaryService:
             )
         return links_dict
 
-
     @staticmethod
-    async def get_avatar_url(avatar_file: UploadFile, username):
+    async def get_avatar_url(avatar_file: UploadFile, username: str):
+        """
+        Upload an avatar image to Cloudinary and generate a URL for it.
+
+        Args:
+            avatar_file (UploadFile): The avatar image file to upload.
+            username (str): The username to associate with the avatar.
+
+        Returns:
+            str: The URL of the uploaded avatar image.
+        """
         r = cloudinary.uploader.upload(
             avatar_file.file, public_id=f"Inst_project/{username}", overwrite=True
         )
+
         src_url = cloudinary.CloudinaryImage(
             f"Inst_project/{username}"
         ).build_url(
