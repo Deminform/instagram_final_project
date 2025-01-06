@@ -1,4 +1,6 @@
 from typing import Sequence
+from dotenv import load_dotenv
+import os
 
 from fastapi import HTTPException, status, UploadFile
 from libgravatar import Gravatar
@@ -18,6 +20,9 @@ from src.users.repository import RoleRepository, TokenRepository, UserRepository
 from src.users.schemas import RoleEnum, UserCreate, UserUpdate, UserResponse
 from src.services.cloudinary_service import CloudinaryService
 
+load_dotenv()
+ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "admin@example.com")
+ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "admin123")
 
 def _handle_integrity_error(e: IntegrityError):
     if "unique" in str(e.orig):
@@ -92,6 +97,37 @@ class UserService:
         return await self.user_repository.update_avatar_url(username, avatar_url)
 
     # -------ADMIN ENDPOINTS-------
+
+    async def ensure_admin_exists(self):
+        user_role = await self.role_repository.get_role_by_name(RoleEnum.ADMIN)
+        admin_user = await self.user_repository.get_user_with_role(user_role.id)
+
+        if not admin_user:
+            avatar = None
+            admin_create = {
+                "first_name": "admin",
+                "last_name": "admin",
+                "phone": "+1234567890",
+                "username": "admin",
+                "email": ADMIN_EMAIL,
+
+            }
+            try:
+                g = Gravatar(admin_create["email"])
+                avatar = g.get_image()
+            except Exception as e:
+                print(e)
+            password = ADMIN_PASSWORD
+            password_hashed = Hash().get_password_hash(password)
+
+            try:
+                await self.user_repository.create_admin_user(admin_create, user_role, password_hashed, avatar)
+                print("Admin user created successfully.")
+            except IntegrityError as e:
+                raise RuntimeError(e)
+        else:
+            print("Admin user already exists.")
+
 
     async def ban_user(self, user_id: int):
         user = await self.user_repository.get_user_by_id(user_id)

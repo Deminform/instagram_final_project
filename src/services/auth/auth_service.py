@@ -10,7 +10,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from conf.config import app_config
 from conf.messages import (
     FORBIDDEN,
-    INCORRECT_CREDENTIALS,
     INVALID_TOKEN_DATA,
     USER_NOT_FOUND,
     BANNED,
