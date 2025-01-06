@@ -14,7 +14,7 @@ from src.users.models import User
 faker = Faker()
 
 
-class TestContacts(unittest.IsolatedAsyncioTestCase):
+class TestPosts(unittest.IsolatedAsyncioTestCase):
     @classmethod
     def setUpClass(cls):
         cls.user = User(

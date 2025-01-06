@@ -66,7 +66,6 @@ def init_models_wrap():
             session.add(user)
             await session.commit()
 
-        # Додавання тестового запису scores
             score = Score(post_id=1, user_id=user.id, score=4, id=1)
             session.add(score)
             score1 = Score(post_id=1, user_id=user.id, score=5, id=2)
@@ -197,4 +196,3 @@ async def get_test_user_token():
         async with TestingSessionLocal() as session:
             return await TokenRepository(session).get_user_tokens(user_id)
     return _get_test_user_token
-
