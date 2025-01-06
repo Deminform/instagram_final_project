@@ -93,6 +93,32 @@ class UserService:
 
     # -------ADMIN ENDPOINTS-------
 
+    async def ensure_admin_exists(self):
+        user_role = await self.role_repository.get_role_by_name(RoleEnum.ADMIN)
+        admin_user = await self.user_repository.get_user_with_role(user_role)
+        if not admin_user:
+            avatar = None
+            user_create = UserCreate(
+                first_name="admin",
+                last_name="admin",
+                phone="+1234567890",
+                username="admin",
+                email="admin@example.com",
+                password="secure-password",
+            )
+            try:
+                g = Gravatar(user_create.email)
+                avatar = g.get_image()
+            except Exception as e:
+                print(e)
+            password_hashed = Hash().get_password_hash(user_create.password)
+
+            return await self.user_repository.create_user(user_create, user_role, avatar, password_hashed
+            )
+        else:
+            print("Admin user already exists.")
+
+
     async def ban_user(self, user_id: int):
         user = await self.user_repository.get_user_by_id(user_id)
         if not user:

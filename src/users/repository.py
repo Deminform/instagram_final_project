@@ -11,6 +11,7 @@ from src.users.models import Role, Token, User
 from src.users.schemas import RoleEnum, UserCreate, UserUpdate, UserResponse
 
 
+
 class UserRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
@@ -115,6 +116,12 @@ class UserRepository:
         result = await self.session.execute(query)
         rows = result.all()
         return [UserResponse.from_user(row.User, row.posts_count) for row in rows]
+
+    async def get_user_with_role(self, user_role) -> User | None:
+        query = select(User).where(User.role_name == user_role)
+        result = await self.session.execute(query)
+        return result.scalar_one_or_none()
+
 
 
 class RoleRepository:
