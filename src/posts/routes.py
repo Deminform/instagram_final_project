@@ -48,7 +48,7 @@ async def get_posts(
 
 @router.get("/{post_id}", response_model=PostResponseSchema)
 async def get_post_by_id(
-        post_id: int,
+        post_id: int = Query(..., ge=1, le=2147483647),
         db: AsyncSession = Depends(get_db),
         user: User = Depends(get_current_user),
 ) -> Post:
@@ -96,7 +96,7 @@ async def create_post(
 
 @router.post("/{post_id}/qr", status_code=status.HTTP_200_OK)
 async def create_qr(
-        post_id: int,
+        post_id: int = Query(..., ge=1, le=2147483647),
         image_filter: str = Query(..., description=messages.IMAGE_FILTER_DESCRIPTION),
         db: AsyncSession = Depends(get_db),
         user: User = Depends(get_current_user),
@@ -117,8 +117,8 @@ async def create_qr(
 
 @router.put("/{post_id}", response_model=PostResponseSchema)
 async def edit_post(
-        post_id: int,
         body: PostUpdateRequest,
+        post_id: int = Query(..., ge=1, le=2147483647),
         db: AsyncSession = Depends(get_db),
         user: User = Depends(get_current_user),
 ) -> Post:
@@ -138,7 +138,7 @@ async def edit_post(
 
 @router.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_post(
-        post_id: int,
+        post_id: int = Query(..., ge=1, le=2147483647),
         db: AsyncSession = Depends(get_db),
         user: User = Depends(get_current_user),
 ):
