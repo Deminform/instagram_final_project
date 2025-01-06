@@ -4,6 +4,7 @@ from fastapi import (
     UploadFile,
     File,
     Form,
+    Path,
 )
 
 from fastapi import Depends, APIRouter
@@ -48,7 +49,7 @@ async def get_posts(
 
 @router.get("/{post_id}", response_model=PostResponseSchema)
 async def get_post_by_id(
-        post_id: int = Query(..., ge=1, le=2147483647),
+        post_id: int = Path(..., ge=1, le=2147483647),
         db: AsyncSession = Depends(get_db),
         user: User = Depends(get_current_user),
 ) -> Post:
@@ -72,9 +73,26 @@ async def create_post(
             max_length=const.POST_DESCRIPTION_MAX_LENGTH,
             description=messages.POST_DESCRIPTION
 ),
-        image_filter: str | None = Form(None),
         tags: str = Form(None, description=messages.TAG_DESCRIPTION),
         image: UploadFile = File(...),
+        image_filter: str | None = Query(None, description=messages.IMAGE_FILTER_DESCRIPTION, enum=[
+        "grayscale",
+        "thumbnail",
+        "blur",
+        "crop",
+        "negate",
+        "vignette",
+        "brightness",
+        "contrast",
+        "saturation",
+        "hue",
+        "invert",
+        "sharpen",
+        "noise",
+        "oil_painting",
+        "pixelate",
+        "posterize",
+        ]),
         db: AsyncSession = Depends(get_db),
         user: User = Depends(get_current_user),
 ) -> Post:
@@ -96,8 +114,25 @@ async def create_post(
 
 @router.post("/{post_id}/qr", status_code=status.HTTP_200_OK)
 async def create_qr(
-        post_id: int = Query(..., ge=1, le=2147483647),
-        image_filter: str = Query(..., description=messages.IMAGE_FILTER_DESCRIPTION),
+        post_id: int = Path(..., ge=1, le=2147483647),
+        image_filter: str | None = Query(None, description=messages.IMAGE_FILTER_DESCRIPTION, enum=[
+            "grayscale",
+            "thumbnail",
+            "blur",
+            "crop",
+            "negate",
+            "vignette",
+            "brightness",
+            "contrast",
+            "saturation",
+            "hue",
+            "invert",
+            "sharpen",
+            "noise",
+            "oil_painting",
+            "pixelate",
+            "posterize",
+        ]),
         db: AsyncSession = Depends(get_db),
         user: User = Depends(get_current_user),
 ):
@@ -118,7 +153,7 @@ async def create_qr(
 @router.put("/{post_id}", response_model=PostResponseSchema)
 async def edit_post(
         body: PostUpdateRequest,
-        post_id: int = Query(..., ge=1, le=2147483647),
+        post_id: int = Path(..., ge=1, le=2147483647),
         db: AsyncSession = Depends(get_db),
         user: User = Depends(get_current_user),
 ) -> Post:
@@ -138,7 +173,7 @@ async def edit_post(
 
 @router.delete("/{post_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_post(
-        post_id: int = Query(..., ge=1, le=2147483647),
+        post_id: int = Path(..., ge=1, le=2147483647),
         db: AsyncSession = Depends(get_db),
         user: User = Depends(get_current_user),
 ):

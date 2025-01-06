@@ -16,9 +16,17 @@ class Settings(BaseSettings):
     DATABASE_PASSWORD: str = "9876543210"
     DATABASE_NAME: str = "database_name"
     DATABASE_HOST: str = "localhost"
-    DB_URL: str = (
-        "postgresql+asyncpg://${POSTGRES_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}/${DATABASE_NAME}"
-    )
+
+    DB_URL: str = "postgresql+asyncpg://${POSTGRES_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}/${DATABASE_NAME}"
+
+    # DEV Database settings -----------------------------------------------------------------------------
+    DEV_DB_USER: str = "insta_user"
+    DEV_DB_PASSWORD: str = "654321"
+    DEV_DB_NAME: str = "insta"
+    DEV_DB_HOST: str = "localhost"
+    DEV_DB_PORT: int = 5432
+
+    DEV_DB_URL: str = "postgresql+asyncpg://${DEV_DB_USER}:${DEV_DB_PASSWORD}@${DEV_DB_HOST}/${DEV_DB_NAME}"
 
     # Database settings -----------------------------------------------------------------------------
     TEST_POSTGRES_USER: str = "<DB_USERNAME>"
