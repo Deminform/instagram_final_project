@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Sequence
+from typing import Sequence, Optional
 
 from sqlalchemy import and_, select, func, or_
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -117,10 +117,26 @@ class UserRepository:
         rows = result.all()
         return [UserResponse.from_user(row.User, row.posts_count) for row in rows]
 
-    async def get_user_with_role(self, user_role) -> User | None:
-        query = select(User).where(User.role_name == user_role)
+    async def create_admin_user(self, user_data: dict,
+                                user_role: Role,
+                                password_hashed: str,
+                                avatar_url: Optional[str] = None,
+       ) -> User:
+        new_admin = User(**user_data,
+                         password=password_hashed,
+                         avatar_url=avatar_url,
+                         role_id=user_role.id,
+                         is_confirmed=True,
+                         )
+        self.session.add(new_admin)
+        await self.session.commit()
+        await self.session.refresh(new_admin)
+        return new_admin
+
+    async def get_user_with_role(self, role_id: int):
+        query = select(User).where(User.role_id == role_id)
         result = await self.session.execute(query)
-        return result.scalar_one_or_none()
+        return result.scalars().all()
 
 
 
