@@ -10,8 +10,9 @@ from redis import asyncio as aioredis
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
+from sqlalchemy.exc import IntegrityError
 
-
+from database.db import get_db
 from conf.config import app_config
 from src.services import healthchecker
 from src.services.auth.routes import router as auth_router
@@ -21,7 +22,7 @@ from src.posts.routes import router as posts_router
 from src.posts.routes import router_admin as posts_router_admin
 from src.scores.routes import router as scores_router
 from src.comments.router import router as comment_router
-
+from src.users.users_service import UserService
 
 BASE_DIR = Path(__file__).parent
 templates_path = BASE_DIR.joinpath('src', 'templates')
@@ -31,6 +32,14 @@ templates = Jinja2Templates(directory=templates_path)
 
 @asynccontextmanager
 async def lifespan(fastapi_app: FastAPI):
+    async for db in get_db():
+        user_service = UserService(db)
+        try:
+            await user_service.ensure_admin_exists()
+            break
+        except IntegrityError as e:
+            print(e)
+            raise RuntimeError()
     # redis = aioredis.from_url(app_config.REDIS_URL, encoding="utf8")
     # FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
     # await FastAPILimiter.init(redis)
@@ -38,7 +47,6 @@ async def lifespan(fastapi_app: FastAPI):
     yield
 
     # await redis.close()
-#
 
 app = FastAPI(lifespan=lifespan)
 

@@ -16,24 +16,15 @@ class Settings(BaseSettings):
     DATABASE_PASSWORD: str = "9876543210"
     DATABASE_NAME: str = "database_name"
     DATABASE_HOST: str = "localhost"
-    DB_URL: str = (
-        "postgresql+asyncpg://${POSTGRES_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}/${DATABASE_NAME}"
-    )
 
-    # Database settings -----------------------------------------------------------------------------
-    TEST_POSTGRES_USER: str = "<DB_USERNAME>"
-    TEST_POSTGRES_PASSWORD: str = "<PASSWORD>"
-    TEST_POSTGRES_DBNAME: str = "<DB_NAME>"
-    TEST_POSTGRES_HOST: str = "<DB_HOST>"
-    TEST_POSTGRES_PORT: int = 5432
-    TEST_DB_URL: str = "postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_TEST_DB}"
+    DB_URL: str = "postgresql+asyncpg://${POSTGRES_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}/${DATABASE_NAME}"
+
 
     # Mail settings ----------------------------------------------------------------------------------
     MAIL_USERNAME: EmailStr = "email@example.com"
     MAIL_FROM: str = MAIL_USERNAME
     MAIL_PASSWORD: str = "9876543210"
     MAIL_SERVER: str = "mail.example.com"
-    MAIL_PORT: int = 1025
     MAIL_SMTP_PORT: str = '993'
     MAIL_IMAP_PORT: str = '465'
     VERIFY_EMAIL_TOKEN_LIFETIME: int = 24  # Hours
