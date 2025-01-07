@@ -1,11 +1,23 @@
-# Welcome to instagram project!
-RESTful API created using FastAPI. The app works as a server and provides CRUD operations for managing iamges, posts, tags, comments, scores, users and other entities.
-The project supposrts asynchronous operation, works with the database via SQLAlchemy, and can be run in a Docker container.
+# Welcome to PhotoShare!
+PhotoShare is a photo-sharing web application developed with FastAPI, allowing users to upload, share, and interact with photos. The platform supports a variety of features including user authentication, photo transformations, and commenting. Users can upload photos, add tags, and share links with QR codes. The app integrates with Cloudinary for efficient image handling, enabling transformations like resizing and cropping. With roles for regular users, moderators, and administrators, PhotoShare provides robust access control.
 # Features
-- Asynchronous API: Maintain high performance with FastAPI.
-- Authentication: Support registration, login, and role management.
-- ORM: SQLAlchemy is used to work with the database.
-- Configuration: Using .env for environment variables.
+- User Authentication: Register, log in, and manage user sessions with JWT tokens.
+- Photo Management: Upload, delete, and edit photos, along with descriptions.
+- Tags: Add and manage tags for photos. Tags are unique across the application.
+- Photo Transformations: Choose from a limited set of Cloudinary transformations (resize, crop, etc.).
+- QR Code Sharing: Generate unique URLs and QR codes for transformed photos.
+- Comments: Comment on photos, with the ability to edit your own comments. Admins and moderators can delete comments.
+- Rating: Rate photos from 1 to 5 stars, with an average rating displayed.
+- Search & Filter: Search photos by keywords or tags and filter results by rating or date.
+- Admin Controls: Admins can manage users (ban, deactivate) and perform CRUD operations on all photos.
+
+## Technologies Used
+- FastAPI for building the REST API.
+- PostgreSQL for storing user, photo, and comment data.
+- SQLAlchemy for database interactions.
+- Cloudinary for image transformations.
+- JWT for secure authentication and role-based access.
+- Swagger UI for API documentation.
 
 ## Table of Contents
 - [Requirements](#requirements)
