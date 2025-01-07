@@ -13,8 +13,9 @@ from src.users.models import User
 class ScoreService:
     def __init__(self, db: AsyncSession):
         """
-        Initialization the Scores services.
-        :param db: AsyncSession - object of the db session.
+        Initialize the ScoreService with a database session.
+
+        :param db: AsyncSession - The database session object.
         """
         self.score_repository = ScoreRepository(db)
         self.post_repository = PostRepository(db)
@@ -23,9 +24,11 @@ class ScoreService:
 
     async def fetch_score_by_id(self, score_id: int):
         """
-        Get a Score by ID.
-        :param score_id: int - ID score.
-        :return: Score or HTTP 404 exception.
+        Retrieve a score by its unique ID.
+
+        :param score_id: int - The unique identifier of the score.
+        :return: The Score instance if found.
+        :raises HTTPException: If the score is not found (404).
         """
         score = await self.score_repository.get_score_by_id(score_id)
         if not score:
@@ -38,11 +41,12 @@ class ScoreService:
         self, user_id: int, limit: int = 10, offset: int = 0
     ):
         """
-        Get the list of scores by user's ID.
-        :param user_id: int - user's ID.
-        :param limit: int - max result limit (10 by default).
-        :param offset: int = pagination distance (0 by default).
-        :return: list of scores.
+        Retrieve a list of scores for a specific user.
+
+        :param user_id: int - The unique identifier of the user.
+        :param limit: int - The maximum number of scores to retrieve (default: 10).
+        :param offset: int - The number of scores to skip (default: 0).
+        :return: A list of Score instances.
         """
         return await self.score_repository.get_scores_by_user_id(user_id, limit, offset)
 
@@ -50,13 +54,25 @@ class ScoreService:
         self, post_id: int, limit: int = 10, offset: int = 0
     ):
         """
-        Get the list of the Score by post's ID.
-        :param post_id: int - post's ID.
-        :return: score list.
+        Retrieve a list of scores associated with a specific post.
+
+        :param post_id: int - The unique identifier of the post.
+        :param limit: int - The maximum number of scores to retrieve (default: 10).
+        :param offset: int - The number of scores to skip (default: 0).
+        :return: A list of Score instances.
         """
         return await self.score_repository.get_scores_by_post_id(post_id, limit, offset)
 
     async def create_new_score(self, score_data: ScoreCreate, user: User):
+        """
+        Create a new score for a specific post.
+
+        :param score_data: ScoreCreate - The data required to create a new score.
+        :param user: User - The user creating the score.
+        :return: The created Score instance.
+        :raises HTTPException: If the user has already scored the post (400),
+                               or if the user is trying to score their own post (403).
+        """
 
         if await self.score_repository.score_exists(user.id, score_data.post_id):
             raise HTTPException(
@@ -74,27 +90,33 @@ class ScoreService:
     
     async def update_existing_score(self, score_id: int, score_data: ScoreUpdate):
         """
-        Update existing score.
-        :param score_id: int - score's ID.
-        :param score_data: ScoreUpdate - new data for update.
-        :return: updated score or HTTP 404 exception.
+        Update an existing score.
+
+        :param score_id: int - The unique identifier of the score to update.
+        :param score_data: ScoreUpdate - The updated data for the score.
+        :return: The updated Score instance.
+        :raises HTTPException: If the score is not found (404).
         """
         return await self.score_repository.update_score(score_id, score_data)
 
     async def delete_existing_score(self, score_id: int):
         """
-        Delete existing Score.
-        :param score_id: int - score's ID.
-        :return: deleted score or HTTP 404 exception.
+        Delete an existing score by its ID.
+
+        :param score_id: int - The unique identifier of the score to delete.
+        :return: The deleted Score instance.
+        :raises HTTPException: If the score is not found (404).
         """
         score = await self.fetch_score_by_id(score_id)
         return await self.score_repository.delete_score(score)
 
     async def calculate_average_score(self, post_id: int):
         """
-        Calculate average score for the post.
-        :param post_id: int - post's ID.
-        :return: average score or HTTP 404 exception, if there is no score.
+        Calculate the average score for a specific post.
+
+        :param post_id: int - The unique identifier of the post.
+        :return: The average score as a float.
+        :raises HTTPException: If there are no scores for the post (404).
         """
         average_score = await self.score_repository.get_average_score_by_post_id(post_id)
         if average_score is None:

@@ -20,6 +20,14 @@ async def read_score(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(auth_service.get_current_user),
 ):
+    """
+    Retrieve a specific score by its unique ID.
+
+    :param score_id: The unique identifier of the score.
+    :param db: Database session dependency.
+    :param current_user: The currently authenticated user.
+    :return: The requested score.
+    """
     score_service = ScoreService(db)
     return await score_service.fetch_score_by_id(score_id)
 
@@ -32,6 +40,16 @@ async def read_scores_by_user(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(auth_service.get_current_user)
 ):
+    """
+    Retrieve a list of scores created by a specific user, with optional pagination.
+
+    :param user_id: The unique identifier of the user.
+    :param limit: The maximum number of scores to retrieve.
+    :param offset: The number of scores to skip.
+    :param db: Database session dependency.
+    :param current_user: The currently authenticated user.
+    :return: A list of scores.
+    """
     score_service = ScoreService(db)
     return await score_service.fetch_scores_by_user(user_id, limit, offset)
 
@@ -44,6 +62,16 @@ async def read_scores_by_post(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(auth_service.get_current_user),
 ):
+    """
+    Retrieve a list of scores associated with a specific post, with optional pagination.
+
+    :param post_id: The unique identifier of the post.
+    :param limit: The maximum number of scores to retrieve.
+    :param offset: The number of scores to skip.
+    :param db: Database session dependency.
+    :param current_user: The currently authenticated user.
+    :return: A list of scores.
+    """
     score_service = ScoreService(db)
     return await score_service.fetch_scores_by_post(post_id, limit, offset)
 
@@ -54,6 +82,14 @@ async def create_new_score(
         db: AsyncSession = Depends(get_db),
         current_user: UserResponse = Depends(get_current_user)
 ):
+    """
+    Create a new score for a specific post.
+
+    :param score_data: The data for the new score.
+    :param db: Database session dependency.
+    :param current_user: The currently authenticated user creating the score.
+    :return: The created score.
+    """
     score_service = ScoreService(db)
     return await score_service.create_new_score(score_data, current_user)
 
@@ -65,6 +101,15 @@ async def update_existing_score(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(auth_service.get_current_user),
 ):
+    """
+    Update an existing score by its ID.
+
+    :param score_id: The unique identifier of the score to update.
+    :param score_data: The updated score data.
+    :param db: Database session dependency.
+    :param current_user: The currently authenticated user.
+    :return: The updated score.
+    """
     score_service = ScoreService(db)
     return await score_service.update_existing_score(score_id, score_data)
 
@@ -80,6 +125,15 @@ async def delete_existing_score(
     db: AsyncSession = Depends(get_db), 
     current_user: User = Depends(auth_service.get_current_user),
 ):
+    """
+    Delete a specific score by its ID.
+
+    This operation is restricted to users with 'MODER' or 'ADMIN' roles.
+
+    :param score_id: The unique identifier of the score to delete.
+    :param db: Database session dependency.
+    :param current_user: The currently authenticated user.
+    """
     score_service = ScoreService(db)
     return await score_service.delete_existing_score(score_id)
 
@@ -90,6 +144,14 @@ async def get_post_average_score(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(auth_service.get_current_user),
 ):
+    """
+    Calculate the average score for a specific post.
+
+    :param post_id: The unique identifier of the post.
+    :param db: Database session dependency.
+    :param current_user: The currently authenticated user.
+    :return: The average score for the post.
+    """
     score_service = ScoreService(db)
     average_score = await score_service.calculate_average_score(post_id)
     return AverageScore(post_id=post_id, average_score=average_score)
