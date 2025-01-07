@@ -3,9 +3,18 @@ from io import BytesIO
 
 
 class QRService:
+    """
+    A service class for generating QR codes from image URLs.
+    """
 
     @staticmethod
-    async def create_qr(image_url: str):
+    async def create_qr(image_url: str) -> BytesIO:
+        """
+        Generate a QR code for the given image URL.
+
+        :param image_url: The URL to encode in the QR code.
+        :return: A buffer containing the QR code image in PNG format.
+        """
         qr = qrcode.QRCode(
             version=1,
             error_correction=qrcode.constants.ERROR_CORRECT_L,
