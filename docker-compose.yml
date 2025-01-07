@@ -14,29 +14,4 @@ services:
       - '5432:5432'
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
-    command: >
-      bash -c "
-      docker-entrypoint.sh postgres &&
-      psql -v ON_ERROR_STOP=1 --username ${POSTGRES_USER} --dbname ${POSTGRES_DBNAME} -c 'CREATE DATABASE test_db;'"
 
-  email:
-    image: mailhog/mailhog
-    ports:
-      - "1025:1025"
-      - "8025:8025"
-
-#  app:
-#      build:
-#        context: .
-#        dockerfile: Dockerfile
-#      image: insta_final_project
-#      environment:
-#        DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DBNAME}
-#        REDIS_URL: redis://redis:6379
-#      ports:
-#        - '8000:8000'
-#      depends_on:
-#        - postgres
-#        - redis
-#      volumes:
-#        - .:/app

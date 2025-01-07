@@ -26,10 +26,15 @@ DATA_NOT_UNIQUE = "Data already exist."
 TAG_NUMBER_LIMIT = f"Maximum number of tags is {const.TAG_NUMBER_LIMIT}"
 TAG_NAME_LIMIT = f"Maximum length of tag name is {const.TAG_MAX_LENGTH}"
 TAG_DESCRIPTION = f"Tags may be separated by commas, an example: 'tag1,tag2,tag3', up to {const.TAG_NUMBER_LIMIT} tags"
-IMAGE_FILTER_DESCRIPTION = "Image filter, an example: 'blur'"
+IMAGE_FILTER_DESCRIPTION = "Select a filter for the image"
 POST_DESCRIPTION = f"Post description, an example: 'This is a test post', minimum {const.POST_DESCRIPTION_MIN_LENGTH} character, up to {const.POST_DESCRIPTION_MAX_LENGTH} characters and can`t be empty"
 
-UPLOAD_IMAGE_ERROR = "Upload image failed"
+SCORE_WARNING_SELF_SCORE="Users cannot score their posts"
+SCORE_WARNING_ALREADY_SCORED="User has already scored this post"
+SCORE_WARNING_NOT_FOUND="Score not found"
+SCORE_WARNING_NO_SCORES="No scores available for this post"
+
+UPLOAD_IMAGE_ERROR = "Upload image failed" 
 FILTER_IMAGE_ERROR = "Filter image failed"
 FILTER_IMAGE_ERROR_DETAIL = "Filter name is incorrect"
 
