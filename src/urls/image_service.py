@@ -7,34 +7,13 @@ from src.services.qr_service import QRService
 
 
 class URLService:
-    """
-    A service class for managing URLs, generating edited images,
-    and creating QR codes for the images.
-    """
 
     def __init__(self, db: AsyncSession):
-        """
-        Initialize the URLService with necessary dependencies.
-
-        Args:
-            db (AsyncSession): The asynchronous database session.
-        """
         self.image_repository = URLRepository(db)
         self.qr_service = QRService
         self.cloudinary_service = CloudinaryService
 
     async def create_image(self, post_id: int, image_url: str, image_filter: str):
-        """
-        Create and store a new image with a specific filter applied.
-
-        Args:
-            post_id (int): The ID of the post associated with the image.
-            image_url (str): The URL of the original image.
-            image_filter (str): The filter applied to the image.
-
-        Returns:
-            URLs: The created image record or None if it already exists.
-        """
         edited_image = await self.image_repository.get_image(post_id, image_filter)
         if edited_image:
             return None
@@ -43,32 +22,10 @@ class URLService:
         return result
 
     async def check_get_edited_image(self, post_id: int, image_filter: str):
-        """
-        Check if an edited image with a specific filter exists for a post.
-
-        Args:
-            post_id (int): The ID of the post.
-            image_filter (str): The filter applied to the image.
-
-        Returns:
-            str: The URL of the edited image, or None if it doesn't exist.
-        """
         edited_image = await self.image_repository.get_image(post_id, image_filter)
         return edited_image.image_url if edited_image else None
 
     async def generate_qr(self, post_id: int, original_image_url: str, image_filter: str):
-        """
-        Generate a QR code for an edited image. If the image doesn't exist,
-        apply the filter and create it first.
-
-        Args:
-            post_id (int): The ID of the post.
-            original_image_url (str): The URL of the original image.
-            image_filter (str): The filter to be applied to the image.
-
-        Returns:
-            str: The generated QR code for the edited image.
-        """
         edited_image_url = await self.check_get_edited_image(post_id, image_filter)
 
         if edited_image_url:
