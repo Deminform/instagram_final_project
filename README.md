@@ -28,7 +28,7 @@ PhotoShare is a photo-sharing web application developed with FastAPI, allowing u
 
 ## Requirements
 Before you start, make sure you have everything installed:
-- Python 3.10+
+- Python 3.12
 - Poetry for dependency management
 - Docker
   
@@ -53,12 +53,11 @@ Use .env_example file as example
 ```bash
 alembic upgrade head
 ```
-6. Run migration to fill data in 'roles' table
 
 ## Usage
 To run the project, use the following command:
 ```bash
-fastapi dev main.py
+poetry run uvicorn main:app --reload
 ```
 
 First user with admin role is created during startup with credentials, set in .env file:
