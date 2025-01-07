@@ -37,9 +37,8 @@ Use .env_example file as example
 ```bash
  docker compose up
  ```
-5. Run alembic migrations to create database
+5. Run alembic migrations to create database and fill data in 'roles' table
 ```bash
-alembic revision --autogenerate -m 'Init’
 alembic upgrade head
 ```
 6. Run migration to fill data in 'roles' table
@@ -48,6 +47,18 @@ alembic upgrade head
 To run the project, use the following command:
 ```bash
 fastapi dev main.py
+```
+
+First user with admin role is created during startup with credentials, set in .env file:
+```
+ADMIN_EMAIL
+ADMIN_PASSWORD
+```
+
+## Usage
+To run tests:
+```bash
+pytest
 ```
 
 ## Contributing
