@@ -31,6 +31,19 @@ mail_conf = ConnectionConfig(
 
 
 async def send_verification_email(email: EmailStr, host: URL):
+    """
+    Send an email with a verification link to the specified email address.
+
+    This function generates a verification token and sends an email to the provided email address
+    containing a verification link. The email is sent using the `FastMail` service with an HTML body.
+
+    :param email: The email address to which the verification email will be sent.
+    :type email: EmailStr
+    :param host: The host URL used to generate the verification link.
+    :type host: URL
+    :return: None
+    :raises ConnectionErrors: If there is an error during the email sending process.
+    """
     try:
         verification_token = create_verification_token(email)
         template = env.get_template("verification_email.html")

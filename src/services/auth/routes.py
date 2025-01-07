@@ -42,6 +42,20 @@ async def register(
     request: Request,
     db: AsyncSession = Depends(get_db),
 ):
+    """
+        Register a new user.
+        :param user_create: The user data for registration.
+        :type user_create: UserCreate
+        :param background_tasks: Background tasks for sending verification email.
+        :type background_tasks: BackgroundTasks
+        :param request: The request object containing base URL for email verification.
+        :type request: Request
+        :param db: Database session for interacting with the database.
+        :type db: AsyncSession
+        :return: The created user.
+        :rtype: UserResponse
+        :raises HTTPException: If the email or username already exists.
+        """
     user_service = UserService(db)
     user = await user_service.get_user_by_email(user_create.email)
     if user:
@@ -63,6 +77,17 @@ async def register(
 
 @router.get("/verify-email")
 async def verify_email(token: str, db: AsyncSession = Depends(get_db)):
+    """
+    Verify the user's email address using the verification token.
+
+    :param token: The verification token for email verification.
+    :type token: str
+    :param db: Database session for interacting with the database.
+    :type db: AsyncSession
+    :return: A message indicating whether the email was confirmed or already confirmed.
+    :rtype: dict
+    :raises HTTPException: If the user does not exist or the email is already confirmed.
+    """
     email: str = decode_verification_token(token)
     user_service = UserService(db)
     user = await user_service.get_user_by_email(email)
@@ -81,6 +106,17 @@ async def verify_email(token: str, db: AsyncSession = Depends(get_db)):
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = Depends(get_db)
 ) -> Token:
+    """
+    Login and get access and refresh tokens.
+
+    :param form_data: The form data containing username and password for authentication.
+    :type form_data: OAuth2PasswordRequestForm
+    :param db: Database session for interacting with the database.
+    :type db: AsyncSession
+    :return: A token containing access and refresh tokens.
+    :rtype: Token
+    :raises HTTPException: If the user credentials are incorrect, the email is not confirmed, or the user is banned.
+    """
     user_service = UserService(db)
     user = await user_service.get_user_by_email(form_data.username)
     if not user or not Hash().verify_password(form_data.password, user.password):
@@ -110,6 +146,17 @@ async def login_for_access_token(
 async def refresh_tokens(
     refresh_token: str, db: AsyncSession = Depends(get_db)
 ) -> Token:
+    """
+    Refresh access and refresh tokens using the refresh token.
+
+    :param refresh_token: The refresh token to generate new tokens.
+    :type refresh_token: str
+    :param db: Database session for interacting with the database.
+    :type db: AsyncSession
+    :return: A new token containing access and refresh tokens.
+    :rtype: Token
+    :raises HTTPException: If the user does not exist or is banned.
+    """
     token_data = decode_access_token(refresh_token)
     user_service = UserService(db)
     user = await user_service.get_user_by_email(token_data.username)
@@ -134,7 +181,17 @@ async def refresh_tokens(
 async def logout(
     current_user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
 ):
+    """
+    Logout the current user by deactivating their tokens.
 
+    :param current_user: The currently authenticated user.
+    :type current_user: User
+    :param db: Database session for interacting with the database.
+    :type db: AsyncSession
+    :return: A message indicating the logout success.
+    :rtype: dict
+    :raises HTTPException: If the user does not exist.
+    """
     user_service = UserService(db)
     user = await user_service.get_user_by_email(current_user.email)
     if not user:
