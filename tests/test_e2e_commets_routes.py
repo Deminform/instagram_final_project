@@ -1,12 +1,10 @@
 import pytest
 import pytest_asyncio
-from sqlalchemy import select
 
 from conf import messages
 from src.posts.models import Post
 from src.comments.models import Comment
 from src.comments.repository import CommentRepository
-from sqlalchemy.ext.asyncio import AsyncSession
 from tests.conftest import TestingSessionLocal
 
 
@@ -225,7 +223,7 @@ async def test_get_comment_by_post_author(client, get_user_tokens, create_test_c
     offset = 0
 
     response = client.get(
-        f"/api/comments/admin/{post_id}/{user_id}?limit={limit}&offset={offset}",
+        f"api/admin/comments/?post_id={post_id}&user_id={user_id}&limit={limit}&offset={offset}",
         headers={"Authorization": f"Bearer {get_user_tokens['access_token']}"},
     )
 
@@ -243,7 +241,7 @@ async def test_get_comment_by_post_author_no(client, get_user_tokens):
     offset = 0
 
     response = client.get(
-        f"/api/comments/admin/{post_id}/{user_id}?limit={limit}&offset={offset}",
+        f"api/admin/comments/?post_id={post_id}&user_id={user_id}&limit={limit}&offset={offset}",
         headers={"Authorization": f"Bearer {get_user_tokens['access_token']}"},
     )
 

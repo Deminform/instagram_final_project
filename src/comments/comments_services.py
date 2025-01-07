@@ -69,19 +69,6 @@ class CommentService:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.NOT_COMMENT)
         return comment
 
-    async def delete_comment_by_post(self, pist_id: int):
-        """
-        Delete all comments by post ID.
-
-        :param post_id: int: ID of the post for which comments need to be deleted.
-        :return: dict: A message indicating the number of deleted comments.
-        :raises HTTPException: If no comments are found for the specified post.
-        """
-        deleted_count = await self.comment_repository.delete_comment_by_post_id(pist_id)
-        if deleted_count == 0:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=messages.NOT_COMMENT)
-        return {"message": f"Deleted {deleted_count} comments"}
-
     async def get_comment_by_post_all(self, post_id: int, limit: int, offset: int) -> list[Comment]:
         """
         Retrieve all comments for a specific post.
@@ -138,9 +125,3 @@ class CommentService:
         if len(comment) == 0:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
         return comment
-
-    async def delete_comments_by_post_id(self, post_id) -> list[Comment]:
-        # delete all comments by post_id
-        # returns a list of deleted comments
-        # NOT USED COMMIT FUNCTION (only session.delete(comment))
-        pass

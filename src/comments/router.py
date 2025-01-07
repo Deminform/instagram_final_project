@@ -4,7 +4,6 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from database.db import get_db
 from src.users.models import User
-from conf import messages
 from src.services.auth import auth_service
 from src.comments.schema import CommentResponse, CommentUpdateResponse, CommentBase, MessageResponse
 from src.comments.comments_services import CommentService
@@ -14,12 +13,13 @@ from src.services.auth.auth_service import RoleChecker
 
 
 router = APIRouter(prefix="/comments", tags=["comments"])
+router_admin = APIRouter(prefix="/admin/comments", tags=["comments"])
 
 
 @router.post("/{post_id}", response_model=CommentResponse)
 async def add_comment(
-    post_id: int,
     body: CommentBase,
+    post_id: int = Path(..., ge=1, le=2147483647),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(auth_service.get_current_user),
 ):
@@ -40,8 +40,8 @@ async def add_comment(
 
 @router.put("/{comment_id}", response_model=CommentUpdateResponse)
 async def edit_comment(
-    comment_id: int,
     body: CommentBase,
+    comment_id: int = Path(..., ge=1, le=2147483647),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(auth_service.get_current_user),
 ):
@@ -52,8 +52,8 @@ async def edit_comment(
     omment object if successful or None otherwise.
     If it is unsuccessful, it raises a 404 error with detail message COMM_NOT_FOUND.
 
-    :param comment_id: int: Identify the comment to be edited
     :param body: CommentBase: Pass the comment body to the edit_comment function
+    :param comment_id: int: Identify the comment to be edited
     :param db: Session: Get the database session
     :param current_user: User: Check if the user is logged in
     :return: None, but the function expects a commentbase object
@@ -70,7 +70,7 @@ async def edit_comment(
     ],
 )
 async def delete_comment(
-    comment_id: int = Path(ge=1),
+    comment_id: int = Path(..., ge=1, le=2147483647),
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(auth_service.get_current_user),
 ):
@@ -91,7 +91,7 @@ async def delete_comment(
 
 @router.get("/{post_id}", response_model=list[CommentUpdateResponse])
 async def get_comment_by_post_all(
-    post_id: int,
+    post_id: int = Path(..., ge=1, le=2147483647),
     limit: int = Query(10, ge=10, le=500),
     offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),
@@ -101,8 +101,8 @@ async def get_comment_by_post_all(
     The get_comment_by_post_all function returns all comments of a post
 
     :param post_id: int: Specify the post that the comment is being created for
-    :param limit (int, optional): [description]. Defaults to Query(10, ge=10, le=500).
-    :param offset (int, optional): [description]. Defaults to Query(0, ge=0)
+    :param limit: int: Defaults to Query(10, ge=10, le=500).
+    :param offset: int: Defaults to Query(0, ge=0)
     :param db: Session: Get the database session
     :param current_user: User: Check if the user is logged in
     :return: All comment objects for the given post
@@ -113,7 +113,7 @@ async def get_comment_by_post_all(
 
 @router.get("/user/{post_id}", response_model=list[CommentUpdateResponse])
 async def get_comment_by_post_user(
-    post_id: int,
+    post_id: int = Path(..., ge=1, le=2147483647),
     limit: int = Query(10, ge=10, le=500),
     offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),
@@ -123,8 +123,8 @@ async def get_comment_by_post_user(
     The get_comment_by_post_user function returns all comments made by a user.
 
     :param post_id: int: Specify the post that the comment is being created for
-    :param limit (int, optional): [description]. Defaults to Query(10, ge=10, le=500).
-    :param offset (int, optional): [description]. Defaults to Query(0, ge=0)
+    :param limit: int: Defaults to Query(10, ge=10, le=500).
+    :param offset: int: Defaults to Query(0, ge=0)
     :param db: Session: Get the database session
     :param current_user: User: Check if the user is logged in
     :return: All comment objects for this post left by the registered user
@@ -133,16 +133,16 @@ async def get_comment_by_post_user(
     return await comment_service.get_comment_by_post_user(post_id, limit, offset, current_user)
 
 
-@router.get(
-    "/admin/{post_id}/{user_id}",
+@router_admin.get(
+    "/",
     response_model=list[CommentUpdateResponse],
     dependencies=[
         Depends(RoleChecker([RoleEnum.MODER, RoleEnum.ADMIN])),
     ],
 )
 async def get_comment_by_post_author(
-    post_id: int,
-    user_id: int,
+    post_id: int = Query(..., ge=1, le=2147483647),
+    user_id: int = Query(..., ge=1, le=2147483647),
     limit: int = Query(10, ge=10, le=500),
     offset: int = Query(0, ge=0),
     db: AsyncSession = Depends(get_db),
@@ -154,8 +154,8 @@ async def get_comment_by_post_author(
 
     :param post_id: int: Specify the post that the comment is being created for
     :param user_id: int: Specifies the user who created the comment
-    :param limit (int, optional): [description]. Defaults to Query(10, ge=10, le=500).
-    :param offset (int, optional): [description]. Defaults to Query(0, ge=0)
+    :param limit: int: Defaults to Query(10, ge=10, le=500).
+    :param offset: int: Defaults to Query(0, ge=0)
     :param db: Session: Get the database session
     :param current_user: User: Check if the user is logged in
     :return: All comment objects for this post, this user
