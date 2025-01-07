@@ -17,9 +17,19 @@ cloudinary.config(
 
 
 class CloudinaryService:
+    """
+    A service class for interacting with Cloudinary, including uploading images, applying filters, and retrieving URLs.
+    """
 
     @staticmethod
-    async def apply_filter(original_image_url: str, filter_name: str):
+    async def apply_filter(original_image_url: str, filter_name: str) -> str:
+        """
+        Apply a filter to an image and return the URL of the edited image.
+
+        :param original_image_url: The URL or public ID of the original image on Cloudinary.
+        :param filter_name: The name of the filter to apply.
+        :return: The URL of the edited image.
+        """
         edited_image_url, options = cloudinary_url(
             original_image_url,
             transformation=[
@@ -30,7 +40,14 @@ class CloudinaryService:
         return edited_image_url
 
     @staticmethod
-    async def get_image_urls(image_file: UploadFile, image_filter: str = None):
+    async def get_image_urls(image_file: UploadFile, image_filter: str = None) -> dict:
+        """
+        Upload an image to Cloudinary, optionally apply a filter, and return URLs for the original and edited images.
+
+        :param image_file: The image file to upload.
+        :param image_filter: (Optional) The filter to apply to the image.
+        :return: A dictionary containing URLs for the original and (optionally) the edited image.
+        """
         links_dict = {}
         unique_filename = uuid.uuid4().hex
 
@@ -57,7 +74,14 @@ class CloudinaryService:
         return links_dict
 
     @staticmethod
-    async def get_avatar_url(avatar_file: UploadFile, username: str):
+    async def get_avatar_url(avatar_file: UploadFile, username: str) -> str:
+        """
+        Upload an avatar image to Cloudinary and generate a URL for it.
+
+        :param avatar_file: The avatar image file to upload.
+        :param username: The username to associate with the avatar.
+        :return: The URL of the uploaded avatar image.
+        """
         r = cloudinary.uploader.upload(
             avatar_file.file, public_id=f"Inst_project/{username}", overwrite=True
         )
