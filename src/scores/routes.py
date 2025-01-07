@@ -14,24 +14,6 @@ from src.scores.score_service import ScoreService
 router = APIRouter(prefix="/scores", tags=["scores"])
 
 
-@router.get("/{score_id}", response_model=Score)
-async def read_score(
-    score_id: int, 
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(auth_service.get_current_user),
-):
-    """
-    Retrieve a specific score by its unique ID.
-
-    :param score_id: The unique identifier of the score.
-    :param db: Database session dependency.
-    :param current_user: The currently authenticated user.
-    :return: The requested score.
-    """
-    score_service = ScoreService(db)
-    return await score_service.fetch_score_by_id(score_id)
-
-
 @router.get("/user/{user_id}", response_model=list[Score])
 async def read_scores_by_user(
     user_id: int,
