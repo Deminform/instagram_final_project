@@ -19,29 +19,12 @@ class Settings(BaseSettings):
 
     DB_URL: str = "postgresql+asyncpg://${POSTGRES_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}/${DATABASE_NAME}"
 
-    # DEV Database settings -----------------------------------------------------------------------------
-    DEV_DB_USER: str = "insta_user"
-    DEV_DB_PASSWORD: str = "654321"
-    DEV_DB_NAME: str = "insta"
-    DEV_DB_HOST: str = "localhost"
-    DEV_DB_PORT: int = 5432
-
-    DEV_DB_URL: str = "postgresql+asyncpg://${DEV_DB_USER}:${DEV_DB_PASSWORD}@${DEV_DB_HOST}/${DEV_DB_NAME}"
-
-    # Database settings -----------------------------------------------------------------------------
-    TEST_POSTGRES_USER: str = "<DB_USERNAME>"
-    TEST_POSTGRES_PASSWORD: str = "<PASSWORD>"
-    TEST_POSTGRES_DBNAME: str = "<DB_NAME>"
-    TEST_POSTGRES_HOST: str = "<DB_HOST>"
-    TEST_POSTGRES_PORT: int = 5432
-    TEST_DB_URL: str = "postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_TEST_DB}"
 
     # Mail settings ----------------------------------------------------------------------------------
     MAIL_USERNAME: EmailStr = "email@example.com"
     MAIL_FROM: str = MAIL_USERNAME
     MAIL_PASSWORD: str = "9876543210"
     MAIL_SERVER: str = "mail.example.com"
-    MAIL_PORT: int = 1025
     MAIL_SMTP_PORT: str = '993'
     MAIL_IMAP_PORT: str = '465'
     VERIFY_EMAIL_TOKEN_LIFETIME: int = 24  # Hours
