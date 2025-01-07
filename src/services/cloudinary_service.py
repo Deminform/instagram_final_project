@@ -33,6 +33,7 @@ class CloudinaryService:
         edited_image_url, options = cloudinary_url(
             original_image_url,
             transformation=[
+                {"width": 1080, "height": 1080, "crop": "fill"},
                 FILTER_DICT.get(filter_name),
             ]
         )
