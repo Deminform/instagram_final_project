@@ -79,7 +79,7 @@ class CommentRepository:
         """
         stmt = select(Comment).filter_by(post_id=post_id).offset(offset).limit(limit)
         comments = await self.db.execute(stmt)
-        return comments.scalars().all()
+        return list(comments.scalars().all())
 
     async def get_comment_by_post_user(
         self, post_id: int, limit: int, offset: int, user: User
@@ -100,7 +100,7 @@ class CommentRepository:
             .limit(limit)
         )
         comments = await self.db.execute(stmt)
-        return comments.scalars().all()
+        return list(comments.scalars().all())
 
     async def get_comment_by_post_author(
         self, post_id: int, user_id: int, limit: int, offset: int

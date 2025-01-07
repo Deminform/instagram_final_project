@@ -24,9 +24,10 @@ from src.scores.routes import router as scores_router
 from src.comments.router import router as comment_router
 from src.users.users_service import UserService
 
+
 BASE_DIR = Path(__file__).parent
-templates_path = BASE_DIR.joinpath('src', 'templates')
-static_files_path = BASE_DIR.joinpath('src', 'static')
+templates_path = BASE_DIR.joinpath("src", "templates")
+static_files_path = BASE_DIR.joinpath("src", "static")
 templates = Jinja2Templates(directory=templates_path)
 
 
@@ -48,6 +49,7 @@ async def lifespan(fastapi_app: FastAPI):
 
     # await redis.close()
 
+
 app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
@@ -58,7 +60,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount('/static', StaticFiles(directory=static_files_path), name="static")
+app.mount("/static", StaticFiles(directory=static_files_path), name="static")
 app.include_router(healthchecker.router, prefix="/api")
 app.include_router(auth_router, prefix="/api")
 app.include_router(posts_router, prefix="/api")
@@ -67,8 +69,11 @@ app.include_router(users_router, prefix="/api")
 app.include_router(users_router_admin, prefix="/api")
 app.include_router(scores_router, prefix="/api")
 app.include_router(comment_router, prefix="/api")
+app.include_router(comment_admin_router, prefix="/api")
 
 
 @app.get("/", response_class=HTMLResponse)
 def index(request: Request):
-    return templates.TemplateResponse('index.html', {'request': request, 'page_title': 'STRONG NUTS | Final Project'})
+    return templates.TemplateResponse(
+        "index.html", {"request": request, "page_title": "STRONG NUTS | Final Project"}
+    )
