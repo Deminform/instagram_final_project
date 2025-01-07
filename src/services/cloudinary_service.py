@@ -63,6 +63,7 @@ class CloudinaryService:
                 edited_image_url = await CloudinaryService.apply_filter(original_image_url["public_id"], image_filter)
                 links_dict[const.EDITED_IMAGE_URL] = edited_image_url
             else:
+                links_dict[const.ORIGINAL_IMAGE_URL] = original_image_url["public_id"]
                 links_dict[const.EDITED_IMAGE_URL] = original_image_url["secure_url"]
 
         except Exception as e:
