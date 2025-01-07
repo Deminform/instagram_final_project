@@ -55,11 +55,6 @@ ADMIN_EMAIL
 ADMIN_PASSWORD
 ```
 
-## Usage
-To run tests:
-```bash
-pytest
-```
 
 ## Contributing
 1. Fork the repository.
