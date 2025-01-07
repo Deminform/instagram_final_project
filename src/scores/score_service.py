@@ -30,7 +30,7 @@ class ScoreService:
         score = await self.score_repository.get_score_by_id(score_id)
         if not score:
             raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Score not found"
+                status_code=status.HTTP_404_NOT_FOUND, detail=messages.SCORE_WARNING_NOT_FOUND
             )
         return score
 
@@ -61,7 +61,7 @@ class ScoreService:
         if await self.score_repository.score_exists(user.id, score_data.post_id):
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail="User has already scored this post"
+                detail=messages.SCORE_WARNING_ALREADY_SCORED
             )
         
         post = await self.post_repository.get_post_by_id(score_data.post_id)
@@ -100,7 +100,7 @@ class ScoreService:
         if average_score is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="No scores available for this post",
+                detail=messages.SCORE_WARNING_NO_SCORES,
             )
         return average_score
 

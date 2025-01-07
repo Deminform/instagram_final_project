@@ -30,8 +30,11 @@ IMAGE_FILTER_DESCRIPTION = "Select a filter for the image"
 POST_DESCRIPTION = f"Post description, an example: 'This is a test post', minimum {const.POST_DESCRIPTION_MIN_LENGTH} character, up to {const.POST_DESCRIPTION_MAX_LENGTH} characters and can`t be empty"
 
 SCORE_WARNING_SELF_SCORE="Users cannot score their posts"
+SCORE_WARNING_ALREADY_SCORED="User has already scored this post"
+SCORE_WARNING_NOT_FOUND="Score not found"
+SCORE_WARNING_NO_SCORES="No scores available for this post"
 
-UPLOAD_IMAGE_ERROR = "Upload image failed"
+UPLOAD_IMAGE_ERROR = "Upload image failed" 
 FILTER_IMAGE_ERROR = "Filter image failed"
 FILTER_IMAGE_ERROR_DETAIL = "Filter name is incorrect"
 
