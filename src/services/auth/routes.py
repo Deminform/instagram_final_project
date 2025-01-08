@@ -71,7 +71,7 @@ async def register(
         )
 
     user = await user_service.create_user(user_create)
-    background_tasks.add_task(send_verification_email, user.email, request.base_url)
+    background_tasks.add_task(send_verification_email, user.email, request.base_url, user.first_name)
     return user
 
 

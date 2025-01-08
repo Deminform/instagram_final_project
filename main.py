@@ -22,6 +22,7 @@ from src.posts.routes import router as posts_router
 from src.posts.routes import router_admin as posts_router_admin
 from src.scores.routes import router as scores_router
 from src.comments.router import router as comment_router
+from src.comments.router import router_admin as comment_admin_router
 from src.users.users_service import UserService
 
 
