@@ -99,20 +99,9 @@ class ScoreRepository:
         return score
 
 
-    async def delete_score(self, score_id: int)-> Optional[Score]:
-        """
-        Delete a score record by its ID.
-
-        :param score_id: The unique identifier of the score to delete.
-        :return: The deleted Score instance if found, otherwise None.
-        """
-        stmt = select(Score).where(Score.id == score_id)
-        result = await self.session.execute(stmt)
-        score = result.scalar_one_or_none()
-
-        if score:
-            await self.session.delete(score)
-            await self.session.commit()
+    async def delete_score(self, score: Score)-> Optional[Score]:
+        await self.session.delete(score)
+        await self.session.commit()
         return score
 
 

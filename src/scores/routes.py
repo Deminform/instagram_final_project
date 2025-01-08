@@ -98,9 +98,7 @@ async def update_existing_score(
 
 @router.delete("/{score_id}", 
                status_code=status.HTTP_204_NO_CONTENT,
-               dependencies=[
-                   Depends(RoleChecker([RoleEnum.MODER, RoleEnum.ADMIN])),
-               ],
+               dependencies=[Depends(RoleChecker([RoleEnum.MODER, RoleEnum.ADMIN])),],
             )
 async def delete_existing_score(
     score_id: int,
