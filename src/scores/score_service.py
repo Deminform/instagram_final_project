@@ -125,5 +125,3 @@ class ScoreService:
                 detail=messages.SCORE_WARNING_NO_SCORES,
             )
         return average_score
-
-
