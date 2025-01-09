@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database.db import get_db
 from src.users.models import User
 from src.services.auth import auth_service
-from src.comments.schema import CommentResponse, CommentUpdateResponse, CommentBase, MessageResponse
+from src.comments.schema import CommentResponse, CommentUpdateResponse, CommentBase
 from src.comments.comments_services import CommentService
 
 from src.users.schemas import RoleEnum
