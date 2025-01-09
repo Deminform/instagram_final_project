@@ -1,4 +1,4 @@
-from sqlalchemy import Integer, String, DateTime, func, ForeignKey
+from sqlalchemy import Integer, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
 from conf.config import Base
 
