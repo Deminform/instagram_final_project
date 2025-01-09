@@ -30,5 +30,4 @@ FILTER_DICT = {
     "noise": {"effect": "noise:1000"},
     "oil_painting": {"effect": "oil_paint:3"},
     "pixelate": {"effect": "pixelate:20"},
-    "posterize": {"effect": "posterize:5"},
 }

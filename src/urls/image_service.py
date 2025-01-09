@@ -1,6 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.urls.models import URLs
 from src.urls.repository import URLRepository
 from src.services.cloudinary_service import CloudinaryService
 from src.services.qr_service import QRService

@@ -1,9 +1,7 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, delete
 from fastapi import HTTPException, status
 
 from conf import messages
-from src.scores.models import Score
 from src.scores.repository import ScoreRepository
 from src.scores.schemas import ScoreCreate, ScoreUpdate
 from src.posts.repository import PostRepository
