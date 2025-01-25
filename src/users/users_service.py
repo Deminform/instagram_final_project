@@ -100,6 +100,7 @@ class UserService:
         :rtype: UserResponse | None
         """
         user = await self.user_repository.get_user_by_username(username)
+
         if user:
             posts_count = await self.user_repository.get_user_posts_count(user.id)
             return UserResponse.from_user(user, posts_count)
@@ -237,7 +238,12 @@ class UserService:
         :rtype: User
         """
         user = await self.user_repository.get_user_by_id(user_id)
-        user_role = await self.role_repository.get_role_by_name(RoleEnum(role))
+        try:
+            user_role = await self.role_repository.get_role_by_name(RoleEnum(role))
+        except ValueError:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Not a valid role value"
+            )
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail=USER_NOT_FOUND
