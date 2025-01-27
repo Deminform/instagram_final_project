@@ -1,8 +1,9 @@
 from typing import Sequence
 
-from fastapi import APIRouter, Depends, File, UploadFile, status, Query
+from fastapi import APIRouter, Depends, File, UploadFile, status, Query, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from conf.messages import USER_NOT_FOUND
 from database.db import get_db
 from src.services.auth.auth_service import RoleChecker, get_current_user
 from src.users.models import User
@@ -55,7 +56,11 @@ async def get_user_info_by_username(
     """
     user_service = UserService(db)
     user = await user_service.get_user_by_username(username)
-
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=USER_NOT_FOUND,
+        )
     return user
 
 

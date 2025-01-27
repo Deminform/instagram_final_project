@@ -1,9 +1,7 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field
 
-from conf import const
-from src.tags.models import Tag
 from src.tags.schemas import TagResponseSchema
 
 

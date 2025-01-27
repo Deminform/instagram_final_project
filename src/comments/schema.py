@@ -5,7 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class CommentBase(BaseModel):
-    comment: str = Field(min_length=3, max_length=1500)
+    comment: str = Field(..., min_length=3, max_length=1500)
 
 
 class CommentResponse(BaseModel):

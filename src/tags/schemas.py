@@ -1,8 +1,5 @@
 from pydantic import BaseModel, ConfigDict
 
-from src.tags.models import Tag
-
-
 class TagSchema(BaseModel):
     name: str
 
