@@ -12,13 +12,20 @@ class Base(DeclarativeBase):
 class Settings(BaseSettings):
 
     # Database settings -----------------------------------------------------------------------------
-    DATABASE_USER: str = "username"
-    DATABASE_PASSWORD: str = "9876543210"
-    DATABASE_NAME: str = "database_name"
-    DATABASE_HOST: str = "localhost"
+    # DATABASE_USER: str = "username"
+    # DATABASE_PASSWORD: str = "9876543210"
+    # DATABASE_NAME: str = "database_name"
+    # DATABASE_HOST: str = "localhost"
+    #
+    # DB_URL: str = "postgresql+asyncpg://${POSTGRES_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}/${DATABASE_NAME}"
 
-    DB_URL: str = "postgresql+asyncpg://${POSTGRES_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}/${DATABASE_NAME}"
+    POSTGRES_USER: str = "username"
+    POSTGRES_PASSWORD: str = "9876543210"
+    POSTGRES_DBNAME: str = "database_name"
+    POSTGRES_HOST: str = "localhost"
+    POSTGRES_PORT: int = 5432
 
+    DB_URL: str = "postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DBNAME}"
 
     # Mail settings ----------------------------------------------------------------------------------
     MAIL_USERNAME: EmailStr = "email@example.com"

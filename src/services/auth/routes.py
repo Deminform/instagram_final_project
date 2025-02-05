@@ -144,7 +144,8 @@ async def login_for_access_token(
 
 @router.post("/refresh", response_model=Token)
 async def refresh_tokens(
-    refresh_token: str, db: AsyncSession = Depends(get_db)
+        refresh_token: str,
+        db: AsyncSession = Depends(get_db)
 ) -> Token:
     """
     Refresh access and refresh tokens using the refresh token.
