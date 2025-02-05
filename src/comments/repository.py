@@ -66,7 +66,7 @@ class CommentRepository:
         :param post_id: int: Find the comment in the database
         """
         stmt = delete(Comment).filter(Comment.post_id == post_id)
-        result = await self.db.execute(stmt)
+        await self.db.execute(stmt)
 
     async def get_comment_by_post_all(self, post_id: int, limit: int, offset: int) -> list[Comment]:
         """
@@ -77,7 +77,13 @@ class CommentRepository:
         :param offset: int: Defaults to Query(0, ge=0)
         :return: All comment object
         """
-        stmt = select(Comment).filter_by(post_id=post_id).offset(offset).limit(limit)
+        stmt = (
+            select(Comment)
+            .filter_by(post_id=post_id)
+            .order_by(Comment.created_at.desc())
+            .offset(offset)
+            .limit(limit)
+        )
         comments = await self.db.execute(stmt)
         return list(comments.scalars().all())
 
